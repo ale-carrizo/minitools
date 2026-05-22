@@ -105,7 +105,7 @@ export default function Home() {
               <rect x="8" y="8" width="4.5" height="4.5" rx="1.2" fill="white" />
             </svg>
           </div>
-          <span className="text-white font-bold text-[15px] tracking-[-0.03em] font-display">MiniTools</span>
+          <span className="text-white font-semibold text-[15px] tracking-[-0.03em]">MiniTools</span>
         </div>
         <button className="bg-[#5448EE] hover:bg-[#4035d4] text-white text-[13px] font-semibold px-4 py-[7px] rounded-[8px] transition-colors duration-150">
           Empezar gratis
@@ -123,7 +123,7 @@ export default function Home() {
         </div>
 
         <div className="relative z-10 text-center px-6 animate-fade-up">
-          <h1 className="text-5xl sm:text-[70px] lg:text-[80px] font-bold leading-[1.05] tracking-[-0.04em] mb-5 font-display">
+          <h1 className="text-5xl sm:text-[70px] lg:text-[80px] font-semibold leading-[1.05] tracking-[-0.04em] mb-5">
             <span className="text-white block">Todas las herramientas</span>
             <span className="block" style={{ color: "#8880F5" }}>en una sola suscripción</span>
           </h1>
@@ -161,8 +161,8 @@ export default function Home() {
       {/* ── TOOLS GRID ─────────────────────────────── */}
       <section className="bg-[#F6F6FB] pt-16 pb-24 px-6">
         <div className="text-center mb-10">
-          <p className="text-[#5448EE] text-[11px] font-bold tracking-[0.12em] uppercase mb-3">12 HERRAMIENTAS INCLUIDAS</p>
-          <h2 className="text-[36px] sm:text-[42px] font-extrabold text-[#1a1a2e] tracking-[-0.03em] mb-3 font-display">
+          <p className="text-[#5448EE] text-[11px] font-semibold tracking-[0.12em] uppercase mb-3">12 HERRAMIENTAS INCLUIDAS</p>
+          <h2 className="text-[36px] sm:text-[42px] font-semibold text-[#1a1a2e] tracking-[-0.03em] mb-3">
             Todo lo que necesita tu negocio
           </h2>
           <p className="text-[#1a1a2e]/50 text-[16px] max-w-md mx-auto leading-relaxed">
@@ -202,7 +202,7 @@ export default function Home() {
               <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 mb-4 flex-shrink-0">
                 <tool.Icon />
               </div>
-              <h3 className="text-[#1a1a2e] font-bold text-[13.5px] leading-snug mb-2">{tool.name}</h3>
+              <h3 className="text-[#1a1a2e] font-semibold text-[13.5px] leading-snug mb-2">{tool.name}</h3>
               <p className="text-[#1a1a2e]/45 text-[12px] leading-relaxed flex-1 mb-4">{tool.desc}</p>
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-semibold text-[#5448EE] bg-[#5448EE]/10 px-2.5 py-1 rounded-full">
@@ -223,8 +223,8 @@ export default function Home() {
       {/* ── PRICING ────────────────────────────────── */}
       <section className="bg-white py-24 px-6">
         <div className="text-center mb-14">
-          <p className="text-[#5448EE] text-[11px] font-bold tracking-[0.12em] uppercase mb-3">PRECIOS</p>
-          <h2 className="text-[36px] sm:text-[42px] font-extrabold text-[#1a1a2e] tracking-[-0.03em] mb-3 font-display">
+          <p className="text-[#5448EE] text-[11px] font-semibold tracking-[0.12em] uppercase mb-3">PRECIOS</p>
+          <h2 className="text-[36px] sm:text-[42px] font-semibold text-[#1a1a2e] tracking-[-0.03em] mb-3">
             Simple y transparente
           </h2>
           <p className="text-[#1a1a2e]/50 text-[16px] max-w-sm mx-auto leading-relaxed">
@@ -235,10 +235,10 @@ export default function Home() {
         <div className="max-w-2xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-5">
           {/* Mensual */}
           <div className="border border-[#E4E3F2] rounded-2xl p-7">
-            <p className="text-[#1a1a2e]/35 text-[11px] font-bold tracking-[0.1em] uppercase mb-5">MENSUAL</p>
+            <p className="text-[#1a1a2e]/35 text-[11px] font-semibold tracking-[0.1em] uppercase mb-5">MENSUAL</p>
             <div className="flex items-baseline gap-0.5 mb-1">
-              <span className="text-[20px] font-bold text-[#1a1a2e] self-start mt-2">$</span>
-              <span className="text-[54px] font-extrabold text-[#1a1a2e] leading-none tracking-[-0.03em]">12</span>
+              <span className="text-[20px] font-semibold text-[#1a1a2e] self-start mt-2">$</span>
+              <span className="text-[54px] font-semibold text-[#1a1a2e] leading-none tracking-[-0.03em]">12</span>
             </div>
             <p className="text-[#1a1a2e]/40 text-[13px] mb-7">por mes · facturado mensualmente</p>
             <ul className="space-y-3 mb-8">
@@ -259,14 +259,14 @@ export default function Home() {
           {/* Anual */}
           <div className="border-2 border-[#5448EE] rounded-2xl p-7 relative">
             <div className="absolute -top-[14px] left-1/2 -translate-x-1/2">
-              <span className="bg-[#5448EE] text-white text-[11px] font-bold tracking-wider px-4 py-1.5 rounded-full whitespace-nowrap">
+              <span className="bg-[#5448EE] text-white text-[11px] font-semibold tracking-wider px-4 py-1.5 rounded-full whitespace-nowrap">
                 MÁS POPULAR
               </span>
             </div>
-            <p className="text-[#1a1a2e]/35 text-[11px] font-bold tracking-[0.1em] uppercase mb-5">ANUAL</p>
+            <p className="text-[#1a1a2e]/35 text-[11px] font-semibold tracking-[0.1em] uppercase mb-5">ANUAL</p>
             <div className="flex items-baseline gap-0.5 mb-1">
-              <span className="text-[20px] font-bold text-[#1a1a2e] self-start mt-2">$</span>
-              <span className="text-[54px] font-extrabold text-[#1a1a2e] leading-none tracking-[-0.03em]">8</span>
+              <span className="text-[20px] font-semibold text-[#1a1a2e] self-start mt-2">$</span>
+              <span className="text-[54px] font-semibold text-[#1a1a2e] leading-none tracking-[-0.03em]">8</span>
               <span className="ml-2 self-center text-[12px] font-semibold bg-purple-100 text-purple-600 px-2 py-0.5 rounded-full">-33%</span>
             </div>
             <p className="text-[#1a1a2e]/40 text-[13px] mb-7">por mes · facturado $96/año</p>
@@ -289,14 +289,14 @@ export default function Home() {
 
       {/* ── CTA SECTION ────────────────────────────── */}
       <section className="py-20 px-6 text-center" style={{ background: "linear-gradient(135deg, #5448EE 0%, #8880F5 100%)" }}>
-        <h2 className="text-[36px] sm:text-[46px] font-extrabold text-white tracking-[-0.03em] mb-3 font-display">
+        <h2 className="text-[36px] sm:text-[46px] font-semibold text-white tracking-[-0.03em] mb-3">
           Empezá hoy. 14 días gratis.
         </h2>
         <p className="text-white/65 text-[16px] mb-9">
           Sin tarjeta de crédito. Sin compromisos. Cancelá cuando quieras.
         </p>
         <div className="flex items-center justify-center gap-3 flex-wrap">
-          <button className="bg-white text-[#5448EE] font-bold text-[15px] px-7 py-3.5 rounded-xl hover:bg-gray-50 transition-colors duration-150">
+          <button className="bg-white text-[#5448EE] font-semibold text-[15px] px-7 py-3.5 rounded-xl hover:bg-gray-50 transition-colors duration-150">
             Crear cuenta gratis
           </button>
           <button className="text-white font-semibold text-[15px] px-7 py-3.5 rounded-xl border border-white/30 hover:bg-white/10 transition-colors duration-150">
@@ -317,7 +317,7 @@ export default function Home() {
                 <rect x="8" y="8" width="4.5" height="4.5" rx="1.2" fill="white" />
               </svg>
             </div>
-            <span className="text-white font-bold text-[14px] tracking-[-0.025em] font-display">MiniTools</span>
+            <span className="text-white font-semibold text-[14px] tracking-[-0.025em]">MiniTools</span>
           </div>
           <div className="flex items-center gap-6 text-white/40 text-[13px]">
             <a href="#" className="hover:text-white/70 transition-colors">Privacidad</a>
