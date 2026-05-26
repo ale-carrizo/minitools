@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-brand: #5448EE;
+  --color-brand-light: #8880F5;
+  --color-surface: #F6F6FB;
+}
+
+* { -webkit-font-smoothing: antialiased; }
+
+body {
+  background-color: #F6F6FB;
+  color: #1a1a2e;
+  font-family: var(--font-dm-sans), -apple-system, BlinkMacSystemFont, sans-serif;
+}
