@@ -31,5 +31,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Prisma generated client
+app/generated/
+apps/app/app/generated/
+
 # Vercel / Railway
 .vercel
