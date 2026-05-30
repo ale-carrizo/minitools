@@ -1,9 +1,14 @@
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
 
 // Edge-compatible config: NO Prisma, NO bcrypt, NO Node.js-only modules
 export const authConfig = {
   providers: [
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
     // Provider declared here for edge compatibility (authorize runs only in Node.js via auth.ts)
     Credentials({
       credentials: {

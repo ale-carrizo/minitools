@@ -107,9 +107,9 @@ export default function Home() {
           </div>
           <span className="text-white font-semibold text-[15px] tracking-[-0.03em]">MiniTools</span>
         </div>
-        <button className="bg-[#5448EE] hover:bg-[#4035d4] text-white text-[13px] font-semibold px-4 py-[7px] rounded-[8px] transition-colors duration-150">
+        <a href="https://app.zimple.tools/register" className="bg-[#5448EE] hover:bg-[#4035d4] text-white text-[13px] font-semibold px-4 py-[7px] rounded-[8px] transition-colors duration-150">
           Empezar gratis
-        </button>
+        </a>
       </nav>
 
       {/* ── HERO ───────────────────────────────────── */}
@@ -132,9 +132,9 @@ export default function Home() {
           </p>
 
           <div className="flex items-center justify-center gap-3 mb-3">
-            <button className="bg-[#5448EE] hover:bg-[#4035d4] text-white font-semibold text-[15px] px-6 py-3 rounded-xl transition-all duration-200 hover:shadow-[0_4px_30px_rgba(84,72,238,0.5)]">
+            <a href="https://app.zimple.tools/register" className="bg-[#5448EE] hover:bg-[#4035d4] text-white font-semibold text-[15px] px-6 py-3 rounded-xl transition-all duration-200 hover:shadow-[0_4px_30px_rgba(84,72,238,0.5)]">
               Empezar gratis — 14 días
-            </button>
+            </a>
             <button className="text-white font-medium text-[15px] px-6 py-3 rounded-xl border border-white/25 hover:border-white/50 hover:bg-white/[0.06] transition-all duration-200">
               Ver herramientas
             </button>
@@ -251,9 +251,9 @@ export default function Home() {
                 </li>
               ))}
             </ul>
-            <button className="w-full py-3 rounded-xl border border-[#E4E3F2] text-[#1a1a2e] font-semibold text-[14px] hover:border-[#5448EE] hover:text-[#5448EE] transition-all duration-150">
+            <a href="https://app.zimple.tools/register" className="block w-full py-3 rounded-xl border border-[#E4E3F2] text-[#1a1a2e] font-semibold text-[14px] text-center hover:border-[#5448EE] hover:text-[#5448EE] transition-all duration-150">
               Empezar con Mensual
-            </button>
+            </a>
           </div>
 
           {/* Anual */}
@@ -280,9 +280,9 @@ export default function Home() {
                 </li>
               ))}
             </ul>
-            <button className="w-full py-3 rounded-xl bg-[#5448EE] hover:bg-[#4035d4] text-white font-semibold text-[14px] transition-colors duration-150">
+            <a href="https://app.zimple.tools/register" className="block w-full py-3 rounded-xl bg-[#5448EE] hover:bg-[#4035d4] text-white font-semibold text-[14px] text-center transition-colors duration-150">
               Empezar con Anual
-            </button>
+            </a>
           </div>
         </div>
       </section>
@@ -296,9 +296,9 @@ export default function Home() {
           Sin tarjeta de crédito. Sin compromisos. Cancelá cuando quieras.
         </p>
         <div className="flex items-center justify-center gap-3 flex-wrap">
-          <button className="bg-white text-[#5448EE] font-semibold text-[15px] px-7 py-3.5 rounded-xl hover:bg-gray-50 transition-colors duration-150">
+          <a href="https://app.zimple.tools/register" className="bg-white text-[#5448EE] font-semibold text-[15px] px-7 py-3.5 rounded-xl hover:bg-gray-50 transition-colors duration-150">
             Crear cuenta gratis
-          </button>
+          </a>
           <button className="text-white font-semibold text-[15px] px-7 py-3.5 rounded-xl border border-white/30 hover:bg-white/10 transition-colors duration-150">
             Ver demo
           </button>
