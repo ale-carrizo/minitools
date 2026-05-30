@@ -9,14 +9,12 @@ export const authConfig = {
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
-    // Provider declared here for edge compatibility (authorize runs only in Node.js via auth.ts)
     Credentials({
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Contraseña", type: "password" },
       },
       async authorize() {
-        // Actual validation happens in auth.ts (Node.js runtime)
         return null;
       },
     }),
@@ -29,17 +27,26 @@ export const authConfig = {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
+      const isAdmin = auth?.user?.role === "ADMIN";
       const { pathname } = nextUrl;
 
-      if (pathname.startsWith("/dashboard") && !isLoggedIn) {
-        return false; // redirects to signIn page
+      // Admin routes: must be logged in AND admin
+      if (pathname.startsWith("/admin")) {
+        if (!isLoggedIn) return false;
+        if (!isAdmin) return Response.redirect(new URL("/dashboard", nextUrl));
+        return true;
       }
 
-      if (
-        (pathname.startsWith("/login") || pathname.startsWith("/register")) &&
-        isLoggedIn
-      ) {
-        return Response.redirect(new URL("/dashboard", nextUrl));
+      // Dashboard routes: must be logged in
+      if (pathname.startsWith("/dashboard")) {
+        if (!isLoggedIn) return false;
+        return true;
+      }
+
+      // Auth routes: redirect to dashboard if already logged in
+      if (pathname.startsWith("/login") || pathname.startsWith("/register")) {
+        if (isLoggedIn) return Response.redirect(new URL("/dashboard", nextUrl));
+        return true;
       }
 
       return true;

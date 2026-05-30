@@ -6,7 +6,6 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { authConfig } from "./auth.config";
 
-// Full config: runs only in Node.js runtime (server components, API routes)
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(prisma),
@@ -29,12 +28,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         });
 
         if (!user || !user.password) return null;
+        if (user.suspended) return null;
 
         const valid = await bcrypt.compare(
           credentials.password as string,
           user.password
         );
-
         if (!valid) return null;
 
         return {
@@ -42,18 +41,33 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           email: user.email,
           name: user.name,
           image: user.image,
+          role: user.role,
         };
       },
     }),
   ],
   callbacks: {
+    async signIn({ user, account }) {
+      // Block suspended users (Google OAuth)
+      if (account?.provider === "google" && user.email) {
+        const dbUser = await prisma.user.findUnique({
+          where: { email: user.email },
+        });
+        if (dbUser?.suspended) return false;
+      }
+      return true;
+    },
     jwt({ token, user }) {
-      if (user) token.id = user.id;
+      if (user) {
+        token.id = user.id!;
+        token.role = (user.role as "USER" | "ADMIN") ?? "USER";
+      }
       return token;
     },
     session({ session, token }) {
-      if (token.id && session.user) {
+      if (session.user) {
         session.user.id = token.id as string;
+        session.user.role = token.role as "USER" | "ADMIN";
       }
       return session;
     },
