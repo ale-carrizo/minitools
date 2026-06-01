@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { suspendUser, unsuspendUser, makeAdmin, removeAdmin } from "./actions";
+import PromoteForm from "./promote-form";
 
 const statusBadge: Record<string, string> = {
   ACTIVE: "bg-green-100 text-green-700",
@@ -34,7 +35,9 @@ export default async function AdminUsersPage() {
         </p>
       </div>
 
-      <div className="bg-white rounded-2xl border border-[#e5e7eb] overflow-hidden">
+      <PromoteForm />
+
+      <div className="bg-white rounded-2xl border border-[#e5e7eb] overflow-hidden mt-6">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

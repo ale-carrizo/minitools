@@ -56,3 +56,23 @@ export async function removeAdmin(userId: string) {
   });
   revalidatePath("/admin/users");
 }
+
+export type PromoteState = { error?: string; success?: string };
+
+export async function promoteByEmail(
+  _prev: PromoteState,
+  formData: FormData
+): Promise<PromoteState> {
+  await requireAdmin();
+
+  const email = (formData.get("email") as string)?.trim().toLowerCase();
+  if (!email) return { error: "Ingresá un email." };
+
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) return { error: `No existe ningún usuario con el email ${email}.` };
+  if (user.role === "ADMIN") return { error: `${email} ya es administrador.` };
+
+  await prisma.user.update({ where: { email }, data: { role: "ADMIN" } });
+  revalidatePath("/admin/users");
+  return { success: `${email} ahora es administrador.` };
+}
