@@ -25,9 +25,17 @@ export const authConfig = {
     error: "/login",
   },
   callbacks: {
+    // Map JWT claims → session so middleware can read role
+    session({ session, token }: { session: any; token: any }) {
+      if (session.user) {
+        session.user.id = token.id ?? token.sub;
+        session.user.role = token.role ?? "USER";
+      }
+      return session;
+    },
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const isAdmin = auth?.user?.role === "ADMIN";
+      const isAdmin = (auth?.user as any)?.role === "ADMIN";
       const { pathname } = nextUrl;
 
       // Admin routes: must be logged in AND admin
