@@ -11,204 +11,123 @@ export default function RegisterPage() {
   const [state, formAction, pending] = useActionState(registerUser, {});
 
   useEffect(() => {
-    if (state.success) {
-      router.push("/login?registered=1");
-    }
+    if (state.success) router.push("/login?registered=1");
   }, [state.success, router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F6F6FB] px-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-[#0C0B1A] flex items-center justify-center px-4 relative overflow-hidden">
+      {/* Purple glow */}
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          width: "600px", height: "400px", borderRadius: "50%",
+          background: "radial-gradient(ellipse at center, #5448EE 0%, #8880F5 30%, transparent 70%)",
+          filter: "blur(2px)", opacity: 0.18,
+          top: "50%", left: "50%", transform: "translate(-50%, -60%)",
+        }}
+      />
+
+      <div className="w-full max-w-sm relative z-10">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#5448EE] mb-4">
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              className="text-white"
-            >
-              <rect
-                x="3"
-                y="3"
-                width="7"
-                height="7"
-                rx="1.5"
-                fill="currentColor"
-              />
-              <rect
-                x="14"
-                y="3"
-                width="7"
-                height="7"
-                rx="1.5"
-                fill="currentColor"
-                opacity="0.6"
-              />
-              <rect
-                x="3"
-                y="14"
-                width="7"
-                height="7"
-                rx="1.5"
-                fill="currentColor"
-                opacity="0.6"
-              />
-              <rect
-                x="14"
-                y="14"
-                width="7"
-                height="7"
-                rx="1.5"
-                fill="currentColor"
-                opacity="0.3"
-              />
+          <div className="inline-flex items-center justify-center w-10 h-10 rounded-[10px] bg-[#5448EE] mb-5">
+            <svg width="18" height="18" viewBox="0 0 14 14" fill="none">
+              <rect x="1.5" y="1.5" width="4.5" height="4.5" rx="1.2" fill="white" />
+              <rect x="8" y="1.5" width="4.5" height="4.5" rx="1.2" fill="white" fillOpacity="0.5" />
+              <rect x="1.5" y="8" width="4.5" height="4.5" rx="1.2" fill="white" fillOpacity="0.5" />
+              <rect x="8" y="8" width="4.5" height="4.5" rx="1.2" fill="white" />
             </svg>
           </div>
-          <h1 className="text-2xl font-semibold text-[#1a1a2e]">
+          <h1 className="text-[22px] font-semibold text-white tracking-[-0.03em]">
             Creá tu cuenta gratis
           </h1>
-          <p className="text-[#6b7280] mt-1 text-sm">
+          <p className="text-white/40 text-sm mt-1.5">
             Accedé a todas tus herramientas de negocio
           </p>
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-[#e5e7eb] p-8">
-          <form action={formAction} className="space-y-5">
+        <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-7 backdrop-blur-sm">
+          <form action={formAction} className="space-y-4">
             <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-[#374151] mb-1.5"
-              >
+              <label htmlFor="name" className="block text-sm font-medium text-white/60 mb-1.5">
                 Nombre completo
               </label>
               <input
-                id="name"
-                name="name"
-                type="text"
-                autoComplete="name"
-                required
-                placeholder="Tu nombre"
-                className="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] bg-[#F6F6FB] text-[#1a1a2e] text-sm placeholder:text-[#9ca3af] focus:outline-none focus:ring-2 focus:ring-[#5448EE] focus:border-transparent transition"
+                id="name" name="name" type="text"
+                autoComplete="name" required placeholder="Tu nombre"
+                className="w-full px-4 py-2.5 rounded-xl bg-white/[0.06] border border-white/[0.10] text-white text-sm placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-[#5448EE] focus:border-transparent transition"
               />
             </div>
 
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-[#374151] mb-1.5"
-              >
+              <label htmlFor="email" className="block text-sm font-medium text-white/60 mb-1.5">
                 Email
               </label>
               <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                placeholder="tu@email.com"
-                className="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] bg-[#F6F6FB] text-[#1a1a2e] text-sm placeholder:text-[#9ca3af] focus:outline-none focus:ring-2 focus:ring-[#5448EE] focus:border-transparent transition"
+                id="email" name="email" type="email"
+                autoComplete="email" required placeholder="tu@email.com"
+                className="w-full px-4 py-2.5 rounded-xl bg-white/[0.06] border border-white/[0.10] text-white text-sm placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-[#5448EE] focus:border-transparent transition"
               />
             </div>
 
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-[#374151] mb-1.5"
-              >
+              <label htmlFor="password" className="block text-sm font-medium text-white/60 mb-1.5">
                 Contraseña
               </label>
               <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="new-password"
-                required
-                minLength={8}
+                id="password" name="password" type="password"
+                autoComplete="new-password" required minLength={8}
                 placeholder="Mínimo 8 caracteres"
-                className="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] bg-[#F6F6FB] text-[#1a1a2e] text-sm placeholder:text-[#9ca3af] focus:outline-none focus:ring-2 focus:ring-[#5448EE] focus:border-transparent transition"
+                className="w-full px-4 py-2.5 rounded-xl bg-white/[0.06] border border-white/[0.10] text-white text-sm placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-[#5448EE] focus:border-transparent transition"
               />
             </div>
 
             {state.error && (
-              <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
-                    clipRule="evenodd"
-                  />
+              <div className="flex items-center gap-2 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
                 </svg>
                 {state.error}
               </div>
             )}
 
             <button
-              type="submit"
-              disabled={pending}
-              className="w-full py-2.5 px-4 rounded-xl bg-[#5448EE] text-white text-sm font-medium hover:bg-[#4338ca] focus:outline-none focus:ring-2 focus:ring-[#5448EE] focus:ring-offset-2 transition disabled:opacity-60 disabled:cursor-not-allowed"
+              type="submit" disabled={pending}
+              className="w-full py-2.5 rounded-xl bg-[#5448EE] hover:bg-[#4035d4] text-white text-sm font-semibold transition-all hover:shadow-[0_4px_24px_rgba(84,72,238,0.45)] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {pending ? (
                 <span className="flex items-center justify-center gap-2">
-                  <svg
-                    className="animate-spin h-4 w-4"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                    />
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
                   </svg>
                   Creando cuenta...
                 </span>
-              ) : (
-                "Crear cuenta gratis"
-              )}
+              ) : "Crear cuenta gratis"}
             </button>
 
-            <p className="text-xs text-center text-[#9ca3af]">
+            <p className="text-[11px] text-center text-white/25">
               Al registrarte aceptás nuestros{" "}
-              <Link href="#" className="underline">
-                Términos de servicio
-              </Link>{" "}
-              y{" "}
-              <Link href="#" className="underline">
-                Política de privacidad
-              </Link>
-              .
+              <Link href="#" className="underline hover:text-white/50 transition-colors">Términos</Link>
+              {" "}y{" "}
+              <Link href="#" className="underline hover:text-white/50 transition-colors">Privacidad</Link>.
             </p>
 
             {/* Divider */}
             <div className="flex items-center gap-3">
-              <div className="flex-1 h-px bg-[#e5e7eb]" />
-              <span className="text-xs text-[#9ca3af]">o registrate con</span>
-              <div className="flex-1 h-px bg-[#e5e7eb]" />
+              <div className="flex-1 h-px bg-white/[0.08]" />
+              <span className="text-xs text-white/30">o registrate con</span>
+              <div className="flex-1 h-px bg-white/[0.08]" />
             </div>
 
             {/* Google */}
             <button
               type="button"
               onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-              className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl border border-[#e5e7eb] bg-white text-sm font-medium text-[#374151] hover:bg-[#F6F6FB] transition"
+              className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl bg-white/[0.06] border border-white/[0.10] text-white/80 text-sm font-medium hover:bg-white/[0.10] hover:text-white transition-all"
             >
-              <svg width="18" height="18" viewBox="0 0 24 24">
+              <svg width="16" height="16" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                 <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
@@ -219,12 +138,9 @@ export default function RegisterPage() {
           </form>
         </div>
 
-        <p className="text-center text-sm text-[#6b7280] mt-6">
+        <p className="text-center text-sm text-white/30 mt-6">
           ¿Ya tenés cuenta?{" "}
-          <Link
-            href="/login"
-            className="text-[#5448EE] font-medium hover:underline"
-          >
+          <Link href="/login" className="text-[#8880F5] hover:text-white font-medium transition-colors">
             Ingresá
           </Link>
         </p>

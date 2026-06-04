@@ -35,43 +35,53 @@ export default async function DashboardLayout({ children }: { children: React.Re
   if (!session?.user) redirect("/login");
 
   return (
-    <div className="flex h-screen bg-[#F6F6FB] overflow-hidden">
-      <aside className="w-60 flex-shrink-0 flex flex-col bg-white border-r border-[#e5e7eb] overflow-y-auto">
+    <div className="flex h-screen bg-[#0C0B1A] overflow-hidden">
+      {/* Sidebar — same dark as landing navbar */}
+      <aside className="w-58 flex-shrink-0 flex flex-col border-r border-white/[0.06] overflow-y-auto no-scrollbar" style={{ width: "232px" }}>
+
         {/* Brand */}
-        <div className="flex items-center gap-2.5 px-5 py-5 border-b border-[#f3f4f6]">
-          <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-[#5448EE]">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-white">
-              <rect x="3" y="3" width="7" height="7" rx="1.5" fill="currentColor"/>
-              <rect x="14" y="3" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.6"/>
-              <rect x="3" y="14" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.6"/>
-              <rect x="14" y="14" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.3"/>
+        <div className="flex items-center gap-2.5 px-5 h-[52px] border-b border-white/[0.06] flex-shrink-0">
+          <div className="w-6 h-6 rounded-[5px] bg-[#5448EE] flex items-center justify-center flex-shrink-0">
+            <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+              <rect x="1.5" y="1.5" width="4.5" height="4.5" rx="1.2" fill="white"/>
+              <rect x="8" y="1.5" width="4.5" height="4.5" rx="1.2" fill="white" fillOpacity="0.5"/>
+              <rect x="1.5" y="8" width="4.5" height="4.5" rx="1.2" fill="white" fillOpacity="0.5"/>
+              <rect x="8" y="8" width="4.5" height="4.5" rx="1.2" fill="white"/>
             </svg>
           </div>
-          <span className="font-semibold text-[#1a1a2e] text-sm">Zimple Tools</span>
+          <span className="text-white font-semibold text-[14px] tracking-[-0.02em]">Zimple Tools</span>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 px-3 py-4 space-y-5">
-          <Link href="/dashboard" className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium text-[#374151] hover:bg-[#F6F6FB] hover:text-[#5448EE] transition-colors">
-            <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
+        <nav className="flex-1 px-3 py-4 space-y-4">
+          <Link
+            href="/dashboard"
+            className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-white/60 hover:text-white hover:bg-white/[0.06] transition-colors"
+          >
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+            </svg>
             Inicio
           </Link>
 
           {nav.map((group) => (
             <div key={group.section}>
-              <p className="px-3 mb-1 text-[10px] font-semibold uppercase tracking-wider text-[#9ca3af]">
+              <p className="px-3 mb-1 text-[10px] font-semibold uppercase tracking-wider text-white/25">
                 {group.section}
               </p>
               <ul className="space-y-0.5">
                 {group.tools.map((tool) => (
                   <li key={tool.href}>
                     {tool.available ? (
-                      <Link href={tool.href} className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-[#6b7280] hover:bg-[#F6F6FB] hover:text-[#5448EE] transition-colors">
+                      <Link
+                        href={tool.href}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-white/60 hover:text-white hover:bg-white/[0.06] transition-colors"
+                      >
                         <span className="flex-shrink-0 opacity-70">{tool.icon}</span>
                         {tool.label}
                       </Link>
                     ) : (
-                      <span className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-[#d1d5db] cursor-default">
+                      <span className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-white/20 cursor-default">
                         <span className="flex-shrink-0 opacity-40">{tool.icon}</span>
                         {tool.label}
                       </span>
@@ -83,33 +93,46 @@ export default async function DashboardLayout({ children }: { children: React.Re
           ))}
         </nav>
 
-        {/* User footer */}
-        <div className="border-t border-[#f3f4f6] px-3 py-3">
+        {/* Footer */}
+        <div className="border-t border-white/[0.06] px-3 py-3 space-y-0.5">
           {session.user.role === "ADMIN" && (
-            <Link href="/admin" className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-[#5448EE] hover:bg-[#EEF0FF] transition-colors mb-1">
-              <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd"/></svg>
+            <Link
+              href="/admin"
+              className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-[#8880F5] hover:bg-white/[0.06] hover:text-white transition-colors"
+            >
+              <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd"/>
+              </svg>
               Panel Admin
             </Link>
           )}
-          <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl">
-            <div className="w-7 h-7 rounded-full bg-[#5448EE] flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
+          <div className="flex items-center gap-2.5 px-3 py-2">
+            <div className="w-6 h-6 rounded-full bg-[#5448EE] flex items-center justify-center text-white text-[10px] font-semibold flex-shrink-0">
               {session.user.name?.charAt(0)?.toUpperCase() ?? "U"}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium text-[#1a1a2e] truncate">{session.user.name ?? "Usuario"}</p>
-              <p className="text-[11px] text-[#9ca3af] truncate">{session.user.email}</p>
+              <p className="text-xs font-medium text-white/70 truncate">{session.user.name ?? "Usuario"}</p>
+              <p className="text-[10px] text-white/30 truncate">{session.user.email}</p>
             </div>
           </div>
           <form action={async () => { "use server"; await signOut({ redirectTo: "/login" }); }}>
-            <button type="submit" className="mt-1 w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-[#9ca3af] hover:bg-[#F6F6FB] hover:text-red-500 transition-colors text-left">
-              <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h6a1 1 0 100-2H4V5h5a1 1 0 100-2H3zm10.293 3.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L14.586 11H8a1 1 0 110-2h6.586l-1.293-1.293a1 1 0 010-1.414z" clipRule="evenodd"/></svg>
+            <button
+              type="submit"
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-white/30 hover:text-red-400 hover:bg-white/[0.04] transition-colors text-left"
+            >
+              <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h6a1 1 0 100-2H4V5h5a1 1 0 100-2H3zm10.293 3.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L14.586 11H8a1 1 0 110-2h6.586l-1.293-1.293a1 1 0 010-1.414z" clipRule="evenodd"/>
+              </svg>
               Cerrar sesión
             </button>
           </form>
         </div>
       </aside>
 
-      <main className="flex-1 overflow-y-auto">{children}</main>
+      {/* Main content area — slightly lighter than sidebar */}
+      <main className="flex-1 overflow-y-auto" style={{ background: "#0F0E1C" }}>
+        {children}
+      </main>
     </div>
   );
 }
