@@ -93,9 +93,10 @@ model Subscription {
   endDate              DateTime?
   trialEndsAt          DateTime?
   priceMonthly         Float
-  currency             String             @default("USD")
-  stripeCustomerId     String?
-  stripeSubscriptionId String?
+  currency             String             @default("ARS")
+  mpPreapprovalId      String?            // Mercado Pago preapproval ID
+  mpPayerEmail         String?            // Payer email en MP
+  mpPlanId             String?            // MP preapproval_plan ID usado
   createdAt            DateTime           @default(now())
   updatedAt            DateTime           @updatedAt
 
