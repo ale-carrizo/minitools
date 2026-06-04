@@ -15,9 +15,9 @@ const tools = [
 ];
 
 const statusConfig = {
-  available: { label: "Disponible", dot: "bg-[#5448EE]", badge: "text-[#8880F5] bg-[#5448EE]/10" },
-  soon:      { label: "En desarrollo", dot: "bg-white/30", badge: "text-white/40 bg-white/[0.06]" },
-  planned:   { label: "Próximamente", dot: "bg-white/15", badge: "text-white/25 bg-white/[0.04]" },
+  available: { label: "Disponible", dot: "bg-[#5448EE]", badge: "text-[#8880F5] bg-[#5448EE]/15 font-semibold" },
+  soon:      { label: "En desarrollo", dot: "bg-white/30", badge: "text-white/50 bg-white/[0.08]" },
+  planned:   { label: "Próximamente", dot: "bg-white/15", badge: "text-white/35 bg-white/[0.05]" },
 };
 
 export default async function DashboardPage() {
@@ -63,23 +63,25 @@ export default async function DashboardPage() {
           const isAvailable = tool.status === "available";
 
           const card = (
-            <div className={`group bg-white/[0.04] border rounded-2xl p-5 transition-all duration-200 h-full flex flex-col ${
+            <div className={`group border rounded-2xl p-5 transition-all duration-200 h-full flex flex-col ${
               isAvailable
-                ? "border-white/[0.10] hover:border-[#5448EE]/60 hover:bg-white/[0.06] cursor-pointer"
-                : "border-white/[0.06] opacity-60"
+                ? "bg-[#1A1830] border-white/[0.12] hover:border-[#5448EE]/70 hover:bg-[#1E1C38] cursor-pointer"
+                : "bg-[#141322] border-white/[0.07]"
             }`}>
               <div className="flex items-start justify-between mb-4">
                 <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
-                  isAvailable ? "bg-[#5448EE]/15 text-[#8880F5]" : "bg-white/[0.06] text-white/30"
+                  isAvailable ? "bg-[#5448EE]/20 text-[#8880F5]" : "bg-white/[0.05] text-white/25"
                 }`}>
                   {tool.icon}
                 </div>
-                <span className="text-[10px] font-mono text-white/20">{tool.num}</span>
+                <span className="text-[10px] font-mono text-white/25">{tool.num}</span>
               </div>
-              <h3 className={`font-medium text-[13.5px] leading-snug mb-1.5 ${isAvailable ? "text-white/90" : "text-white/40"}`}>
+              <h3 className={`font-semibold text-[13.5px] leading-snug mb-2 ${isAvailable ? "text-white" : "text-white/45"}`}>
                 {tool.label}
               </h3>
-              <p className="text-[12px] text-white/30 leading-relaxed flex-1">{tool.desc}</p>
+              <p className={`text-[12px] leading-relaxed flex-1 ${isAvailable ? "text-white/55" : "text-white/30"}`}>
+                {tool.desc}
+              </p>
               <div className="mt-4">
                 <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${st.badge}`}>
                   {st.label}

@@ -130,7 +130,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       </aside>
 
       {/* Main content area — slightly lighter than sidebar */}
-      <main className="flex-1 overflow-y-auto" style={{ background: "#0F0E1C" }}>
+      <main className="flex-1 overflow-y-auto" style={{ background: "#111028" }}>
         {children}
       </main>
     </div>
