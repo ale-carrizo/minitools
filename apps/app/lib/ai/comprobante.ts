@@ -55,7 +55,7 @@ const stubProvider: IAProvider = {
       emisor_nombre: 'Ana Martínez',
       emisor_banco:  'Banco Nación',
       referencia:    'CVU 0000003100094693671220',
-      tipo:          'transferencia',
+      tipo:          'transferencia' as const,
       confidence:    0.95,
     }
     return { ...raw, raw }
