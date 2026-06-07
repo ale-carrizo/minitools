@@ -4,7 +4,7 @@ import Link from "next/link";
 const tools = [
   { num: "01", label: "Control de Stock", href: "/dashboard/stock", status: "available" as const, icon: <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor"><path d="M4 3a2 2 0 100 4h12a2 2 0 100-4H4z"/><path fillRule="evenodd" d="M3 8h14v7a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm5 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" clipRule="evenodd"/></svg>, desc: "Inventario con alertas automáticas de stock mínimo" },
   { num: "02", label: "Generador de Presupuestos", href: "/dashboard/presupuestos", status: "available" as const, icon: <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd"/></svg>, desc: "Presupuestos en PDF con logo y seguimiento de estados" },
-  { num: "03", label: "Control de Caja + Pagos", href: "/dashboard/caja", status: "soon" as const, icon: <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd"/></svg>, desc: "Ingresos y egresos del día con lectura de comprobantes por IA" },
+  { num: "03", label: "Control de Caja + Pagos", href: "/dashboard/caja", status: "available" as const, icon: <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd"/></svg>, desc: "Ingresos y egresos del día con lectura de comprobantes por IA" },
   { num: "04", label: "Calculadora de Precios", href: "/dashboard/precios", status: "soon" as const, icon: <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd"/></svg>, desc: "Precio de venta desde costo, IVA, margen y punto de equilibrio" },
   { num: "05", label: "Recibo de Sueldo", href: "/dashboard/sueldos", status: "planned" as const, icon: <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd"/></svg>, desc: "Recibos de sueldo PDF para empleados y monotributistas" },
   { num: "06", label: "Control de Asistencia", href: "/dashboard/asistencia", status: "planned" as const, icon: <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/></svg>, desc: "Entradas, salidas y horas trabajadas del personal" },
@@ -36,6 +36,7 @@ export default async function DashboardPage() {
         <p className="text-white/40 text-sm mt-1">
           Tus herramientas de negocio — MVP v1.0
         </p>
+
       </div>
 
       {/* Progress banner */}
@@ -46,8 +47,8 @@ export default async function DashboardPage() {
           </svg>
         </div>
         <div className="flex-1">
-          <p className="text-sm font-medium text-white/80">2 herramientas disponibles · 8 en camino</p>
-          <p className="text-xs text-white/40 mt-0.5">Stock y Presupuestos ya están listos para usar.</p>
+          <p className="text-sm font-medium text-white/80">3 herramientas disponibles · 7 en camino</p>
+          <p className="text-xs text-white/40 mt-0.5">Stock, Presupuestos y Caja ya están listos para usar.</p>
         </div>
         <div className="flex items-center gap-1.5">
           {tools.map((t) => (
