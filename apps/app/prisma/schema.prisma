@@ -44,6 +44,8 @@ model User {
   sessions     Session[]
   subscription Subscription?
   toolUsage    ToolUsage[]
+  cajaDias     CajaDia[]
+  cajaCobros   CajaCobro[]
 }
 
 model Account {
@@ -128,4 +130,54 @@ model ToolUsage {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, toolSlug])
+}
+
+// ── Control de Caja ───────────────────────────────────────────────────────────
+
+model CajaDia {
+  id          String      @id @default(cuid())
+  userId      String
+  fecha       String      // YYYY-MM-DD
+  cerrada     Boolean     @default(false)
+  cerradaAt   DateTime?
+  notaCierre  String?
+  totalCache  Float       @default(0)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  user   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cobros CajaCobro[]
+
+  @@unique([userId, fecha])
+}
+
+model CajaCobro {
+  id             String    @id @default(cuid())
+  userId         String
+  diaId          String
+  monto          Float
+  fechaCobro     String    // YYYY-MM-DD
+  horaCobro      String?   // HH:MM
+  medio          String    // transferencia | efectivo | mercadopago | tarjeta_debito | tarjeta_credito | otro
+  source         String    // comprobante_ia | extracto | mercadopago | manual
+  concepto       String?
+  emisorNombre   String?
+  emisorBanco    String?
+  referencia     String?
+  comprobanteUrl String?
+  iaRaw          Json?
+  iaConfidence   Float?
+  iaProvider     String?
+  iaModel        String?
+  mpPaymentId    String?   @unique
+  mpStatus       String?
+  extractoRow    Json?
+  anulado        Boolean   @default(false)
+  anuladoAt      DateTime?
+  anuladoMotivo  String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  user User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dia  CajaDia @relation(fields: [diaId], references: [id], onDelete: Cascade)
 }
