@@ -1,0 +1,202 @@
+'use server'
+
+import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
+import { auth } from '@/auth'
+import { prisma } from '@/lib/prisma'
+import type { Producto, MovimientoStock, MovimientoTipo } from '@/types/stock'
+
+// ── Helper ────────────────────────────────────────────────────────────────────
+async function getUserId(): Promise<string> {
+  const session = await auth()
+  if (!session?.user?.id) redirect('/login')
+  return session.user.id
+}
+
+function toProducto(p: any): Producto {
+  return {
+    id:          p.id,
+    userId:      p.userId,
+    nombre:      p.nombre,
+    sku:         p.sku         ?? null,
+    categoria:   p.categoria   ?? null,
+    descripcion: p.descripcion ?? null,
+    precioCosto: p.precioCosto,
+    precioVenta: p.precioVenta,
+    stock:       p.stock,
+    stockMinimo: p.stockMinimo,
+    unidad:      p.unidad,
+    activo:      p.activo,
+    createdAt:   p.createdAt.toISOString(),
+    updatedAt:   p.updatedAt.toISOString(),
+  }
+}
+
+function toMovimiento(m: any): MovimientoStock {
+  return {
+    id:         m.id,
+    userId:     m.userId,
+    productoId: m.productoId,
+    tipo:       m.tipo as MovimientoTipo,
+    cantidad:   m.cantidad,
+    stockAntes: m.stockAntes,
+    motivo:     m.motivo ?? null,
+    createdAt:  m.createdAt.toISOString(),
+  }
+}
+
+// ── Queries ───────────────────────────────────────────────────────────────────
+export async function getProductos(): Promise<Producto[]> {
+  const userId = await getUserId()
+  const items  = await prisma.producto.findMany({
+    where:   { userId, activo: true },
+    orderBy: { nombre: 'asc' },
+  })
+  return items.map(toProducto)
+}
+
+export async function getProducto(id: string): Promise<Producto | null> {
+  const userId  = await getUserId()
+  const item    = await prisma.producto.findFirst({ where: { id, userId } })
+  return item ? toProducto(item) : null
+}
+
+export async function getAlertasStock(): Promise<Producto[]> {
+  const userId = await getUserId()
+  const items  = await prisma.producto.findMany({
+    where:   { userId, activo: true },
+    orderBy: { stock: 'asc' },
+  })
+  return items
+    .map(toProducto)
+    .filter(p => p.stock <= p.stockMinimo)
+}
+
+export async function getMovimientos(productoId: string): Promise<MovimientoStock[]> {
+  const userId = await getUserId()
+  const items  = await prisma.movimientoStock.findMany({
+    where:   { productoId, userId },
+    orderBy: { createdAt: 'desc' },
+    take:    50,
+  })
+  return items.map(toMovimiento)
+}
+
+// ── Mutaciones ────────────────────────────────────────────────────────────────
+interface ProductoPayload {
+  nombre:      string
+  sku?:        string
+  categoria?:  string
+  descripcion?: string
+  precioCosto: number
+  precioVenta: number
+  stock:       number
+  stockMinimo: number
+  unidad:      string
+}
+
+export async function crearProducto(data: ProductoPayload): Promise<Producto> {
+  const userId = await getUserId()
+
+  const producto = await prisma.producto.create({
+    data: {
+      userId,
+      nombre:      data.nombre.trim(),
+      sku:         data.sku?.trim()        || null,
+      categoria:   data.categoria?.trim()  || null,
+      descripcion: data.descripcion?.trim() || null,
+      precioCosto: data.precioCosto,
+      precioVenta: data.precioVenta,
+      stock:       data.stock,
+      stockMinimo: data.stockMinimo,
+      unidad:      data.unidad,
+    },
+  })
+
+  // Registrar movimiento inicial si hay stock
+  if (data.stock > 0) {
+    await prisma.movimientoStock.create({
+      data: {
+        userId,
+        productoId: producto.id,
+        tipo:       'entrada',
+        cantidad:   data.stock,
+        stockAntes: 0,
+        motivo:     'Stock inicial',
+      },
+    })
+  }
+
+  revalidatePath('/dashboard/stock')
+  return toProducto(producto)
+}
+
+export async function editarProducto(id: string, data: Partial<ProductoPayload>): Promise<Producto> {
+  const userId = await getUserId()
+
+  const producto = await prisma.producto.findFirst({ where: { id, userId } })
+  if (!producto) throw new Error('Producto no encontrado')
+
+  const updated = await prisma.producto.update({
+    where: { id },
+    data: {
+      nombre:      data.nombre?.trim(),
+      sku:         data.sku?.trim()         || null,
+      categoria:   data.categoria?.trim()   || null,
+      descripcion: data.descripcion?.trim() || null,
+      precioCosto: data.precioCosto,
+      precioVenta: data.precioVenta,
+      stockMinimo: data.stockMinimo,
+      unidad:      data.unidad,
+    },
+  })
+
+  revalidatePath('/dashboard/stock')
+  return toProducto(updated)
+}
+
+export async function eliminarProducto(id: string): Promise<void> {
+  const userId = await getUserId()
+  await prisma.producto.update({
+    where: { id, userId },
+    data:  { activo: false },
+  })
+  revalidatePath('/dashboard/stock')
+}
+
+export async function registrarMovimiento(
+  productoId: string,
+  tipo: MovimientoTipo,
+  cantidad: number,
+  motivo?: string,
+): Promise<Producto> {
+  const userId = await getUserId()
+
+  const producto = await prisma.$transaction(async (tx) => {
+    const p = await tx.producto.findFirst({ where: { id: productoId, userId } })
+    if (!p) throw new Error('Producto no encontrado')
+
+    let nuevoStock: number
+    if (tipo === 'entrada') nuevoStock = p.stock + cantidad
+    else if (tipo === 'salida') {
+      if (cantidad > p.stock) throw new Error(`Stock insuficiente (disponible: ${p.stock})`)
+      nuevoStock = p.stock - cantidad
+    } else {
+      // ajuste: cantidad es el nuevo valor absoluto
+      nuevoStock = cantidad
+    }
+
+    await tx.movimientoStock.create({
+      data: { userId, productoId, tipo, cantidad, stockAntes: p.stock, motivo: motivo || null },
+    })
+
+    return tx.producto.update({
+      where: { id: productoId },
+      data:  { stock: nuevoStock },
+    })
+  })
+
+  revalidatePath('/dashboard/stock')
+  revalidatePath(`/dashboard/stock/${productoId}`)
+  return toProducto(producto)
+}

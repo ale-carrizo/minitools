@@ -46,6 +46,8 @@ model User {
   toolUsage    ToolUsage[]
   cajaDias     CajaDia[]
   cajaCobros   CajaCobro[]
+  productos    Producto[]
+  movimientos  MovimientoStock[]
 }
 
 model Account {
@@ -130,6 +132,42 @@ model ToolUsage {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, toolSlug])
+}
+
+// ── Control de Stock ─────────────────────────────────────────────────────────
+
+model Producto {
+  id          String   @id @default(cuid())
+  userId      String
+  nombre      String
+  sku         String?
+  categoria   String?
+  descripcion String?
+  precioCosto Float    @default(0)
+  precioVenta Float    @default(0)
+  stock       Int      @default(0)
+  stockMinimo Int      @default(0)
+  unidad      String   @default("unidad")
+  activo      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movimientos MovimientoStock[]
+}
+
+model MovimientoStock {
+  id         String   @id @default(cuid())
+  userId     String
+  productoId String
+  tipo       String   // entrada | salida | ajuste
+  cantidad   Int
+  stockAntes Int
+  motivo     String?
+  createdAt  DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  producto Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
 }
 
 // ── Control de Caja ───────────────────────────────────────────────────────────
