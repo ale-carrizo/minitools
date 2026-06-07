@@ -167,13 +167,13 @@ export async function registrarCobro(payload: RegistrarCobroPayload): Promise<Ca
         emisorBanco:    payload.emisor_banco    ?? null,
         referencia:     payload.referencia      ?? null,
         comprobanteUrl: payload.comprobante_url ?? null,
-        iaRaw:          payload.ia_raw          ?? null,
+        iaRaw:          payload.ia_raw          ?? undefined,
         iaConfidence:   payload.ia_confidence   ?? null,
         iaProvider:     payload.ia_provider     ?? null,
         iaModel:        payload.ia_model        ?? null,
         mpPaymentId:    payload.mp_payment_id   ?? null,
         mpStatus:       payload.mp_status       ?? null,
-        extractoRow:    payload.extracto_row    ?? null,
+        extractoRow:    payload.extracto_row    ?? undefined,
       },
     })
 
