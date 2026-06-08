@@ -59,6 +59,8 @@ model User {
   turnoConfig  TurnoConfig?
   turnoServicios TurnoServicio[]
   turnos       Turno[]
+  liquidaciones Liquidacion[]
+  liquidacionItems LiquidacionItem[]
 }
 
 model Account {
@@ -300,7 +302,11 @@ model Empleado {
   id          String   @id @default(cuid())
   userId      String
   nombre      String
+  apellido    String?
+  cuil        String?
   cargo       String?
+  salarioBasico Float?
+  categoriaLaboral String?
   turnoInicio String?
   turnoFin    String?
   tolerancia  Int      @default(15)
@@ -310,6 +316,7 @@ model Empleado {
 
   user        User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   asistencias RegistroAsistencia[]
+  liquidacionItems LiquidacionItem[]
 }
 
 model RegistroAsistencia {
@@ -461,4 +468,56 @@ model Turno {
 
   user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   servicio TurnoServicio? @relation(fields: [servicioId], references: [id], onDelete: SetNull)
+}
+
+// ── Liquidación de Sueldos ────────────────────────────────────────────────────
+
+model Liquidacion {
+  id        String   @id @default(cuid())
+  userId    String
+  periodo   String
+  estado    String   @default("borrador")
+  notas     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items LiquidacionItem[]
+
+  @@unique([userId, periodo])
+}
+
+model LiquidacionItem {
+  id               String   @id @default(cuid())
+  userId           String
+  liquidacionId    String
+  empleadoId       String?
+  empleadoNombre   String
+  empleadoCuil     String?
+  categoria        String?
+  salarioBruto     Float
+  diasTrabajados   Int      @default(30)
+  diasHabiles      Int      @default(30)
+  salarioCalculado Float
+  horasExtraMonto  Float    @default(0)
+  adicionalesMonto Float    @default(0)
+  totalBruto       Float
+  jubilacionEmpl   Float
+  obraSocialEmpl   Float
+  pamiEmpl         Float
+  otrasDeduccs     Float    @default(0)
+  totalDeduccs     Float
+  netoAPagar       Float
+  jubilacionEmp    Float
+  fne              Float
+  obraSocialEmp    Float
+  artMonto         Float    @default(0)
+  totalContribEmp  Float
+  costoTotalEmp    Float
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  liquidacion Liquidacion  @relation(fields: [liquidacionId], references: [id], onDelete: Cascade)
+  empleado    Empleado?    @relation(fields: [empleadoId], references: [id], onDelete: SetNull)
 }
