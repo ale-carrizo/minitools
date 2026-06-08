@@ -56,6 +56,9 @@ model User {
   recibos      Recibo[]
   garantias    GarantiaProducto[]
   reclamos     ReclamoGarantia[]
+  turnoConfig  TurnoConfig?
+  turnoServicios TurnoServicio[]
+  turnos       Turno[]
 }
 
 model Account {
@@ -407,4 +410,55 @@ model ReclamoGarantia {
 
   user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   producto GarantiaProducto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+}
+
+// ── Gestión de Turnos ─────────────────────────────────────────────────────────
+
+model TurnoConfig {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  horaInicio  String   @default("08:00")
+  horaFin     String   @default("20:00")
+  intervalo   Int      @default(30)
+  diasHabiles String   @default("[1,2,3,4,5]")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model TurnoServicio {
+  id        String   @id @default(cuid())
+  userId    String
+  nombre    String
+  duracion  Int
+  precio    Float    @default(0)
+  color     String   @default("#5448EE")
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  turnos Turno[]
+}
+
+model Turno {
+  id            String   @id @default(cuid())
+  userId        String
+  servicioId    String?
+  clienteNombre String
+  clienteTel    String?
+  clienteEmail  String?
+  fecha         String
+  horaInicio    String
+  horaFin       String
+  duracion      Int
+  precio        Float    @default(0)
+  estado        String   @default("pendiente")
+  notas         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  servicio TurnoServicio? @relation(fields: [servicioId], references: [id], onDelete: SetNull)
 }
