@@ -1,0 +1,313 @@
+'use client'
+
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useMemo, useState, useTransition } from 'react'
+import { crearPresupuesto, editarPresupuesto } from '@/lib/actions/presupuesto'
+import {
+  calcularTotales,
+  formatCurrency,
+  MONEDAS,
+  type Cliente,
+  type Presupuesto,
+} from '@/types/presupuesto'
+import ClienteSelect from './ClienteSelect'
+
+interface Props {
+  clientes: Cliente[]
+  presupuesto?: Presupuesto
+}
+
+type FormItem = {
+  orden: number
+  descripcion: string
+  cantidad: number
+  precioUnitario: number
+}
+
+function todayDate() {
+  return new Date().toISOString().slice(0, 10)
+}
+
+export default function PresupuestoForm({ clientes: initialClientes, presupuesto }: Props) {
+  const router = useRouter()
+  const [isPending, startTransition] = useTransition()
+  const [error, setError] = useState<string | null>(null)
+  const [clientes, setClientes] = useState(initialClientes)
+  const isEdit = Boolean(presupuesto)
+  const [form, setForm] = useState({
+    titulo: presupuesto?.titulo ?? '',
+    clienteId: presupuesto?.clienteId ?? '',
+    moneda: presupuesto?.moneda ?? 'ARS',
+    fechaEmision: presupuesto?.fechaEmision ?? todayDate(),
+    fechaVence: presupuesto?.fechaVence ?? '',
+    descuento: presupuesto?.descuento ?? 0,
+    iva: presupuesto?.iva ?? 21,
+    notas: presupuesto?.notas ?? '',
+    notasCliente: presupuesto?.notasCliente ?? '',
+  })
+  const [items, setItems] = useState<FormItem[]>(
+    presupuesto?.items.length
+      ? presupuesto.items.map((item) => ({
+          orden: item.orden,
+          descripcion: item.descripcion,
+          cantidad: item.cantidad,
+          precioUnitario: item.precioUnitario,
+        }))
+      : [{ orden: 1, descripcion: '', cantidad: 1, precioUnitario: 0 }],
+  )
+
+  const totals = useMemo(
+    () => calcularTotales(items, Number(form.descuento), Number(form.iva)),
+    [form.descuento, form.iva, items],
+  )
+
+  function setField<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
+    setForm((prev) => ({ ...prev, [key]: value }))
+  }
+
+  function setItem(index: number, patch: Partial<FormItem>) {
+    setItems((prev) => prev.map((item, itemIndex) => {
+      if (itemIndex !== index) return item
+      return { ...item, ...patch }
+    }))
+  }
+
+  function addItem() {
+    setItems((prev) => [...prev, { orden: prev.length + 1, descripcion: '', cantidad: 1, precioUnitario: 0 }])
+  }
+
+  function removeItem(index: number) {
+    setItems((prev) => prev
+      .filter((_, itemIndex) => itemIndex !== index)
+      .map((item, itemIndex) => ({ ...item, orden: itemIndex + 1 })))
+  }
+
+  function moveItem(index: number, direction: -1 | 1) {
+    const nextIndex = index + direction
+    if (nextIndex < 0 || nextIndex >= items.length) return
+    const nextItems = [...items]
+    const current = nextItems[index]
+    nextItems[index] = nextItems[nextIndex]
+    nextItems[nextIndex] = current
+    setItems(nextItems.map((item, itemIndex) => ({ ...item, orden: itemIndex + 1 })))
+  }
+
+  function handleSubmit() {
+    setError(null)
+    const payload = {
+      titulo: form.titulo,
+      clienteId: form.clienteId || undefined,
+      moneda: form.moneda,
+      fechaEmision: form.fechaEmision,
+      fechaVence: form.fechaVence || undefined,
+      descuento: Number(form.descuento),
+      iva: Number(form.iva),
+      notas: form.notas || undefined,
+      notasCliente: form.notasCliente || undefined,
+      items: items.map((item, index) => ({
+        orden: index + 1,
+        descripcion: item.descripcion,
+        cantidad: Number(item.cantidad),
+        precioUnitario: Number(item.precioUnitario),
+      })),
+    }
+
+    startTransition(async () => {
+      try {
+        if (isEdit) {
+          await editarPresupuesto(presupuesto!.id, payload)
+          router.push(`/dashboard/presupuestos/${presupuesto!.id}`)
+          router.refresh()
+        } else {
+          await crearPresupuesto(payload)
+        }
+      } catch (err: any) {
+        setError(err.message ?? 'No se pudo guardar el presupuesto')
+      }
+    })
+  }
+
+  return (
+    <div className="max-w-5xl space-y-5">
+      {error ? (
+        <div className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-[13px] text-red-400">
+          {error}
+        </div>
+      ) : null}
+
+      <div className="rounded-2xl border border-white/[0.08] bg-white/[0.04] p-5">
+        <p className="mb-4 text-[11px] font-semibold uppercase tracking-wider text-white/30">Encabezado</p>
+        <div className="grid gap-4 md:grid-cols-2">
+          <div>
+            <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-white/40">Titulo</label>
+            <input
+              value={form.titulo}
+              onChange={(e) => setField('titulo', e.target.value)}
+              placeholder="Ej: Presupuesto servicio tecnico mensual"
+              className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white placeholder:text-white/20 focus:border-[#5448EE]/60 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-white/40">Cliente</label>
+            <ClienteSelect
+              clientes={clientes}
+              value={form.clienteId}
+              onChange={(value) => setField('clienteId', value)}
+              onCreated={(cliente) => setClientes((prev) => [...prev, cliente].sort((a, b) => a.nombre.localeCompare(b.nombre)))}
+            />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-white/40">Moneda</label>
+            <select
+              value={form.moneda}
+              onChange={(e) => setField('moneda', e.target.value)}
+              className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white focus:border-[#5448EE]/60 focus:outline-none"
+            >
+              {MONEDAS.map((moneda) => <option key={moneda} value={moneda}>{moneda}</option>)}
+            </select>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-white/40">Fecha emision</label>
+              <input
+                type="date"
+                value={form.fechaEmision}
+                onChange={(e) => setField('fechaEmision', e.target.value)}
+                className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white focus:border-[#5448EE]/60 focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-white/40">Fecha vence</label>
+              <input
+                type="date"
+                value={form.fechaVence}
+                onChange={(e) => setField('fechaVence', e.target.value)}
+                className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white focus:border-[#5448EE]/60 focus:outline-none"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-white/[0.08] bg-white/[0.04] p-5">
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-white/30">Items</p>
+          <button type="button" onClick={addItem} className="rounded-xl bg-[#5448EE] px-3 py-2 text-[12px] font-medium text-white hover:bg-[#4438DE]">
+            + Agregar item
+          </button>
+        </div>
+
+        <div className="space-y-3">
+          {items.map((item, index) => {
+            const subtotal = item.cantidad * item.precioUnitario
+            return (
+              <div key={`${item.orden}-${index}`} className="grid gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.03] p-4 md:grid-cols-[1.8fr,0.6fr,0.8fr,0.8fr,auto]">
+                <input
+                  value={item.descripcion}
+                  onChange={(e) => setItem(index, { descripcion: e.target.value })}
+                  placeholder="Descripcion del item"
+                  className="rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white placeholder:text-white/20 focus:border-[#5448EE]/60 focus:outline-none"
+                />
+                <input
+                  type="number"
+                  step="any"
+                  value={item.cantidad}
+                  onChange={(e) => setItem(index, { cantidad: Number(e.target.value) })}
+                  className="rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white focus:border-[#5448EE]/60 focus:outline-none"
+                />
+                <input
+                  type="number"
+                  step="any"
+                  value={item.precioUnitario}
+                  onChange={(e) => setItem(index, { precioUnitario: Number(e.target.value) })}
+                  className="rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white focus:border-[#5448EE]/60 focus:outline-none"
+                />
+                <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2.5 text-[13px] font-medium text-white/70">
+                  {formatCurrency(subtotal, form.moneda)}
+                </div>
+                <div className="flex gap-2">
+                  <button type="button" onClick={() => moveItem(index, -1)} className="rounded-xl border border-white/10 px-2.5 py-2 text-white/50 hover:text-white">↑</button>
+                  <button type="button" onClick={() => moveItem(index, 1)} className="rounded-xl border border-white/10 px-2.5 py-2 text-white/50 hover:text-white">↓</button>
+                  <button type="button" onClick={() => removeItem(index)} disabled={items.length === 1} className="rounded-xl border border-red-500/20 px-2.5 py-2 text-red-400 disabled:opacity-40">×</button>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      <div className="grid gap-5 lg:grid-cols-[1fr,360px]">
+        <div className="rounded-2xl border border-white/[0.08] bg-white/[0.04] p-5">
+          <p className="mb-4 text-[11px] font-semibold uppercase tracking-wider text-white/30">Condiciones y notas</p>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-white/40">Descuento %</label>
+              <input
+                type="number"
+                step="any"
+                value={form.descuento}
+                onChange={(e) => setField('descuento', Number(e.target.value))}
+                className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white focus:border-[#5448EE]/60 focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-white/40">IVA %</label>
+              <input
+                type="number"
+                step="any"
+                value={form.iva}
+                onChange={(e) => setField('iva', Number(e.target.value))}
+                className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white focus:border-[#5448EE]/60 focus:outline-none"
+              />
+            </div>
+          </div>
+          <div className="mt-4 grid gap-4">
+            <textarea
+              value={form.notas}
+              onChange={(e) => setField('notas', e.target.value)}
+              placeholder="Notas internas..."
+              rows={3}
+              className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white placeholder:text-white/20 focus:border-[#5448EE]/60 focus:outline-none"
+            />
+            <textarea
+              value={form.notasCliente}
+              onChange={(e) => setField('notasCliente', e.target.value)}
+              placeholder="Notas para el cliente (aparecen en el PDF)..."
+              rows={4}
+              className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white placeholder:text-white/20 focus:border-[#5448EE]/60 focus:outline-none"
+            />
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-white/[0.08] bg-white/[0.04] p-5">
+          <p className="mb-4 text-[11px] font-semibold uppercase tracking-wider text-white/30">Totales</p>
+          <div className="space-y-3 text-[13px]">
+            <div className="flex items-center justify-between text-white/55"><span>Subtotal</span><span>{formatCurrency(totals.subtotal, form.moneda)}</span></div>
+            <div className="flex items-center justify-between text-white/55"><span>Descuento</span><span>- {formatCurrency(totals.descuentoMonto, form.moneda)}</span></div>
+            <div className="flex items-center justify-between text-white/55"><span>Base</span><span>{formatCurrency(totals.base, form.moneda)}</span></div>
+            <div className="flex items-center justify-between text-white/55"><span>IVA</span><span>{formatCurrency(totals.ivaMonto, form.moneda)}</span></div>
+            <div className="flex items-center justify-between border-t border-white/[0.06] pt-3 text-[18px] font-semibold text-white">
+              <span>Total</span>
+              <span>{formatCurrency(totals.totalFinal, form.moneda)}</span>
+            </div>
+          </div>
+
+          <div className="mt-5 flex flex-col gap-2">
+            <Link href={isEdit ? `/dashboard/presupuestos/${presupuesto!.id}` : '/dashboard/presupuestos'} className="rounded-xl border border-white/10 px-4 py-2.5 text-center text-[13px] font-medium text-white/50 hover:text-white">
+              Cancelar
+            </Link>
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={isPending || !form.titulo.trim()}
+              className="rounded-xl bg-[#5448EE] px-4 py-2.5 text-[13px] font-medium text-white hover:bg-[#4438DE] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isPending ? 'Guardando...' : isEdit ? 'Guardar cambios' : 'Guardar borrador'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
