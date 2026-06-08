@@ -54,6 +54,8 @@ model User {
   asistencias  RegistroAsistencia[]
   reciboConfig ReciboConfig?
   recibos      Recibo[]
+  garantias    GarantiaProducto[]
+  reclamos     ReclamoGarantia[]
 }
 
 model Account {
@@ -364,4 +366,45 @@ model Recibo {
   updatedAt        DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ── Seguimiento de Garantías ──────────────────────────────────────────────────
+
+model GarantiaProducto {
+  id               String   @id @default(cuid())
+  userId           String
+  nombre           String
+  marca            String?
+  modelo           String?
+  nroSerie         String?
+  categoria        String?
+  proveedor        String?
+  nroFactura       String?
+  fechaCompra      String?
+  fechaVencimiento String?
+  mesesGarantia    Int?
+  precioCompra     Float?
+  notas            String?
+  activo           Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user     User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reclamos ReclamoGarantia[]
+}
+
+model ReclamoGarantia {
+  id          String   @id @default(cuid())
+  userId      String
+  productoId  String
+  fecha       String
+  estado      String   @default("abierto")
+  descripcion String
+  resolucion  String?
+  notas       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  producto GarantiaProducto @relation(fields: [productoId], references: [id], onDelete: Cascade)
 }
