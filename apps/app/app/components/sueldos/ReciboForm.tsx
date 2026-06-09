@@ -48,7 +48,7 @@ export default function ReciboForm({
     notas: recibo?.notas ?? '',
   })
   const [conceptos, setConceptos] = useState<Concepto[]>(
-    recibo?.conceptos.length ? recibo.conceptos : [createConcepto('haber')],
+    recibo?.conceptos.length ? recibo.conceptos : [],
   )
 
   const totals = useMemo(() => calcularTotales(conceptos), [conceptos])
@@ -63,6 +63,7 @@ export default function ReciboForm({
 
   function addConcepto() {
     if (!nuevoConcepto.descripcion.trim()) return
+    if (Number(nuevoConcepto.monto) <= 0) return
     setConceptos((prev) => [...prev, createConcepto(activeTab, nuevoConcepto.descripcion.trim(), Number(nuevoConcepto.monto))])
     setNuevoConcepto({ descripcion: '', monto: 0 })
   }
@@ -112,6 +113,15 @@ export default function ReciboForm({
   return (
     <div className="max-w-6xl space-y-5">
       {error ? <div className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-[13px] text-red-400">{error}</div> : null}
+      {modalidad === 'monotributista' ? (
+        <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/10 px-4 py-3 text-[13px] text-yellow-200">
+          Este documento funciona como resumen interno de pago. Para monotributistas, el comprobante fiscal válido sigue siendo la factura.
+        </div>
+      ) : (
+        <div className="rounded-xl border border-blue-500/20 bg-blue-500/10 px-4 py-3 text-[13px] text-blue-200">
+          Revisá siempre la normativa laboral vigente antes de emitir recibos definitivos. La herramienta ayuda al cálculo, pero no reemplaza asesoramiento legal o contable.
+        </div>
+      )}
 
       <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-5 space-y-4">
         <p className="text-[11px] font-semibold uppercase tracking-wider text-white/30">Empleado</p>
@@ -208,7 +218,11 @@ export default function ReciboForm({
         </div>
 
         <div className="space-y-2">
-          {conceptosActivos.map((concepto) => (
+          {conceptosActivos.length === 0 ? (
+            <div className="rounded-xl border border-white/[0.06] bg-white/[0.03] p-4 text-[13px] text-white/35">
+              Todavía no agregaste {activeTab === 'haber' ? 'haberes' : 'deducciones'}.
+            </div>
+          ) : conceptosActivos.map((concepto) => (
             <div key={concepto.id} className="grid gap-3 rounded-xl border border-white/[0.06] bg-white/[0.03] p-3 md:grid-cols-[1fr,180px,auto]">
               <div className="text-[13px] text-white">{concepto.descripcion}</div>
               <div className={`text-[13px] font-medium ${concepto.tipo === 'haber' ? 'text-emerald-400' : 'text-red-400'}`}>
@@ -232,15 +246,18 @@ export default function ReciboForm({
               {sugerencias.map((item) => <option key={item} value={item} />)}
             </datalist>
           </div>
-          <input
-            type="number"
-            min="0"
-            step="any"
-            value={nuevoConcepto.monto}
-            onChange={(e) => setNuevoConcepto((prev) => ({ ...prev, monto: Number(e.target.value) }))}
-            placeholder="0.00"
-            className="px-3 py-2.5 text-[13px] bg-white/[0.05] border border-white/[0.09] rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-[#5448EE]/60"
-          />
+          <div className="relative">
+            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[13px] text-white/35">$</span>
+            <input
+              type="number"
+              min="0"
+              step="any"
+              value={nuevoConcepto.monto === 0 ? '' : nuevoConcepto.monto}
+              onChange={(e) => setNuevoConcepto((prev) => ({ ...prev, monto: Number(e.target.value || 0) }))}
+              placeholder="0"
+              className="w-full pl-7 pr-3 py-2.5 text-[13px] bg-white/[0.05] border border-white/[0.09] rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-[#5448EE]/60"
+            />
+          </div>
           <button type="button" onClick={addConcepto} className="bg-[#5448EE] hover:bg-[#4438DE] text-white rounded-xl px-4 py-2.5 text-[13px] font-medium">
             + Agregar concepto
           </button>

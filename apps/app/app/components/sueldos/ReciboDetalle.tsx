@@ -45,6 +45,11 @@ export default function ReciboDetalle({
                 <p><span className="text-white/35">Creado:</span> {new Date(recibo.createdAt).toLocaleDateString('es-AR')}</p>
               </div>
             </div>
+            {recibo.empModalidad === 'monotributista' ? (
+              <div className="mt-4 rounded-xl border border-yellow-500/20 bg-yellow-500/10 px-4 py-3 text-[12px] text-yellow-200">
+                Para monotributistas, este archivo funciona como respaldo interno del pago. El comprobante fiscal válido sigue siendo la factura emitida.
+              </div>
+            ) : null}
           </div>
 
           <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl overflow-hidden">

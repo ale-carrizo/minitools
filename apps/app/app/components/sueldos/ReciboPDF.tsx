@@ -33,15 +33,17 @@ export function ReciboPDF({
 }) {
   const haberes = recibo.conceptos.filter((concepto) => concepto.tipo === 'haber')
   const deducciones = recibo.conceptos.filter((concepto) => concepto.tipo === 'deduccion')
+  const isMono = recibo.empModalidad === 'monotributista'
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.row}>
           <View>
-            <Text style={styles.title}>RECIBO DE SUELDO</Text>
+            <Text style={styles.title}>{isMono ? 'RESUMEN DE PAGO' : 'RECIBO DE SUELDO'}</Text>
             <Text style={styles.muted}>Período: {formatPeriodo(recibo.periodo)}</Text>
             <Text style={styles.muted}>Estado: {recibo.estado === 'emitido' ? 'ORIGINAL' : 'BORRADOR'}</Text>
+            {isMono ? <Text style={styles.muted}>Documento interno. La factura es el comprobante fiscal válido.</Text> : null}
           </View>
           <View>
             <Text>{config?.razonSocial ?? 'Sin configurar'}</Text>
