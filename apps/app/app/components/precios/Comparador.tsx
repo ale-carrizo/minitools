@@ -13,6 +13,29 @@ function formatCurrency(value: number) {
   return currencyFormatter.format(Number.isFinite(value) ? value : 0)
 }
 
+function MoneyInput({
+  value,
+  onChange,
+}: {
+  value: number
+  onChange: (value: number) => void
+}) {
+  return (
+    <div className="relative">
+      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[13px] text-white/35">$</span>
+      <input
+        type="number"
+        min="0"
+        step="any"
+        value={value === 0 ? '' : value}
+        onChange={(e) => onChange(Number(e.target.value || 0))}
+        placeholder="0"
+        className="w-full pl-7 pr-3 py-2.5 text-[13px] bg-white/[0.05] border border-white/[0.09] rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-[#5448EE]/60"
+      />
+    </div>
+  )
+}
+
 const initialEscenarios: Escenario[] = [
   { id: '1', nombre: 'Escenario A', costo: 0, margen: 20, iva: 21 },
   { id: '2', nombre: 'Escenario B', costo: 0, margen: 30, iva: 21 },
@@ -100,14 +123,9 @@ export default function Comparador() {
             <div className="space-y-4">
               <div>
                 <label className="block text-[11px] font-medium text-white/40 mb-1.5 uppercase tracking-wider">Costo ($)</label>
-                <input
-                  type="number"
-                  min="0"
-                  step="any"
+                <MoneyInput
                   value={escenario.costo}
-                  onChange={(e) => updateEscenario(escenario.id, { costo: Number(e.target.value) })}
-                  placeholder="0.00"
-                  className="w-full px-3 py-2.5 text-[13px] bg-white/[0.05] border border-white/[0.09] rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-[#5448EE]/60"
+                  onChange={(value) => updateEscenario(escenario.id, { costo: value })}
                 />
               </div>
 

@@ -13,6 +13,29 @@ function formatCurrency(value: number) {
   return currencyFormatter.format(Number.isFinite(value) ? value : 0)
 }
 
+function MoneyInput({
+  value,
+  onChange,
+}: {
+  value: number
+  onChange: (value: number) => void
+}) {
+  return (
+    <div className="relative">
+      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[13px] text-white/35">$</span>
+      <input
+        type="number"
+        min="0"
+        step="any"
+        value={value === 0 ? '' : value}
+        onChange={(e) => onChange(Number(e.target.value || 0))}
+        placeholder="0"
+        className="w-full pl-7 pr-3 py-2.5 text-[13px] bg-white/[0.05] border border-white/[0.09] rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-[#5448EE]/60"
+      />
+    </div>
+  )
+}
+
 export default function CalculadoraEquilibrio({
   onGuardar,
 }: {
@@ -55,43 +78,19 @@ export default function CalculadoraEquilibrio({
 
         <div>
           <label className="block text-[11px] font-medium text-white/40 mb-1.5 uppercase tracking-wider">Costos fijos mensuales ($)</label>
-          <input
-            type="number"
-            min="0"
-            step="any"
-            value={costosFijos}
-            onChange={(e) => setCostosFijos(Number(e.target.value))}
-            placeholder="0.00"
-            className="w-full px-3 py-2.5 text-[13px] bg-white/[0.05] border border-white/[0.09] rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-[#5448EE]/60"
-          />
+          <MoneyInput value={costosFijos} onChange={setCostosFijos} />
           <p className="text-[10px] text-white/25 mt-1">Alquiler, sueldos, servicios, etc. — lo que pagás aunque no vendas nada</p>
         </div>
 
         <div>
           <label className="block text-[11px] font-medium text-white/40 mb-1.5 uppercase tracking-wider">Costo variable por unidad ($)</label>
-          <input
-            type="number"
-            min="0"
-            step="any"
-            value={costoVariable}
-            onChange={(e) => setCostoVariable(Number(e.target.value))}
-            placeholder="0.00"
-            className="w-full px-3 py-2.5 text-[13px] bg-white/[0.05] border border-white/[0.09] rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-[#5448EE]/60"
-          />
+          <MoneyInput value={costoVariable} onChange={setCostoVariable} />
           <p className="text-[10px] text-white/25 mt-1">Materia prima, comisiones, empaque — lo que se suma por cada unidad</p>
         </div>
 
         <div>
           <label className="block text-[11px] font-medium text-white/40 mb-1.5 uppercase tracking-wider">Precio de venta por unidad ($)</label>
-          <input
-            type="number"
-            min="0"
-            step="any"
-            value={precioVenta}
-            onChange={(e) => setPrecioVenta(Number(e.target.value))}
-            placeholder="0.00"
-            className="w-full px-3 py-2.5 text-[13px] bg-white/[0.05] border border-white/[0.09] rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-[#5448EE]/60"
-          />
+          <MoneyInput value={precioVenta} onChange={setPrecioVenta} />
           <p className="text-[10px] text-white/25 mt-1">Precio neto sin IVA al que vendés cada unidad</p>
         </div>
 

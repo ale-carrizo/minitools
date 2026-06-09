@@ -13,6 +13,31 @@ function formatCurrency(value: number) {
   return currencyFormatter.format(Number.isFinite(value) ? value : 0)
 }
 
+function MoneyInput({
+  value,
+  onChange,
+  placeholder = '0',
+}: {
+  value: number
+  onChange: (value: number) => void
+  placeholder?: string
+}) {
+  return (
+    <div className="relative">
+      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[13px] text-white/35">$</span>
+      <input
+        type="number"
+        min="0"
+        step="any"
+        value={value === 0 ? '' : value}
+        onChange={(e) => onChange(Number(e.target.value || 0))}
+        placeholder={placeholder}
+        className="w-full pl-7 pr-3 py-2.5 text-[13px] bg-white/[0.05] border border-white/[0.09] rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-[#5448EE]/60"
+      />
+    </div>
+  )
+}
+
 export default function CalculadoraPrecio({
   onGuardar,
 }: {
@@ -90,15 +115,7 @@ export default function CalculadoraPrecio({
 
         <div>
           <label className="block text-[11px] font-medium text-white/40 mb-1.5 uppercase tracking-wider">Costo ($)</label>
-          <input
-            type="number"
-            min="0"
-            step="any"
-            value={costo}
-            onChange={(e) => setCosto(Number(e.target.value))}
-            placeholder="0.00"
-            className="w-full px-3 py-2.5 text-[13px] bg-white/[0.05] border border-white/[0.09] rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-[#5448EE]/60"
-          />
+          <MoneyInput value={costo} onChange={setCosto} />
           <p className="text-[10px] text-white/25 mt-1">Cuánto te cuesta producirlo o comprarlo</p>
         </div>
 
@@ -129,15 +146,7 @@ export default function CalculadoraPrecio({
         ) : (
           <div>
             <label className="block text-[11px] font-medium text-white/40 mb-1.5 uppercase tracking-wider">Precio de venta ($)</label>
-            <input
-              type="number"
-              min="0"
-              step="any"
-              value={precioVenta}
-              onChange={(e) => setPrecioVenta(Number(e.target.value))}
-              placeholder="0.00"
-              className="w-full px-3 py-2.5 text-[13px] bg-white/[0.05] border border-white/[0.09] rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-[#5448EE]/60"
-            />
+            <MoneyInput value={precioVenta} onChange={setPrecioVenta} />
             <p className="text-[10px] text-white/25 mt-1">Precio al que lo vas a vender (con IVA)</p>
           </div>
         )}
