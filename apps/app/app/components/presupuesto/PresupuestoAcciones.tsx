@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState, useTransition } from 'react'
 import { cambiarEstado, duplicarPresupuesto, eliminarPresupuesto } from '@/lib/actions/presupuesto'
-import type { Presupuesto } from '@/types/presupuesto'
+import { generarLinkWhatsAppPresupuesto, type Presupuesto } from '@/types/presupuesto'
 
 export default function PresupuestoAcciones({ presupuesto }: { presupuesto: Presupuesto }) {
   const router = useRouter()
@@ -38,6 +38,10 @@ export default function PresupuestoAcciones({ presupuesto }: { presupuesto: Pres
   }
 
   actions.push({ label: 'Descargar PDF', kind: 'ghost', href: `/api/presupuestos/${presupuesto.id}/pdf` })
+  const whatsappLink = generarLinkWhatsAppPresupuesto(presupuesto)
+  if (whatsappLink) {
+    actions.push({ label: 'Enviar por WhatsApp', kind: 'ghost', href: whatsappLink })
+  }
 
   function run(action: () => Promise<unknown>) {
     setError(null)

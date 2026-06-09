@@ -46,6 +46,7 @@ export default function PresupuestoForm({ clientes: initialClientes, presupuesto
     notas: presupuesto?.notas ?? '',
     notasCliente: presupuesto?.notasCliente ?? '',
   })
+  const [ivaHabilitado, setIvaHabilitado] = useState((presupuesto?.iva ?? 21) > 0)
   const [items, setItems] = useState<FormItem[]>(
     presupuesto?.items.length
       ? presupuesto.items.map((item) => ({
@@ -102,7 +103,7 @@ export default function PresupuestoForm({ clientes: initialClientes, presupuesto
       fechaEmision: form.fechaEmision,
       fechaVence: form.fechaVence || undefined,
       descuento: Number(form.descuento),
-      iva: Number(form.iva),
+      iva: ivaHabilitado ? Number(form.iva) : 0,
       notas: form.notas || undefined,
       notasCliente: form.notasCliente || undefined,
       items: items.map((item, index) => ({
@@ -199,6 +200,13 @@ export default function PresupuestoForm({ clientes: initialClientes, presupuesto
         </div>
 
         <div className="space-y-3">
+          <div className="hidden md:grid md:grid-cols-[1.8fr,0.6fr,0.8fr,0.8fr,auto] md:gap-3 md:px-1 text-[10px] font-semibold uppercase tracking-wider text-white/25">
+            <span>Descripción</span>
+            <span>Cantidad</span>
+            <span>Precio unitario</span>
+            <span>Subtotal</span>
+            <span />
+          </div>
           {items.map((item, index) => {
             const subtotal = item.cantidad * item.precioUnitario
             return (
@@ -214,15 +222,21 @@ export default function PresupuestoForm({ clientes: initialClientes, presupuesto
                   step="any"
                   value={item.cantidad}
                   onChange={(e) => setItem(index, { cantidad: Number(e.target.value) })}
+                  aria-label="Cantidad"
                   className="rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white focus:border-[#5448EE]/60 focus:outline-none"
                 />
-                <input
-                  type="number"
-                  step="any"
-                  value={item.precioUnitario}
-                  onChange={(e) => setItem(index, { precioUnitario: Number(e.target.value) })}
-                  className="rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white focus:border-[#5448EE]/60 focus:outline-none"
-                />
+                <div className="relative">
+                  <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[13px] text-white/35">$</span>
+                  <input
+                    type="number"
+                    step="any"
+                    value={item.precioUnitario === 0 ? '' : item.precioUnitario}
+                    onChange={(e) => setItem(index, { precioUnitario: Number(e.target.value || 0) })}
+                    aria-label="Precio unitario"
+                    placeholder="0"
+                    className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] pl-7 pr-3 py-2.5 text-[13px] text-white placeholder:text-white/20 focus:border-[#5448EE]/60 focus:outline-none"
+                  />
+                </div>
                 <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2.5 text-[13px] font-medium text-white/70">
                   {formatCurrency(subtotal, form.moneda)}
                 </div>
@@ -251,14 +265,24 @@ export default function PresupuestoForm({ clientes: initialClientes, presupuesto
                 className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white focus:border-[#5448EE]/60 focus:outline-none"
               />
             </div>
-            <div>
-              <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-white/40">IVA %</label>
+            <div className="space-y-2">
+              <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-white/40">IVA</label>
+              <label className="flex items-center gap-2 text-[12px] text-white/60">
+                <input
+                  type="checkbox"
+                  checked={ivaHabilitado}
+                  onChange={(e) => setIvaHabilitado(e.target.checked)}
+                  className="h-4 w-4 rounded border-white/20 bg-white/[0.05] accent-[#5448EE]"
+                />
+                Aplicar IVA al total
+              </label>
               <input
                 type="number"
                 step="any"
                 value={form.iva}
                 onChange={(e) => setField('iva', Number(e.target.value))}
-                className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white focus:border-[#5448EE]/60 focus:outline-none"
+                disabled={!ivaHabilitado}
+                className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white disabled:opacity-40 focus:border-[#5448EE]/60 focus:outline-none"
               />
             </div>
           </div>
@@ -286,7 +310,7 @@ export default function PresupuestoForm({ clientes: initialClientes, presupuesto
             <div className="flex items-center justify-between text-white/55"><span>Subtotal</span><span>{formatCurrency(totals.subtotal, form.moneda)}</span></div>
             <div className="flex items-center justify-between text-white/55"><span>Descuento</span><span>- {formatCurrency(totals.descuentoMonto, form.moneda)}</span></div>
             <div className="flex items-center justify-between text-white/55"><span>Base</span><span>{formatCurrency(totals.base, form.moneda)}</span></div>
-            <div className="flex items-center justify-between text-white/55"><span>IVA</span><span>{formatCurrency(totals.ivaMonto, form.moneda)}</span></div>
+            <div className="flex items-center justify-between text-white/55"><span>{ivaHabilitado ? `IVA ${form.iva}%` : 'Sin IVA'}</span><span>{formatCurrency(totals.ivaMonto, form.moneda)}</span></div>
             <div className="flex items-center justify-between border-t border-white/[0.06] pt-3 text-[18px] font-semibold text-white">
               <span>Total</span>
               <span>{formatCurrency(totals.totalFinal, form.moneda)}</span>

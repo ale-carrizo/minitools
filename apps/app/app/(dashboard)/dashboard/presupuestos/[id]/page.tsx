@@ -99,7 +99,7 @@ export default async function PresupuestoDetailPage({ params }: { params: { id: 
                 <div className="flex justify-between text-white/55"><span>Subtotal</span><span>{formatCurrency(totals.subtotal, presupuesto.moneda)}</span></div>
                 <div className="flex justify-between text-white/55"><span>Descuento {presupuesto.descuento}%</span><span>- {formatCurrency(totals.descuentoMonto, presupuesto.moneda)}</span></div>
                 <div className="flex justify-between text-white/55"><span>Base</span><span>{formatCurrency(totals.base, presupuesto.moneda)}</span></div>
-                <div className="flex justify-between text-white/55"><span>IVA {presupuesto.iva}%</span><span>{formatCurrency(totals.ivaMonto, presupuesto.moneda)}</span></div>
+                <div className="flex justify-between text-white/55"><span>{presupuesto.iva > 0 ? `IVA ${presupuesto.iva}%` : 'Sin IVA'}</span><span>{formatCurrency(totals.ivaMonto, presupuesto.moneda)}</span></div>
                 <div className="flex justify-between border-t border-white/[0.06] pt-3 text-[18px] font-semibold text-white"><span>Total</span><span>{formatCurrency(totals.totalFinal, presupuesto.moneda)}</span></div>
               </div>
             </div>

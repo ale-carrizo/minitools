@@ -113,3 +113,17 @@ export function formatCurrency(value: number, currency: string) {
 export function formatPresupuestoNumero(numero: number) {
   return `#${String(numero).padStart(3, '0')}`
 }
+
+export function generarLinkWhatsAppPresupuesto(presupuesto: Presupuesto) {
+  const telefono = presupuesto.cliente?.telefono?.replace(/\D/g, '')
+  if (!telefono) return ''
+
+  const mensaje = [
+    `Hola ${presupuesto.cliente?.nombre ?? ''}!`,
+    `Te compartimos el presupuesto ${formatPresupuestoNumero(presupuesto.numero)}: ${presupuesto.titulo}.`,
+    `Total: ${formatCurrency(presupuesto.totalFinal, presupuesto.moneda)}.`,
+    presupuesto.fechaVence ? `Válido hasta ${presupuesto.fechaVence.split('-').reverse().join('/')}.` : '',
+  ].filter(Boolean).join('\n')
+
+  return `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`
+}
