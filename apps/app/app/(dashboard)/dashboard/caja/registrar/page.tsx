@@ -1,5 +1,7 @@
 import RegistrarClient from "@/app/components/caja/RegistrarClient"
+import { getProductos } from "@/lib/actions/stock"
 
-export default function RegistrarPage() {
-  return <RegistrarClient />
+export default async function RegistrarPage() {
+  const productos = await getProductos()
+  return <RegistrarClient productos={productos} />
 }

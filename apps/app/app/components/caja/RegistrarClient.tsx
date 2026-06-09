@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { registrarCobro, registrarCobrosLote } from '@/lib/actions/caja'
 import type { BancoExtracto, ExtractoRow } from '@/types/caja'
 import { BANCOS_EXTRACTO } from '@/types/caja'
+import type { Producto } from '@/types/stock'
 
 type Layer = 'comprobante' | 'extracto'
 
@@ -21,7 +22,7 @@ const LAYER_CONFIG = {
   },
 }
 
-export default function RegistrarClient() {
+export default function RegistrarClient({ productos }: { productos: Producto[] }) {
   const router  = useRouter()
   const [layer, setLayer] = useState<Layer>('comprobante')
 
@@ -67,7 +68,7 @@ export default function RegistrarClient() {
       </div>
 
       {/* Efectivo manual — siempre visible */}
-      <EfectivoManual onSuccess={() => router.push('/dashboard/caja')} />
+      <EfectivoManual productos={productos} onSuccess={() => router.push('/dashboard/caja')} />
     </div>
   )
 }
@@ -374,15 +375,46 @@ function ExtractoPanel({ onSuccess }: { onSuccess: () => void }) {
 }
 
 // ── Panel: Efectivo manual ────────────────────────────────────────────────────
-function EfectivoManual({ onSuccess }: { onSuccess: () => void }) {
+function EfectivoManual({ productos, onSuccess }: { productos: Producto[]; onSuccess: () => void }) {
   const [monto, setMonto]       = useState('')
   const [hora, setHora]         = useState(new Date().toTimeString().slice(0, 5))
   const [concepto, setConcepto] = useState('')
+  const [esVenta, setEsVenta]   = useState(false)
+  const [items, setItems]       = useState<Array<{ productoId: string; cantidad: number; precio: string }>>([
+    { productoId: '', cantidad: 1, precio: '' },
+  ])
   const [loading, setLoading]   = useState(false)
   const [error, setError]       = useState('')
 
+  function setItem(index: number, patch: Partial<{ productoId: string; cantidad: number; precio: string }>) {
+    setItems((prev) => prev.map((item, itemIndex) => (itemIndex === index ? { ...item, ...patch } : item)))
+  }
+
+  function addItem() {
+    setItems((prev) => [...prev, { productoId: '', cantidad: 1, precio: '' }])
+  }
+
+  function removeItem(index: number) {
+    setItems((prev) => (prev.length === 1 ? [{ productoId: '', cantidad: 1, precio: '' }] : prev.filter((_, itemIndex) => itemIndex !== index)))
+  }
+
   async function handleSubmit() {
     if (!monto || parseFloat(monto) <= 0) { setError('Ingresá un monto válido'); return }
+    const ventaItems = esVenta
+      ? items
+          .map((item) => ({
+            producto_id: item.productoId,
+            cantidad: Number(item.cantidad),
+            precio: item.precio ? Number(item.precio) : undefined,
+          }))
+          .filter((item) => item.producto_id && item.cantidad > 0)
+      : []
+
+    if (esVenta && ventaItems.length === 0) {
+      setError('Agregá al menos un producto para descontar stock')
+      return
+    }
+
     setLoading(true); setError('')
     try {
       await registrarCobro({
@@ -392,6 +424,7 @@ function EfectivoManual({ onSuccess }: { onSuccess: () => void }) {
         medio:       'efectivo',
         source:      'manual',
         concepto:    concepto || undefined,
+        items:       ventaItems,
       })
       onSuccess()
     } catch (err: any) {
@@ -432,6 +465,82 @@ function EfectivoManual({ onSuccess }: { onSuccess: () => void }) {
         placeholder="Ej: Juan Pérez — cuota marzo"
         className="w-full px-3 py-2.5 text-[13px] bg-white/[0.06] border border-white/[0.08] rounded-xl text-white placeholder:text-white/25 focus:outline-none focus:border-[#5448EE]/50 transition-colors mb-3"
       />
+      <label className="mb-3 flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3 py-3 text-[12px] text-white/65">
+        <input
+          type="checkbox"
+          checked={esVenta}
+          onChange={e => setEsVenta(e.target.checked)}
+          className="h-4 w-4 rounded border-white/20 bg-white/[0.05] accent-[#5448EE]"
+        />
+        Esta operación fue una venta de productos
+      </label>
+
+      {esVenta ? (
+        <div className="mb-3 rounded-2xl border border-white/[0.08] bg-white/[0.03] p-3">
+          <div className="mb-3 flex items-center justify-between">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-white/30">Productos vendidos</p>
+            <button type="button" onClick={addItem} className="rounded-xl bg-[#5448EE] px-3 py-1.5 text-[11px] font-medium text-white hover:bg-[#4438DE]">
+              + Agregar
+            </button>
+          </div>
+          <div className="space-y-3">
+            {items.map((item, index) => {
+              const producto = productos.find((p) => p.id === item.productoId)
+              return (
+                <div key={index} className="grid gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] p-3 md:grid-cols-[1.5fr,0.65fr,0.8fr,auto]">
+                  <div>
+                    <label className="mb-1 block text-[10px] text-white/35">Producto</label>
+                    <select
+                      value={item.productoId}
+                      onChange={(e) => setItem(index, { productoId: e.target.value })}
+                      className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[12px] text-white focus:border-[#5448EE]/60 focus:outline-none"
+                    >
+                      <option value="">Seleccionar producto</option>
+                      {productos.map((producto) => (
+                        <option key={producto.id} value={producto.id}>
+                          {producto.nombre} · stock {producto.stock}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-[10px] text-white/35">Cantidad</label>
+                    <input
+                      type="number"
+                      min={1}
+                      value={item.cantidad}
+                      onChange={(e) => setItem(index, { cantidad: Number(e.target.value || 1) })}
+                      className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[12px] text-white focus:border-[#5448EE]/60 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-[10px] text-white/35">Precio ref.</label>
+                    <input
+                      type="number"
+                      min={0}
+                      step="any"
+                      value={item.precio}
+                      onChange={(e) => setItem(index, { precio: e.target.value })}
+                      placeholder={producto ? String(producto.precioVenta) : 'Opcional'}
+                      className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[12px] text-white placeholder:text-white/20 focus:border-[#5448EE]/60 focus:outline-none"
+                    />
+                  </div>
+                  <div className="flex items-end">
+                    <button type="button" onClick={() => removeItem(index)} className="rounded-xl border border-red-500/20 px-3 py-2 text-[11px] font-medium text-red-400">
+                      Quitar
+                    </button>
+                  </div>
+                  {producto ? (
+                    <p className="md:col-span-4 text-[10px] text-white/35">
+                      Disponible: {producto.stock} {producto.unidad}
+                    </p>
+                  ) : null}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      ) : null}
       {error && <p className="text-[11px] text-red-400 mb-2">{error}</p>}
       <button
         onClick={handleSubmit}

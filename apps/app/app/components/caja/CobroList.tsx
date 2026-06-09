@@ -110,6 +110,11 @@ export default function CobroList({ resumen }: { resumen: CajaDiaResumen }) {
                     {cobro.emisor_banco && ` · ${cobro.emisor_banco}`}
                     {cobro.referencia  && ` · ${cobro.referencia.slice(0, 14)}…`}
                   </p>
+                  {cobro.items.length ? (
+                    <p className="text-[10px] text-white/30 mt-1 truncate">
+                      Venta: {cobro.items.map((item) => `${item.cantidad} x ${item.producto_nombre}`).join(' · ')}
+                    </p>
+                  ) : null}
                 </div>
 
                 {/* Badge */}

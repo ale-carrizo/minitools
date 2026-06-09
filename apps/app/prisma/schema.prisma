@@ -46,6 +46,7 @@ model User {
   toolUsage    ToolUsage[]
   cajaDias     CajaDia[]
   cajaCobros   CajaCobro[]
+  cajaCobroItems CajaCobroItem[]
   productos    Producto[]
   movimientos  MovimientoStock[]
   clientes     Cliente[]
@@ -168,6 +169,7 @@ model Producto {
 
   user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   movimientos MovimientoStock[]
+  cajaCobroItems CajaCobroItem[]
 }
 
 model MovimientoStock {
@@ -230,8 +232,23 @@ model CajaCobro {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
-  user User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  dia  CajaDia @relation(fields: [diaId], references: [id], onDelete: Cascade)
+  user  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dia   CajaDia         @relation(fields: [diaId], references: [id], onDelete: Cascade)
+  items CajaCobroItem[]
+}
+
+model CajaCobroItem {
+  id         String   @id @default(cuid())
+  userId     String
+  cobroId    String
+  productoId String
+  cantidad   Int
+  precio     Float?
+  createdAt  DateTime @default(now())
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cobro    CajaCobro @relation(fields: [cobroId], references: [id], onDelete: Cascade)
+  producto Producto  @relation(fields: [productoId], references: [id], onDelete: Cascade)
 }
 
 // ── Generador de Presupuestos ─────────────────────────────────────────────────

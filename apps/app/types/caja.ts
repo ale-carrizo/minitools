@@ -45,6 +45,17 @@ export interface CajaCobro {
   anulado_motivo:   string | null
   created_at:       string
   updated_at:       string
+  items:            CajaCobroItem[]
+}
+
+export interface CajaCobroItem {
+  id:            string
+  cobro_id:      string
+  producto_id:   string
+  producto_nombre: string
+  cantidad:      number
+  precio:        number | null
+  subtotal:      number | null
 }
 
 // ── Resultado del procesamiento de comprobante por IA ─────────────────────────

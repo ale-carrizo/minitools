@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import type {
-  CajaDia, CajaCobro, CajaDiaResumen,
+  CajaDia, CajaCobro, CajaCobroItem, CajaDiaResumen,
   CajaCobroMedio, CajaCobroSource,
 } from '@/types/caja'
 
@@ -57,6 +57,19 @@ function toCajaCobro(c: any): CajaCobro {
     anulado_motivo:  c.anuladoMotivo ?? null,
     created_at:      c.createdAt.toISOString(),
     updated_at:      c.updatedAt.toISOString(),
+    items:           (c.items ?? []).map(toCajaCobroItem),
+  }
+}
+
+function toCajaCobroItem(item: any): CajaCobroItem {
+  return {
+    id: item.id,
+    cobro_id: item.cobroId,
+    producto_id: item.productoId,
+    producto_nombre: item.producto?.nombre ?? 'Producto',
+    cantidad: item.cantidad,
+    precio: item.precio ?? null,
+    subtotal: item.precio != null ? item.precio * item.cantidad : null,
   }
 }
 
@@ -90,18 +103,23 @@ export async function getResumenHoy(): Promise<CajaDiaResumen> {
     update: {},
   })
 
-  const cobrosRaw = await prisma.cajaCobro.findMany({
+  const cobrosRaw = await (prisma.cajaCobro as any).findMany({
     where:   { diaId: dia.id, anulado: false },
+    include: {
+      items: {
+        include: { producto: true },
+      },
+    },
     orderBy: { createdAt: 'desc' },
   })
 
-  const cobros = cobrosRaw.map(toCajaCobro)
-  const total  = cobros.reduce((acc, c) => acc + c.monto, 0)
+  const cobros: CajaCobro[] = cobrosRaw.map(toCajaCobro)
+  const total  = cobros.reduce((acc: number, c: CajaCobro) => acc + c.monto, 0)
 
   const por_source: CajaDiaResumen['por_source'] = { comprobante_ia: 0, extracto: 0, mercadopago: 0, manual: 0 }
   const por_medio:  CajaDiaResumen['por_medio']  = { transferencia: 0, efectivo: 0, mercadopago: 0, tarjeta_debito: 0, tarjeta_credito: 0, otro: 0 }
 
-  cobros.forEach(c => {
+  cobros.forEach((c: CajaCobro) => {
     por_source[c.source] = (por_source[c.source] ?? 0) + c.monto
     por_medio[c.medio]   = (por_medio[c.medio]   ?? 0) + c.monto
   })
@@ -138,6 +156,11 @@ interface RegistrarCobroPayload {
   mp_payment_id?:   string
   mp_status?:       string
   extracto_row?:    Record<string, any>
+  items?:           Array<{
+    producto_id: string
+    cantidad: number
+    precio?: number
+  }>
 }
 
 export async function registrarCobro(payload: RegistrarCobroPayload): Promise<CajaCobro> {
@@ -153,7 +176,15 @@ export async function registrarCobro(payload: RegistrarCobroPayload): Promise<Ca
 
     if (dia.cerrada) throw new Error(`La caja del ${fecha} ya está cerrada`)
 
-    const cobro = await tx.cajaCobro.create({
+    const ventaItems = (payload.items ?? [])
+      .map((item) => ({
+        productoId: item.producto_id,
+        cantidad: Number(item.cantidad),
+        precio: item.precio === undefined ? null : Number(item.precio),
+      }))
+      .filter((item) => item.productoId && item.cantidad > 0)
+
+    const cobro = await (tx.cajaCobro as any).create({
       data: {
         userId,
         diaId:          dia.id,
@@ -175,17 +206,67 @@ export async function registrarCobro(payload: RegistrarCobroPayload): Promise<Ca
         mpStatus:       payload.mp_status       ?? null,
         extractoRow:    payload.extracto_row    ?? undefined,
       },
+      include: {
+        items: {
+          include: { producto: true },
+        },
+      },
     })
+
+    for (const item of ventaItems) {
+      const producto = await tx.producto.findFirst({
+        where: { id: item.productoId, userId, activo: true },
+      })
+
+      if (!producto) throw new Error('Producto no encontrado')
+      if (item.cantidad > producto.stock) {
+        throw new Error(`Stock insuficiente para ${producto.nombre} (disponible: ${producto.stock})`)
+      }
+
+      await (tx as any).cajaCobroItem.create({
+        data: {
+          userId,
+          cobroId: cobro.id,
+          productoId: producto.id,
+          cantidad: item.cantidad,
+          precio: item.precio,
+        },
+      })
+
+      await tx.movimientoStock.create({
+        data: {
+          userId,
+          productoId: producto.id,
+          tipo: 'salida',
+          cantidad: item.cantidad,
+          stockAntes: producto.stock,
+          motivo: `Venta por caja${payload.concepto ? ` · ${payload.concepto}` : ''}`,
+        },
+      })
+
+      await tx.producto.update({
+        where: { id: producto.id },
+        data: { stock: producto.stock - item.cantidad },
+      })
+    }
 
     await tx.cajaDia.update({
       where: { id: dia.id },
       data:  { totalCache: { increment: payload.monto } },
     })
 
-    return cobro
+    return (tx.cajaCobro as any).findUniqueOrThrow({
+      where: { id: cobro.id },
+      include: {
+        items: {
+          include: { producto: true },
+        },
+      },
+    })
   })
 
   revalidatePath('/dashboard/caja')
+  revalidatePath('/dashboard/stock')
   return toCajaCobro(cobro)
 }
 
