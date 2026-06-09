@@ -17,7 +17,7 @@ export default function AsistenciaShell({ children }: { children: React.ReactNod
       <div className="mb-6">
         <h1 className="text-[24px] font-semibold text-white tracking-[-0.03em]">Control de Asistencia</h1>
         <p className="text-white/40 text-sm mt-0.5">
-          Registrá entradas, salidas y horas trabajadas del personal
+          Registrá entradas y salidas, calculá horas trabajadas y mantené un historial claro por empleado para ordenar presentismo, ausencias y liquidaciones.
         </p>
       </div>
 
