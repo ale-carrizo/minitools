@@ -200,3 +200,67 @@ export async function registrarMovimiento(
   revalidatePath(`/dashboard/stock/${productoId}`)
   return toProducto(producto)
 }
+
+export async function importarProductos(rows: Array<{
+  nombre?: string
+  sku?: string
+  categoria?: string
+  descripcion?: string
+  precioCosto?: number
+  precioVenta?: number
+  stock?: number
+  stockMinimo?: number
+  unidad?: string
+}>): Promise<{ creados: number }> {
+  const userId = await getUserId()
+  const sanitized = rows
+    .map((row) => ({
+      nombre: row.nombre?.trim() ?? '',
+      sku: row.sku?.trim() || null,
+      categoria: row.categoria?.trim() || null,
+      descripcion: row.descripcion?.trim() || null,
+      precioCosto: Number(row.precioCosto ?? 0),
+      precioVenta: Number(row.precioVenta ?? 0),
+      stock: Number(row.stock ?? 0),
+      stockMinimo: Number(row.stockMinimo ?? 0),
+      unidad: row.unidad?.trim() || 'unidad',
+    }))
+    .filter((row) => row.nombre)
+
+  if (sanitized.length === 0) throw new Error('No se encontraron filas válidas para importar')
+
+  await prisma.$transaction(async (tx) => {
+    for (const row of sanitized) {
+      const producto = await tx.producto.create({
+        data: {
+          userId,
+          nombre: row.nombre,
+          sku: row.sku,
+          categoria: row.categoria,
+          descripcion: row.descripcion,
+          precioCosto: row.precioCosto,
+          precioVenta: row.precioVenta,
+          stock: row.stock,
+          stockMinimo: row.stockMinimo,
+          unidad: row.unidad,
+        },
+      })
+
+      if (row.stock > 0) {
+        await tx.movimientoStock.create({
+          data: {
+            userId,
+            productoId: producto.id,
+            tipo: 'entrada',
+            cantidad: row.stock,
+            stockAntes: 0,
+            motivo: 'Importación inicial',
+          },
+        })
+      }
+    }
+  })
+
+  revalidatePath('/dashboard/stock')
+  return { creados: sanitized.length }
+}
