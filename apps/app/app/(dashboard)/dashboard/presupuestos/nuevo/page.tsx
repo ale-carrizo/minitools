@@ -1,7 +1,7 @@
 import PresupuestoForm from '@/app/components/presupuesto/PresupuestoForm'
-import { getClientes } from '@/lib/actions/presupuesto'
+import { getClientes, getPresupuestoTemplate } from '@/lib/actions/presupuesto'
 
 export default async function NuevoPresupuestoPage() {
-  const clientes = await getClientes()
-  return <PresupuestoForm clientes={clientes} />
+  const [clientes, template] = await Promise.all([getClientes(), getPresupuestoTemplate()])
+  return <PresupuestoForm clientes={clientes} template={template} />
 }

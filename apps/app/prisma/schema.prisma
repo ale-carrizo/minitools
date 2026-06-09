@@ -50,6 +50,7 @@ model User {
   movimientos  MovimientoStock[]
   clientes     Cliente[]
   presupuestos Presupuesto[]
+  presupuestoTemplate PresupuestoTemplate?
   empleados    Empleado[]
   asistencias  RegistroAsistencia[]
   reciboConfig ReciboConfig?
@@ -282,6 +283,29 @@ model Presupuesto {
   items   PresupuestoItem[]
 
   @@unique([userId, numero])
+}
+
+model PresupuestoTemplate {
+  id                   String   @id @default(cuid())
+  userId               String   @unique
+  nombreComercial      String?
+  razonSocial          String?
+  cuit                 String?
+  telefono             String?
+  email                String?
+  direccion            String?
+  logoUrl              String?
+  colorPrimario        String   @default("#5448EE")
+  mostrarIvaDefault    Boolean  @default(true)
+  diasValidezDefault   Int      @default(7)
+  textoEncabezado      String?
+  condicionesDefault   String?
+  notasClienteDefault  String?
+  serviciosFrecuentes  Json?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model PresupuestoItem {

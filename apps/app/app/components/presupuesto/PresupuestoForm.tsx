@@ -10,12 +10,15 @@ import {
   MONEDAS,
   type Cliente,
   type Presupuesto,
+  type PresupuestoServicioFrecuente,
+  type PresupuestoTemplate,
 } from '@/types/presupuesto'
 import ClienteSelect from './ClienteSelect'
 
 interface Props {
   clientes: Cliente[]
   presupuesto?: Presupuesto
+  template?: PresupuestoTemplate | null
 }
 
 type FormItem = {
@@ -29,24 +32,42 @@ function todayDate() {
   return new Date().toISOString().slice(0, 10)
 }
 
-export default function PresupuestoForm({ clientes: initialClientes, presupuesto }: Props) {
+function addDays(date: string, days: number) {
+  const base = new Date(`${date}T00:00:00`)
+  base.setDate(base.getDate() + days)
+  return base.toISOString().slice(0, 10)
+}
+
+function buildDefaultItem(servicio?: PresupuestoServicioFrecuente): FormItem {
+  return {
+    orden: 1,
+    descripcion: servicio?.descripcion?.trim()
+      ? `${servicio.nombre} - ${servicio.descripcion}`
+      : servicio?.nombre ?? '',
+    cantidad: 1,
+    precioUnitario: servicio?.precioSugerido ?? 0,
+  }
+}
+
+export default function PresupuestoForm({ clientes: initialClientes, presupuesto, template }: Props) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [clientes, setClientes] = useState(initialClientes)
   const isEdit = Boolean(presupuesto)
+  const defaultFechaEmision = presupuesto?.fechaEmision ?? todayDate()
   const [form, setForm] = useState({
     titulo: presupuesto?.titulo ?? '',
     clienteId: presupuesto?.clienteId ?? '',
     moneda: presupuesto?.moneda ?? 'ARS',
-    fechaEmision: presupuesto?.fechaEmision ?? todayDate(),
-    fechaVence: presupuesto?.fechaVence ?? '',
+    fechaEmision: defaultFechaEmision,
+    fechaVence: presupuesto?.fechaVence ?? (!isEdit && template?.diasValidezDefault ? addDays(defaultFechaEmision, template.diasValidezDefault) : ''),
     descuento: presupuesto?.descuento ?? 0,
-    iva: presupuesto?.iva ?? 21,
-    notas: presupuesto?.notas ?? '',
-    notasCliente: presupuesto?.notasCliente ?? '',
+    iva: presupuesto?.iva ?? (template?.mostrarIvaDefault === false ? 0 : 21),
+    notas: presupuesto?.notas ?? template?.condicionesDefault ?? '',
+    notasCliente: presupuesto?.notasCliente ?? template?.notasClienteDefault ?? '',
   })
-  const [ivaHabilitado, setIvaHabilitado] = useState((presupuesto?.iva ?? 21) > 0)
+  const [ivaHabilitado, setIvaHabilitado] = useState(presupuesto ? presupuesto.iva > 0 : (template?.mostrarIvaDefault ?? true))
   const [items, setItems] = useState<FormItem[]>(
     presupuesto?.items.length
       ? presupuesto.items.map((item) => ({
@@ -55,7 +76,7 @@ export default function PresupuestoForm({ clientes: initialClientes, presupuesto
           cantidad: item.cantidad,
           precioUnitario: item.precioUnitario,
         }))
-      : [{ orden: 1, descripcion: '', cantidad: 1, precioUnitario: 0 }],
+      : [buildDefaultItem()],
   )
 
   const totals = useMemo(
@@ -76,6 +97,22 @@ export default function PresupuestoForm({ clientes: initialClientes, presupuesto
 
   function addItem() {
     setItems((prev) => [...prev, { orden: prev.length + 1, descripcion: '', cantidad: 1, precioUnitario: 0 }])
+  }
+
+  function addServicio(servicio: PresupuestoServicioFrecuente) {
+    setItems((prev) => {
+      const servicioItem = buildDefaultItem(servicio)
+      if (
+        prev.length === 1 &&
+        !prev[0].descripcion.trim() &&
+        prev[0].cantidad === 1 &&
+        prev[0].precioUnitario === 0
+      ) {
+        return [{ ...servicioItem, orden: 1 }]
+      }
+
+      return [...prev, { ...servicioItem, orden: prev.length + 1 }]
+    })
   }
 
   function removeItem(index: number) {
@@ -194,10 +231,31 @@ export default function PresupuestoForm({ clientes: initialClientes, presupuesto
       <div className="rounded-2xl border border-white/[0.08] bg-white/[0.04] p-5">
         <div className="mb-4 flex items-center justify-between">
           <p className="text-[11px] font-semibold uppercase tracking-wider text-white/30">Items</p>
-          <button type="button" onClick={addItem} className="rounded-xl bg-[#5448EE] px-3 py-2 text-[12px] font-medium text-white hover:bg-[#4438DE]">
-            + Agregar item
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button type="button" onClick={addItem} className="rounded-xl bg-[#5448EE] px-3 py-2 text-[12px] font-medium text-white hover:bg-[#4438DE]">
+              + Agregar item
+            </button>
+          </div>
         </div>
+
+        {template?.serviciosFrecuentes.length ? (
+          <div className="mb-4 rounded-2xl border border-white/[0.06] bg-white/[0.03] p-4">
+            <p className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-white/30">Servicios frecuentes</p>
+            <div className="flex flex-wrap gap-2">
+              {template.serviciosFrecuentes.map((servicio) => (
+                <button
+                  key={servicio.id}
+                  type="button"
+                  onClick={() => addServicio(servicio)}
+                  className="rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1.5 text-[12px] text-white/70 transition hover:border-[#5448EE]/40 hover:text-white"
+                >
+                  {servicio.nombre}
+                  {servicio.precioSugerido > 0 ? ` · ${formatCurrency(servicio.precioSugerido, form.moneda)}` : ''}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : null}
 
         <div className="space-y-3">
           <div className="hidden md:grid md:grid-cols-[1.8fr,0.6fr,0.8fr,0.8fr,auto] md:gap-3 md:px-1 text-[10px] font-semibold uppercase tracking-wider text-white/25">
@@ -290,7 +348,7 @@ export default function PresupuestoForm({ clientes: initialClientes, presupuesto
             <textarea
               value={form.notas}
               onChange={(e) => setField('notas', e.target.value)}
-              placeholder="Notas internas..."
+              placeholder="Condiciones comerciales o notas internas..."
               rows={3}
               className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white placeholder:text-white/20 focus:border-[#5448EE]/60 focus:outline-none"
             />

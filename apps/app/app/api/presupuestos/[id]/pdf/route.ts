@@ -3,7 +3,7 @@ import { renderToBuffer } from '@react-pdf/renderer'
 import { auth } from '@/auth'
 import { PresupuestoPDF } from '@/app/components/presupuesto/PresupuestoPDF'
 import { prisma } from '@/lib/prisma'
-import { type Presupuesto } from '@/types/presupuesto'
+import { type Presupuesto, type PresupuestoTemplate } from '@/types/presupuesto'
 import type { DocumentProps } from '@react-pdf/renderer'
 
 function serializePresupuesto(raw: any): Presupuesto {
@@ -56,6 +56,29 @@ function serializePresupuesto(raw: any): Presupuesto {
   }
 }
 
+function serializeTemplate(raw: any): PresupuestoTemplate {
+  return {
+    id: raw.id,
+    userId: raw.userId,
+    nombreComercial: raw.nombreComercial ?? null,
+    razonSocial: raw.razonSocial ?? null,
+    cuit: raw.cuit ?? null,
+    telefono: raw.telefono ?? null,
+    email: raw.email ?? null,
+    direccion: raw.direccion ?? null,
+    logoUrl: raw.logoUrl ?? null,
+    colorPrimario: raw.colorPrimario ?? '#5448EE',
+    mostrarIvaDefault: raw.mostrarIvaDefault ?? true,
+    diasValidezDefault: raw.diasValidezDefault ?? 7,
+    textoEncabezado: raw.textoEncabezado ?? null,
+    condicionesDefault: raw.condicionesDefault ?? null,
+    notasClienteDefault: raw.notasClienteDefault ?? null,
+    serviciosFrecuentes: Array.isArray(raw.serviciosFrecuentes) ? raw.serviciosFrecuentes : [],
+    createdAt: raw.createdAt.toISOString(),
+    updatedAt: raw.updatedAt.toISOString(),
+  }
+}
+
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
   if (!session?.user?.id) {
@@ -75,10 +98,15 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
     return new Response('Not found', { status: 404 })
   }
 
+  const template = await prisma.presupuestoTemplate.findUnique({
+    where: { userId: session.user.id },
+  })
+
   const buffer = await renderToBuffer(
     React.createElement(PresupuestoPDF, {
       presupuesto: serializePresupuesto(presupuesto),
       emisorNombre: session.user.name,
+      template: template ? serializeTemplate(template) : null,
     }) as React.ReactElement<DocumentProps>,
   )
 

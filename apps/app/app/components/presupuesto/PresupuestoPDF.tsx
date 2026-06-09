@@ -10,6 +10,7 @@ import {
   formatCurrency,
   formatPresupuestoNumero,
   type Presupuesto,
+  type PresupuestoTemplate,
 } from '@/types/presupuesto'
 
 const styles = StyleSheet.create({
@@ -31,6 +32,13 @@ const styles = StyleSheet.create({
     fontSize: 22,
     color: '#5448EE',
     fontWeight: 700,
+  },
+  subtitle: {
+    marginTop: 6,
+    maxWidth: 280,
+    fontSize: 10,
+    color: '#6b7280',
+    lineHeight: 1.4,
   },
   metaText: {
     fontSize: 10,
@@ -112,19 +120,24 @@ const styles = StyleSheet.create({
 export function PresupuestoPDF({
   presupuesto,
   emisorNombre,
+  template,
 }: {
   presupuesto: Presupuesto
   emisorNombre?: string | null
+  template?: PresupuestoTemplate | null
 }) {
   const totals = calcularTotales(presupuesto.items, presupuesto.descuento, presupuesto.iva)
+  const accent = template?.colorPrimario ?? '#5448EE'
+  const businessName = template?.nombreComercial || template?.razonSocial || emisorNombre || 'Usuario'
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
           <View>
-            <Text style={styles.title}>PRESUPUESTO</Text>
+            <Text style={{ ...styles.title, color: accent }}>PRESUPUESTO</Text>
             <Text style={styles.metaText}>{formatPresupuestoNumero(presupuesto.numero)}</Text>
+            {template?.textoEncabezado ? <Text style={styles.subtitle}>{template.textoEncabezado}</Text> : null}
           </View>
           <View>
             <Text style={styles.metaText}>Fecha emision: {presupuesto.fechaEmision}</Text>
@@ -143,9 +156,17 @@ export function PresupuestoPDF({
           </View>
           <View style={styles.panel}>
             <Text style={styles.panelTitle}>De</Text>
-            <Text>{emisorNombre ?? 'Usuario'}</Text>
-            <Text>{presupuesto.titulo}</Text>
+            <Text>{businessName}</Text>
+            {template?.razonSocial && template.razonSocial !== businessName ? <Text>{template.razonSocial}</Text> : null}
+            {template?.cuit ? <Text>CUIT: {template.cuit}</Text> : null}
+            {template?.telefono ? <Text>{template.telefono}</Text> : null}
+            {template?.email ? <Text>{template.email}</Text> : null}
+            {template?.direccion ? <Text>{template.direccion}</Text> : null}
           </View>
+        </View>
+
+        <View style={{ marginBottom: 14 }}>
+          <Text style={{ fontSize: 14, fontWeight: 700, color: accent }}>{presupuesto.titulo}</Text>
         </View>
 
         <View style={styles.table}>
@@ -186,14 +207,19 @@ export function PresupuestoPDF({
           </View>
           <View style={styles.finalRow}>
             <Text>TOTAL</Text>
-            <Text>{formatCurrency(totals.totalFinal, presupuesto.moneda)}</Text>
+            <Text style={{ color: accent }}>{formatCurrency(totals.totalFinal, presupuesto.moneda)}</Text>
           </View>
         </View>
 
-        {presupuesto.notasCliente ? (
+        {presupuesto.notasCliente || template?.condicionesDefault ? (
           <View style={styles.notes}>
             <Text style={styles.panelTitle}>Notas para el cliente</Text>
-            <Text>{presupuesto.notasCliente}</Text>
+            {presupuesto.notasCliente ? <Text>{presupuesto.notasCliente}</Text> : null}
+            {template?.condicionesDefault ? (
+              <Text style={{ marginTop: presupuesto.notasCliente ? 8 : 0 }}>
+                {template.condicionesDefault}
+              </Text>
+            ) : null}
           </View>
         ) : null}
       </Page>

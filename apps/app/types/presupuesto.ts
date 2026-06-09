@@ -15,6 +15,34 @@ export interface PresupuestoItem {
   subtotal: number
 }
 
+export interface PresupuestoServicioFrecuente {
+  id: string
+  nombre: string
+  descripcion: string | null
+  precioSugerido: number
+}
+
+export interface PresupuestoTemplate {
+  id: string
+  userId: string
+  nombreComercial: string | null
+  razonSocial: string | null
+  cuit: string | null
+  telefono: string | null
+  email: string | null
+  direccion: string | null
+  logoUrl: string | null
+  colorPrimario: string
+  mostrarIvaDefault: boolean
+  diasValidezDefault: number
+  textoEncabezado: string | null
+  condicionesDefault: string | null
+  notasClienteDefault: string | null
+  serviciosFrecuentes: PresupuestoServicioFrecuente[]
+  createdAt: string
+  updatedAt: string
+}
+
 export interface Cliente {
   id: string
   userId: string

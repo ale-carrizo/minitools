@@ -14,6 +14,7 @@ export default function PresupuestoShell({
   const tabs = [
     { label: 'Presupuestos', href: '/dashboard/presupuestos', badge: borradores },
     { label: 'Clientes', href: '/dashboard/presupuestos/clientes' },
+    { label: 'Template', href: '/dashboard/presupuestos/template' },
     { label: '+ Nuevo', href: '/dashboard/presupuestos/nuevo' },
   ]
 

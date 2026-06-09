@@ -11,6 +11,8 @@ import {
   type PresupuestoEstado,
   type PresupuestoInput,
   type PresupuestoItem,
+  type PresupuestoServicioFrecuente,
+  type PresupuestoTemplate,
 } from '@/types/presupuesto'
 
 async function getUserId(): Promise<string> {
@@ -67,6 +69,49 @@ function toPresupuestoItem(item: any): PresupuestoItem {
     cantidad: item.cantidad,
     precioUnitario: item.precioUnitario,
     subtotal: item.subtotal,
+  }
+}
+
+function toServiciosFrecuentes(value: unknown): PresupuestoServicioFrecuente[] {
+  if (!Array.isArray(value)) return []
+
+  return value
+    .map((item) => {
+      if (!item || typeof item !== 'object') return null
+      const raw = item as Record<string, unknown>
+      const nombre = String(raw.nombre ?? '').trim()
+      if (!nombre) return null
+
+      return {
+        id: String(raw.id ?? crypto.randomUUID()),
+        nombre,
+        descripcion: raw.descripcion ? String(raw.descripcion) : null,
+        precioSugerido: Number(raw.precioSugerido ?? 0) || 0,
+      }
+    })
+    .filter((item): item is PresupuestoServicioFrecuente => Boolean(item))
+}
+
+function toPresupuestoTemplate(template: any): PresupuestoTemplate {
+  return {
+    id: template.id,
+    userId: template.userId,
+    nombreComercial: template.nombreComercial ?? null,
+    razonSocial: template.razonSocial ?? null,
+    cuit: template.cuit ?? null,
+    telefono: template.telefono ?? null,
+    email: template.email ?? null,
+    direccion: template.direccion ?? null,
+    logoUrl: template.logoUrl ?? null,
+    colorPrimario: template.colorPrimario ?? '#5448EE',
+    mostrarIvaDefault: template.mostrarIvaDefault ?? true,
+    diasValidezDefault: template.diasValidezDefault ?? 7,
+    textoEncabezado: template.textoEncabezado ?? null,
+    condicionesDefault: template.condicionesDefault ?? null,
+    notasClienteDefault: template.notasClienteDefault ?? null,
+    serviciosFrecuentes: toServiciosFrecuentes(template.serviciosFrecuentes),
+    createdAt: template.createdAt.toISOString(),
+    updatedAt: template.updatedAt.toISOString(),
   }
 }
 
@@ -128,6 +173,52 @@ function normalizeInput(data: PresupuestoInput) {
   }
 }
 
+function normalizeTemplateInput(data: {
+  nombreComercial?: string
+  razonSocial?: string
+  cuit?: string
+  telefono?: string
+  email?: string
+  direccion?: string
+  logoUrl?: string
+  colorPrimario?: string
+  mostrarIvaDefault?: boolean
+  diasValidezDefault?: number
+  textoEncabezado?: string
+  condicionesDefault?: string
+  notasClienteDefault?: string
+  serviciosFrecuentes?: Array<{
+    id?: string
+    nombre: string
+    descripcion?: string
+    precioSugerido?: number
+  }>
+}) {
+  return {
+    nombreComercial: maybeNull(data.nombreComercial),
+    razonSocial: maybeNull(data.razonSocial),
+    cuit: maybeNull(data.cuit),
+    telefono: maybeNull(data.telefono),
+    email: maybeNull(data.email),
+    direccion: maybeNull(data.direccion),
+    logoUrl: maybeNull(data.logoUrl),
+    colorPrimario: maybeTrim(data.colorPrimario) ?? '#5448EE',
+    mostrarIvaDefault: Boolean(data.mostrarIvaDefault),
+    diasValidezDefault: Math.max(0, Number(data.diasValidezDefault ?? 7) || 0),
+    textoEncabezado: maybeNull(data.textoEncabezado),
+    condicionesDefault: maybeNull(data.condicionesDefault),
+    notasClienteDefault: maybeNull(data.notasClienteDefault),
+    serviciosFrecuentes: (data.serviciosFrecuentes ?? [])
+      .map((item) => ({
+        id: item.id?.trim() || crypto.randomUUID(),
+        nombre: item.nombre.trim(),
+        descripcion: maybeNull(item.descripcion),
+        precioSugerido: Number(item.precioSugerido ?? 0) || 0,
+      }))
+      .filter((item) => item.nombre),
+  }
+}
+
 function buildItemsCreateMany(
   items: Array<{ orden: number; descripcion: string; cantidad: number; precioUnitario: number }>,
 ) {
@@ -179,6 +270,55 @@ export async function getClientes(): Promise<Cliente[]> {
   })
 
   return clientes.map(toCliente)
+}
+
+export async function getPresupuestoTemplate(): Promise<PresupuestoTemplate | null> {
+  const userId = await getUserId()
+  const template = await prisma.presupuestoTemplate.findUnique({
+    where: { userId },
+  })
+
+  return template ? toPresupuestoTemplate(template) : null
+}
+
+export async function guardarPresupuestoTemplate(data: {
+  nombreComercial?: string
+  razonSocial?: string
+  cuit?: string
+  telefono?: string
+  email?: string
+  direccion?: string
+  logoUrl?: string
+  colorPrimario?: string
+  mostrarIvaDefault?: boolean
+  diasValidezDefault?: number
+  textoEncabezado?: string
+  condicionesDefault?: string
+  notasClienteDefault?: string
+  serviciosFrecuentes?: Array<{
+    id?: string
+    nombre: string
+    descripcion?: string
+    precioSugerido?: number
+  }>
+}): Promise<PresupuestoTemplate> {
+  const userId = await getUserId()
+  const payload = normalizeTemplateInput(data)
+
+  const template = await prisma.presupuestoTemplate.upsert({
+    where: { userId },
+    update: payload,
+    create: {
+      userId,
+      ...payload,
+    },
+  })
+
+  revalidatePath('/dashboard/presupuestos')
+  revalidatePath('/dashboard/presupuestos/nuevo')
+  revalidatePath('/dashboard/presupuestos/template')
+
+  return toPresupuestoTemplate(template)
 }
 
 export async function getCliente(id: string): Promise<Cliente | null> {
