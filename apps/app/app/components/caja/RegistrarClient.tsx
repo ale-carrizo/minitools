@@ -12,11 +12,11 @@ const LAYER_CONFIG = {
   comprobante: {
     icon: '📄',
     label: 'Comprobante',
-    desc: 'Foto o PDF · IA lee los datos',
+    desc: 'Subí un comprobante y la IA lee los datos',
   },
   extracto: {
     icon: '📊',
-    label: 'Extracto bancario',
+    label: 'Subir extracto bancario',
     desc: 'XLS o CSV del homebanking',
   },
 }
@@ -204,29 +204,6 @@ function ComprobantePanel({ onSuccess }: { onSuccess: () => void }) {
             <p className="text-[11px] text-white/35">JPG, PNG o PDF · máx 10MB</p>
           </>
         )}
-      </div>
-
-      {/* Accesos rápidos */}
-      <div className="grid grid-cols-3 gap-2">
-        {[
-          { label: 'Cámara',  accept: 'image/*',        capture: 'environment' },
-          { label: 'Galería', accept: 'image/*',         capture: undefined },
-          { label: 'PDF',     accept: 'application/pdf', capture: undefined },
-        ].map(opt => (
-          <button
-            key={opt.label}
-            onClick={() => {
-              if (!fileRef.current) return
-              fileRef.current.accept = opt.accept
-              if (opt.capture) fileRef.current.setAttribute('capture', opt.capture)
-              else fileRef.current.removeAttribute('capture')
-              fileRef.current.click()
-            }}
-            className="py-2 text-[11px] font-medium text-white/40 border border-white/[0.08] rounded-xl hover:bg-white/[0.06] hover:text-white/70 transition-all"
-          >
-            {opt.label === 'Cámara' ? '📷' : opt.label === 'Galería' ? '🖼' : '📋'} {opt.label}
-          </button>
-        ))}
       </div>
 
       {error && <p className="mt-2 text-[11px] text-red-400">{error}</p>}
