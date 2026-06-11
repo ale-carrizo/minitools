@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import MeshGradient from "./components/MeshGradient";
+import ParticleField from "./components/ParticleField";
 
 // Inline SVG icons — lucide-style line art
 function IconFacturacion() {
@@ -116,11 +116,16 @@ export default function Home() {
 
       {/* ── HERO ───────────────────────────────────── */}
       <section className="relative min-h-screen bg-[#0C0B1A] flex flex-col items-center justify-center overflow-hidden">
-        {/* Liquid mesh gradient background */}
-        <MeshGradient className="opacity-85" />
-        {/* Vignette to keep the top edges deep behind the navbar */}
-        <div className="absolute inset-0 pointer-events-none z-[1]"
-          style={{ background: "radial-gradient(ellipse at 50% 40%, transparent 30%, rgba(12,11,26,0.55) 100%)" }} />
+        {/* Aurora mesh + central glow + particles */}
+        <div className="aurora" />
+        <ParticleField className="z-[1] opacity-60" />
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-[1]">
+          <div className="animate-pulse-glow" style={{
+            width: "860px", height: "500px", borderRadius: "50%",
+            background: "radial-gradient(ellipse at center, #5448EE 0%, #8880F5 30%, transparent 70%)",
+            filter: "blur(2px)",
+          }} />
+        </div>
 
         <div className="relative z-10 text-center px-6 animate-fade-up">
           {/* Eyebrow badge */}

@@ -4,7 +4,7 @@ import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import MeshGradient from "../../components/MeshGradient";
+import ParticleField from "../../components/ParticleField";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -35,11 +35,27 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-[#0C0B1A] flex items-center justify-center px-4 relative overflow-hidden grain">
-      {/* Liquid mesh gradient background */}
-      <MeshGradient className="opacity-80" />
-      {/* Vignette to keep edges deep */}
-      <div className="absolute inset-0 pointer-events-none"
-        style={{ background: "radial-gradient(ellipse at center, transparent 35%, rgba(12,11,26,0.65) 100%)" }} />
+      {/* Aurora mesh drifting in the background */}
+      <div className="aurora" />
+
+      {/* Constellation particles */}
+      <ParticleField className="z-[1] opacity-70" />
+
+      {/* Soft central glow */}
+      <div
+        className="absolute pointer-events-none z-[1] animate-[pulse-glow_6s_ease-in-out_infinite]"
+        style={{
+          width: "640px",
+          height: "440px",
+          borderRadius: "50%",
+          background: "radial-gradient(ellipse at center, #5448EE 0%, #8880F5 35%, transparent 70%)",
+          filter: "blur(4px)",
+          opacity: 0.16,
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -58%)",
+        }}
+      />
 
       <div className="w-full max-w-sm relative z-10">
         {/* Logo + heading */}
