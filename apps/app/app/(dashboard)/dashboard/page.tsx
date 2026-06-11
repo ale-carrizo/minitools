@@ -23,7 +23,14 @@ const statusConfig = {
 export default async function DashboardPage() {
   const session = await auth();
   const firstName = session?.user?.name?.split(" ")[0] ?? "Usuario";
-  const hour = new Date().getHours();
+  const hour = parseInt(
+    new Date().toLocaleString("es-AR", {
+      timeZone: "America/Argentina/Buenos_Aires",
+      hour: "numeric",
+      hour12: false,
+    }),
+    10
+  );
   const greeting = hour < 12 ? "Buenos días" : hour < 19 ? "Buenas tardes" : "Buenas noches";
 
   return (
