@@ -217,7 +217,7 @@ export default function Home() {
                 transitionDelay: cardsVisible ? `${i * 50}ms` : "0ms",
               }}
             >
-              <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-4 flex-shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:-rotate-6 group-hover:shadow-[0_8px_20px_-6px_rgba(84,72,238,0.5)]"
+              <div className="icon-pop w-11 h-11 rounded-xl flex items-center justify-center mb-4 flex-shrink-0 transition-shadow duration-300 group-hover:shadow-[0_8px_20px_-6px_rgba(84,72,238,0.5)]"
                 style={{ background: "linear-gradient(135deg, #EEF0FF, #E0E2FF)", color: "#5448EE" }}>
                 <tool.Icon />
               </div>

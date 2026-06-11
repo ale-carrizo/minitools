@@ -81,9 +81,9 @@ export default async function DashboardPage() {
                   style={{ background: "radial-gradient(circle, rgba(84,72,238,0.35), transparent 70%)", filter: "blur(6px)" }} />
               )}
               <div className="relative flex items-start justify-between mb-4">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
                   isAvailable
-                    ? "text-white shadow-[0_4px_14px_-4px_rgba(84,72,238,0.6)] group-hover:scale-110 group-hover:-rotate-6"
+                    ? "icon-pop text-white shadow-[0_4px_14px_-4px_rgba(84,72,238,0.6)]"
                     : "bg-white/[0.05] text-white/25"
                 }`}
                   style={isAvailable ? { background: "linear-gradient(135deg, #6E63FF, #5448EE 60%, #4035d4)" } : undefined}>
