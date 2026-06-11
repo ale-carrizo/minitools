@@ -29,28 +29,33 @@ export default async function DashboardPage() {
   return (
     <div className="p-8">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-[26px] font-semibold text-white tracking-[-0.03em]">
-          {greeting}, {firstName} 👋
+      <div className="mb-8 animate-[fade-up_0.6s_cubic-bezier(0.16,1,0.3,1)_both]">
+        <h1 className="font-display text-[30px] font-semibold tracking-[-0.035em]">
+          <span className="text-white">{greeting}, </span>
+          <span className="text-gradient">{firstName}</span>
+          <span className="text-white"> 👋</span>
         </h1>
-        <p className="text-white/40 text-sm mt-1">
+        <p className="text-white/40 text-sm mt-1.5">
           Tus herramientas de negocio — MVP v1.0
         </p>
-
       </div>
 
       {/* Progress banner */}
-      <div className="flex items-center gap-4 bg-[#5448EE]/10 border border-[#5448EE]/20 rounded-2xl px-5 py-4 mb-8">
-        <div className="flex-shrink-0 w-8 h-8 rounded-xl bg-[#5448EE] flex items-center justify-center">
-          <svg width="14" height="14" viewBox="0 0 20 20" fill="white">
+      <div className="relative flex items-center gap-4 rounded-2xl px-5 py-4 mb-8 overflow-hidden border border-[#5448EE]/25 animate-[fade-up_0.6s_cubic-bezier(0.16,1,0.3,1)_0.08s_both]"
+        style={{ background: "linear-gradient(110deg, rgba(84,72,238,0.18), rgba(136,128,245,0.06) 55%, transparent)" }}>
+        <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full pointer-events-none"
+          style={{ background: "radial-gradient(circle, rgba(136,128,245,0.30), transparent 70%)", filter: "blur(8px)" }} />
+        <div className="relative flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center shadow-[0_4px_16px_-4px_rgba(84,72,238,0.7)] animate-[float_7s_ease-in-out_infinite]"
+          style={{ background: "linear-gradient(135deg, #6E63FF, #5448EE 60%, #4035d4)" }}>
+          <svg width="15" height="15" viewBox="0 0 20 20" fill="white">
             <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd"/>
           </svg>
         </div>
-        <div className="flex-1">
-          <p className="text-sm font-medium text-white/80">9 herramientas disponibles · 1 en camino</p>
+        <div className="relative flex-1">
+          <p className="text-sm font-medium text-white/85">9 herramientas disponibles · 1 en camino</p>
           <p className="text-xs text-white/40 mt-0.5">Stock, Presupuestos, Caja, Precios, Sueldos, Asistencia, Garantías, Turnos y más.</p>
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="relative flex items-center gap-1.5">
           {tools.map((t) => (
             <div key={t.num} className={`w-1.5 h-1.5 rounded-full ${statusConfig[t.status].dot}`} />
           ))}
@@ -59,34 +64,48 @@ export default async function DashboardPage() {
 
       {/* Tools grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-        {tools.map((tool) => {
+        {tools.map((tool, idx) => {
           const st = statusConfig[tool.status];
           const isAvailable = tool.status === "available";
 
           const card = (
-            <div className={`group border rounded-2xl p-5 transition-all duration-200 h-full flex flex-col ${
-              isAvailable
-                ? "bg-[#1A1830] border-white/[0.12] hover:border-[#5448EE]/70 hover:bg-[#1E1C38] cursor-pointer"
-                : "bg-[#141322] border-white/[0.07]"
-            }`}>
-              <div className="flex items-start justify-between mb-4">
-                <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
-                  isAvailable ? "bg-[#5448EE]/20 text-[#8880F5]" : "bg-white/[0.05] text-white/25"
-                }`}>
+            <div
+              style={{ "--i": idx + 2 } as React.CSSProperties}
+              className={`group relative overflow-hidden border rounded-2xl p-5 h-full flex flex-col animate-[fade-up_0.5s_cubic-bezier(0.16,1,0.3,1)_both] [animation-delay:calc(var(--i)*45ms)] ${
+                isAvailable
+                  ? "card-glow bg-[#1A1830] border-white/[0.12] cursor-pointer"
+                  : "bg-[#141322] border-white/[0.07]"
+              }`}>
+              {isAvailable && (
+                <div className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                  style={{ background: "radial-gradient(circle, rgba(84,72,238,0.35), transparent 70%)", filter: "blur(6px)" }} />
+              )}
+              <div className="relative flex items-start justify-between mb-4">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                  isAvailable
+                    ? "text-white shadow-[0_4px_14px_-4px_rgba(84,72,238,0.6)] group-hover:scale-110 group-hover:-rotate-6"
+                    : "bg-white/[0.05] text-white/25"
+                }`}
+                  style={isAvailable ? { background: "linear-gradient(135deg, #6E63FF, #5448EE 60%, #4035d4)" } : undefined}>
                   {tool.icon}
                 </div>
                 <span className="text-[10px] font-mono text-white/25">{tool.num}</span>
               </div>
-              <h3 className={`font-semibold text-[13.5px] leading-snug mb-2 ${isAvailable ? "text-white" : "text-white/45"}`}>
+              <h3 className={`relative font-display font-semibold text-[14px] leading-snug mb-2 ${isAvailable ? "text-white group-hover:text-[#b9b2ff] transition-colors" : "text-white/45"}`}>
                 {tool.label}
               </h3>
-              <p className={`text-[12px] leading-relaxed flex-1 ${isAvailable ? "text-white/55" : "text-white/30"}`}>
+              <p className={`relative text-[12px] leading-relaxed flex-1 ${isAvailable ? "text-white/55" : "text-white/30"}`}>
                 {tool.desc}
               </p>
-              <div className="mt-4">
+              <div className="relative mt-4 flex items-center justify-between">
                 <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${st.badge}`}>
                   {st.label}
                 </span>
+                {isAvailable && (
+                  <span className="text-[#8880F5] opacity-0 -translate-x-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                  </span>
+                )}
               </div>
             </div>
           );

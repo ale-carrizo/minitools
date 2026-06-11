@@ -36,15 +36,16 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
         {/* Brand */}
         <div className="flex items-center gap-2.5 px-5 h-[52px] border-b border-white/[0.06] flex-shrink-0">
-          <div className="w-6 h-6 rounded-[5px] bg-[#5448EE] flex items-center justify-center flex-shrink-0">
-            <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+          <div className="w-7 h-7 rounded-[7px] flex items-center justify-center flex-shrink-0 shadow-[0_4px_14px_-3px_rgba(84,72,238,0.7)]"
+            style={{ background: "linear-gradient(135deg, #6E63FF, #5448EE 55%, #4035d4)" }}>
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
               <rect x="1.5" y="1.5" width="4.5" height="4.5" rx="1.2" fill="white"/>
               <rect x="8" y="1.5" width="4.5" height="4.5" rx="1.2" fill="white" fillOpacity="0.5"/>
               <rect x="1.5" y="8" width="4.5" height="4.5" rx="1.2" fill="white" fillOpacity="0.5"/>
               <rect x="8" y="8" width="4.5" height="4.5" rx="1.2" fill="white"/>
             </svg>
           </div>
-          <span className="text-white font-semibold text-[14px] tracking-[-0.02em]">Zimple Tools</span>
+          <span className="font-display text-white font-semibold text-[15px] tracking-[-0.02em]">Zimple Tools</span>
         </div>
 
         {/* Nav */}
@@ -70,9 +71,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
                     {tool.available ? (
                       <Link
                         href={tool.href}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-white/60 hover:text-white hover:bg-white/[0.06] transition-colors"
+                        className="group relative flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-white/60 hover:text-white hover:bg-gradient-to-r hover:from-[#5448EE]/15 hover:to-transparent"
                       >
-                        <span className="flex-shrink-0 opacity-70">{tool.icon}</span>
+                        <span className="absolute left-0 top-1/2 -translate-y-1/2 h-0 w-[2px] rounded-full bg-[#8880F5] transition-all duration-300 group-hover:h-5" />
+                        <span className="flex-shrink-0 opacity-70 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:opacity-100 group-hover:text-[#8880F5]">{tool.icon}</span>
                         {tool.label}
                       </Link>
                     ) : (
@@ -125,8 +127,17 @@ export default async function DashboardLayout({ children }: { children: React.Re
       </aside>
 
       {/* Main content area — slightly lighter than sidebar */}
-      <main className="flex-1 overflow-y-auto" style={{ background: "#111028" }}>
-        {children}
+      <main className="relative flex-1 overflow-y-auto grain" style={{ background: "#111028" }}>
+        {/* Ambient aurora glow fixed behind content */}
+        <div className="pointer-events-none fixed inset-0 z-0 opacity-60">
+          <div className="absolute -top-[10%] right-[2%] h-[420px] w-[520px] rounded-full"
+            style={{ background: "radial-gradient(circle, rgba(84,72,238,0.18), transparent 70%)", filter: "blur(20px)" }} />
+          <div className="absolute bottom-[4%] left-[6%] h-[360px] w-[460px] rounded-full"
+            style={{ background: "radial-gradient(circle, rgba(136,128,245,0.12), transparent 70%)", filter: "blur(20px)" }} />
+        </div>
+        <div className="relative z-[1]">
+          {children}
+        </div>
       </main>
     </div>
   );

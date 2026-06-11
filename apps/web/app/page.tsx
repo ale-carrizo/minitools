@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import ParticleField from "./components/ParticleField";
 
 // Inline SVG icons — lucide-style line art
 function IconFacturacion() {
@@ -97,7 +98,8 @@ export default function Home() {
         scrolled ? "bg-[#0C0B1A]/90 backdrop-blur-md border-b border-white/[0.06]" : "bg-white/[0.06]"
       }`}>
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-[6px] bg-[#5448EE] flex items-center justify-center flex-shrink-0">
+          <div className="w-7 h-7 rounded-[7px] flex items-center justify-center flex-shrink-0 shadow-[0_4px_14px_-3px_rgba(84,72,238,0.7)]"
+            style={{ background: "linear-gradient(135deg, #6E63FF, #5448EE 55%, #4035d4)" }}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <rect x="1.5" y="1.5" width="4.5" height="4.5" rx="1.2" fill="white" />
               <rect x="8" y="1.5" width="4.5" height="4.5" rx="1.2" fill="white" fillOpacity="0.5" />
@@ -105,16 +107,19 @@ export default function Home() {
               <rect x="8" y="8" width="4.5" height="4.5" rx="1.2" fill="white" />
             </svg>
           </div>
-          <span className="text-white font-semibold text-[15px] tracking-[-0.03em]">MiniTools</span>
+          <span className="font-display text-white font-semibold text-[16px] tracking-[-0.03em]">Zimple Tools</span>
         </div>
-        <a href="https://app.zimple.tools/register" className="bg-[#5448EE] hover:bg-[#4035d4] text-white text-[13px] font-semibold px-4 py-[7px] rounded-[8px] transition-colors duration-150">
+        <a href="https://app.zimple.tools/register" className="btn-brand text-white text-[13px] font-semibold px-4 py-[7px] rounded-[8px]">
           Empezar gratis
         </a>
       </nav>
 
       {/* ── HERO ───────────────────────────────────── */}
       <section className="relative min-h-screen bg-[#0C0B1A] flex flex-col items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        {/* Aurora mesh + central glow + particles */}
+        <div className="aurora" />
+        <ParticleField className="z-[1] opacity-60" />
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-[1]">
           <div className="animate-pulse-glow" style={{
             width: "860px", height: "500px", borderRadius: "50%",
             background: "radial-gradient(ellipse at center, #5448EE 0%, #8880F5 30%, transparent 70%)",
@@ -123,20 +128,30 @@ export default function Home() {
         </div>
 
         <div className="relative z-10 text-center px-6 animate-fade-up">
-          <h1 className="text-5xl sm:text-[70px] lg:text-[80px] font-semibold leading-[1.05] tracking-[-0.04em] mb-5">
+          {/* Eyebrow badge */}
+          <div className="inline-flex items-center gap-2 mb-6 px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.10] backdrop-blur-sm">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-[#8880F5] opacity-75 animate-ping" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-[#8880F5]" />
+            </span>
+            <span className="text-white/70 text-[12.5px] font-medium">12 herramientas · una sola suscripción</span>
+          </div>
+
+          <h1 className="font-display text-5xl sm:text-[70px] lg:text-[82px] font-semibold leading-[1.04] tracking-[-0.045em] mb-5">
             <span className="text-white block">Todas las herramientas</span>
-            <span className="block" style={{ color: "#8880F5" }}>en una sola suscripción</span>
+            <span className="text-gradient block">en una sola suscripción</span>
           </h1>
-          <p className="text-white/40 text-[17px] leading-relaxed mb-8 max-w-[340px] mx-auto">
+          <p className="text-white/45 text-[17px] leading-relaxed mb-8 max-w-[360px] mx-auto">
             Una suscripción. Acceso ilimitado. Sin complicaciones.
           </p>
 
           <div className="flex items-center justify-center gap-3 mb-3">
-            <a href="https://app.zimple.tools/register" className="bg-[#5448EE] hover:bg-[#4035d4] text-white font-semibold text-[15px] px-6 py-3 rounded-xl transition-all duration-200 hover:shadow-[0_4px_30px_rgba(84,72,238,0.5)]">
+            <a href="https://app.zimple.tools/register" className="btn-brand text-white font-semibold text-[15px] px-6 py-3 rounded-xl">
               Empezar gratis — 14 días
             </a>
-            <button className="text-white font-medium text-[15px] px-6 py-3 rounded-xl border border-white/25 hover:border-white/50 hover:bg-white/[0.06] transition-all duration-200">
+            <button className="group text-white font-medium text-[15px] px-6 py-3 rounded-xl border border-white/25 hover:border-white/50 hover:bg-white/[0.06] transition-all duration-200">
               Ver herramientas
+              <span className="inline-block ml-1.5 transition-transform duration-200 group-hover:translate-y-0.5">↓</span>
             </button>
           </div>
           <p className="text-white/30 text-[13px] mb-10">
@@ -146,7 +161,10 @@ export default function Home() {
           {/* Module chips with colored dots */}
           <div className="flex flex-wrap items-center justify-center gap-2 max-w-3xl mx-auto">
             {chips.map((chip, i) => (
-              <span key={chip} className="flex items-center gap-2 text-white/60 text-[13px] px-3.5 py-1.5 rounded-full bg-white/[0.08] hover:bg-white/[0.13] hover:text-white/80 cursor-pointer transition-all duration-150 select-none whitespace-nowrap">
+              <span
+                key={chip}
+                style={{ animationDelay: `${0.4 + i * 0.04}s` }}
+                className="flex items-center gap-2 text-white/60 text-[13px] px-3.5 py-1.5 rounded-full bg-white/[0.08] hover:bg-white/[0.14] hover:text-white hover:-translate-y-0.5 cursor-pointer transition-all duration-200 select-none whitespace-nowrap animate-[fade-up_0.6s_cubic-bezier(0.16,1,0.3,1)_both]">
                 <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: chipColors[i] }} />
                 {chip}
               </span>
@@ -154,7 +172,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 h-28 pointer-events-none"
+        <div className="absolute bottom-0 left-0 right-0 h-28 pointer-events-none z-[2]"
           style={{ background: "linear-gradient(to bottom, transparent, #F6F6FB)" }} />
       </section>
 
@@ -199,10 +217,11 @@ export default function Home() {
                 transitionDelay: cardsVisible ? `${i * 50}ms` : "0ms",
               }}
             >
-              <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 mb-4 flex-shrink-0">
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-4 flex-shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:-rotate-6 group-hover:shadow-[0_8px_20px_-6px_rgba(84,72,238,0.5)]"
+                style={{ background: "linear-gradient(135deg, #EEF0FF, #E0E2FF)", color: "#5448EE" }}>
                 <tool.Icon />
               </div>
-              <h3 className="text-[#1a1a2e] font-semibold text-[13.5px] leading-snug mb-2">{tool.name}</h3>
+              <h3 className="text-[#1a1a2e] font-semibold text-[14px] leading-snug mb-2 group-hover:text-[#5448EE] transition-colors">{tool.name}</h3>
               <p className="text-[#1a1a2e]/45 text-[12px] leading-relaxed flex-1 mb-4">{tool.desc}</p>
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-semibold text-[#5448EE] bg-[#5448EE]/10 px-2.5 py-1 rounded-full">
@@ -309,7 +328,8 @@ export default function Home() {
       <footer className="bg-[#0C0B1A] py-8 px-6">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-[5px] bg-[#5448EE] flex items-center justify-center flex-shrink-0">
+            <div className="w-6 h-6 rounded-[5px] flex items-center justify-center flex-shrink-0"
+              style={{ background: "linear-gradient(135deg, #6E63FF, #5448EE 55%, #4035d4)" }}>
               <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
                 <rect x="1.5" y="1.5" width="4.5" height="4.5" rx="1.2" fill="white" />
                 <rect x="8" y="1.5" width="4.5" height="4.5" rx="1.2" fill="white" fillOpacity="0.5" />
@@ -317,14 +337,14 @@ export default function Home() {
                 <rect x="8" y="8" width="4.5" height="4.5" rx="1.2" fill="white" />
               </svg>
             </div>
-            <span className="text-white font-semibold text-[14px] tracking-[-0.025em]">MiniTools</span>
+            <span className="font-display text-white font-semibold text-[15px] tracking-[-0.025em]">Zimple Tools</span>
           </div>
           <div className="flex items-center gap-6 text-white/40 text-[13px]">
             <a href="#" className="hover:text-white/70 transition-colors">Privacidad</a>
             <a href="#" className="hover:text-white/70 transition-colors">Términos</a>
             <a href="#" className="hover:text-white/70 transition-colors">Contacto</a>
           </div>
-          <p className="text-white/30 text-[13px]">© 2026 MiniTools. Todos los derechos reservados.</p>
+          <p className="text-white/30 text-[13px]">© 2026 Zimple Tools. Todos los derechos reservados.</p>
         </div>
       </footer>
     </main>

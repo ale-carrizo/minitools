@@ -5,6 +5,7 @@ import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { registerUser } from "./actions";
+import ParticleField from "../../components/ParticleField";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -15,39 +16,46 @@ export default function RegisterPage() {
   }, [state.success, router]);
 
   return (
-    <div className="min-h-screen bg-[#0C0B1A] flex items-center justify-center px-4 relative overflow-hidden">
-      {/* Purple glow */}
+    <div className="min-h-screen bg-[#0C0B1A] flex items-center justify-center px-4 relative overflow-hidden grain">
+      {/* Aurora mesh */}
+      <div className="aurora" />
+
+      {/* Constellation particles */}
+      <ParticleField className="z-[1] opacity-70" />
+
+      {/* Central glow */}
       <div
-        className="absolute pointer-events-none"
+        className="absolute pointer-events-none z-[1] animate-[pulse-glow_6s_ease-in-out_infinite]"
         style={{
-          width: "600px", height: "400px", borderRadius: "50%",
-          background: "radial-gradient(ellipse at center, #5448EE 0%, #8880F5 30%, transparent 70%)",
-          filter: "blur(2px)", opacity: 0.18,
-          top: "50%", left: "50%", transform: "translate(-50%, -60%)",
+          width: "640px", height: "440px", borderRadius: "50%",
+          background: "radial-gradient(ellipse at center, #5448EE 0%, #8880F5 35%, transparent 70%)",
+          filter: "blur(4px)", opacity: 0.16,
+          top: "50%", left: "50%", transform: "translate(-50%, -58%)",
         }}
       />
 
       <div className="w-full max-w-sm relative z-10">
         {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-10 h-10 rounded-[10px] bg-[#5448EE] mb-5">
-            <svg width="18" height="18" viewBox="0 0 14 14" fill="none">
+        <div className="text-center mb-8 animate-[fade-up_0.7s_cubic-bezier(0.16,1,0.3,1)_both]">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-[14px] mb-5 animate-[float_7s_ease-in-out_infinite] shadow-[0_8px_30px_-6px_rgba(84,72,238,0.7)]"
+            style={{ background: "linear-gradient(135deg, #6E63FF, #5448EE 55%, #4035d4)" }}>
+            <svg width="20" height="20" viewBox="0 0 14 14" fill="none">
               <rect x="1.5" y="1.5" width="4.5" height="4.5" rx="1.2" fill="white" />
               <rect x="8" y="1.5" width="4.5" height="4.5" rx="1.2" fill="white" fillOpacity="0.5" />
               <rect x="1.5" y="8" width="4.5" height="4.5" rx="1.2" fill="white" fillOpacity="0.5" />
               <rect x="8" y="8" width="4.5" height="4.5" rx="1.2" fill="white" />
             </svg>
           </div>
-          <h1 className="text-[22px] font-semibold text-white tracking-[-0.03em]">
+          <h1 className="text-[26px] font-semibold text-white tracking-[-0.035em]">
             Creá tu cuenta gratis
           </h1>
-          <p className="text-white/40 text-sm mt-1.5">
-            Accedé a todas tus herramientas de negocio
+          <p className="text-white/45 text-sm mt-2">
+            Accedé a todas tus <span className="text-gradient font-medium">herramientas de negocio</span>
           </p>
         </div>
 
-        {/* Card */}
-        <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-7 backdrop-blur-sm">
+        {/* Glass card */}
+        <div className="glass rounded-2xl p-7 animate-[scale-in_0.6s_cubic-bezier(0.16,1,0.3,1)_0.1s_both]">
           <form action={formAction} className="space-y-4">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-white/60 mb-1.5">
@@ -56,7 +64,7 @@ export default function RegisterPage() {
               <input
                 id="name" name="name" type="text"
                 autoComplete="name" required placeholder="Tu nombre"
-                className="w-full px-4 py-2.5 rounded-xl bg-white/[0.06] border border-white/[0.10] text-white text-sm placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-[#5448EE] focus:border-transparent transition"
+                className="w-full px-4 py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.10] text-white text-sm placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-[#5448EE]/70 focus:border-transparent focus:bg-white/[0.07]"
               />
             </div>
 
@@ -67,7 +75,7 @@ export default function RegisterPage() {
               <input
                 id="email" name="email" type="email"
                 autoComplete="email" required placeholder="tu@email.com"
-                className="w-full px-4 py-2.5 rounded-xl bg-white/[0.06] border border-white/[0.10] text-white text-sm placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-[#5448EE] focus:border-transparent transition"
+                className="w-full px-4 py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.10] text-white text-sm placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-[#5448EE]/70 focus:border-transparent focus:bg-white/[0.07]"
               />
             </div>
 
@@ -79,7 +87,7 @@ export default function RegisterPage() {
                 id="password" name="password" type="password"
                 autoComplete="new-password" required minLength={8}
                 placeholder="Mínimo 8 caracteres"
-                className="w-full px-4 py-2.5 rounded-xl bg-white/[0.06] border border-white/[0.10] text-white text-sm placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-[#5448EE] focus:border-transparent transition"
+                className="w-full px-4 py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.10] text-white text-sm placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-[#5448EE]/70 focus:border-transparent focus:bg-white/[0.07]"
               />
             </div>
 
@@ -94,7 +102,7 @@ export default function RegisterPage() {
 
             <button
               type="submit" disabled={pending}
-              className="w-full py-2.5 rounded-xl bg-[#5448EE] hover:bg-[#4035d4] text-white text-sm font-semibold transition-all hover:shadow-[0_4px_24px_rgba(84,72,238,0.45)] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-brand w-full py-2.5 rounded-xl text-white text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {pending ? (
                 <span className="flex items-center justify-center gap-2">
@@ -125,7 +133,7 @@ export default function RegisterPage() {
             <button
               type="button"
               onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-              className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl bg-white/[0.06] border border-white/[0.10] text-white/80 text-sm font-medium hover:bg-white/[0.10] hover:text-white transition-all"
+              className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl bg-white/[0.05] border border-white/[0.10] text-white/80 text-sm font-medium hover:bg-white/[0.10] hover:text-white hover:border-white/20"
             >
               <svg width="16" height="16" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
