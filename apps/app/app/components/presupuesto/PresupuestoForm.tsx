@@ -13,7 +13,6 @@ import {
   type PresupuestoServicioFrecuente,
   type PresupuestoTemplate,
 } from '@/types/presupuesto'
-import ClienteSelect from './ClienteSelect'
 
 interface Props {
   clientes: Cliente[]
@@ -49,11 +48,10 @@ function buildDefaultItem(servicio?: PresupuestoServicioFrecuente): FormItem {
   }
 }
 
-export default function PresupuestoForm({ clientes: initialClientes, presupuesto, template }: Props) {
+export default function PresupuestoForm({ clientes, presupuesto, template }: Props) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
-  const [clientes, setClientes] = useState(initialClientes)
   const isEdit = Boolean(presupuesto)
   const defaultFechaEmision = presupuesto?.fechaEmision ?? todayDate()
   const [form, setForm] = useState({
@@ -89,10 +87,7 @@ export default function PresupuestoForm({ clientes: initialClientes, presupuesto
   }
 
   function setItem(index: number, patch: Partial<FormItem>) {
-    setItems((prev) => prev.map((item, itemIndex) => {
-      if (itemIndex !== index) return item
-      return { ...item, ...patch }
-    }))
+    setItems((prev) => prev.map((item, i) => (i !== index ? item : { ...item, ...patch })))
   }
 
   function addItem() {
@@ -102,33 +97,23 @@ export default function PresupuestoForm({ clientes: initialClientes, presupuesto
   function addServicio(servicio: PresupuestoServicioFrecuente) {
     setItems((prev) => {
       const servicioItem = buildDefaultItem(servicio)
-      if (
-        prev.length === 1 &&
-        !prev[0].descripcion.trim() &&
-        prev[0].cantidad === 1 &&
-        prev[0].precioUnitario === 0
-      ) {
+      if (prev.length === 1 && !prev[0].descripcion.trim() && prev[0].cantidad === 1 && prev[0].precioUnitario === 0) {
         return [{ ...servicioItem, orden: 1 }]
       }
-
       return [...prev, { ...servicioItem, orden: prev.length + 1 }]
     })
   }
 
   function removeItem(index: number) {
-    setItems((prev) => prev
-      .filter((_, itemIndex) => itemIndex !== index)
-      .map((item, itemIndex) => ({ ...item, orden: itemIndex + 1 })))
+    setItems((prev) => prev.filter((_, i) => i !== index).map((item, i) => ({ ...item, orden: i + 1 })))
   }
 
   function moveItem(index: number, direction: -1 | 1) {
     const nextIndex = index + direction
     if (nextIndex < 0 || nextIndex >= items.length) return
-    const nextItems = [...items]
-    const current = nextItems[index]
-    nextItems[index] = nextItems[nextIndex]
-    nextItems[nextIndex] = current
-    setItems(nextItems.map((item, itemIndex) => ({ ...item, orden: itemIndex + 1 })))
+    const next = [...items]
+    ;[next[index], next[nextIndex]] = [next[nextIndex], next[index]]
+    setItems(next.map((item, i) => ({ ...item, orden: i + 1 })))
   }
 
   function handleSubmit() {
@@ -174,83 +159,101 @@ export default function PresupuestoForm({ clientes: initialClientes, presupuesto
         </div>
       ) : null}
 
+      {/* Encabezado */}
       <div className="rounded-2xl border border-white/[0.08] bg-white/[0.04] p-5">
         <p className="mb-4 text-[11px] font-semibold uppercase tracking-wider text-white/30">Encabezado</p>
         <div className="grid gap-4 md:grid-cols-2">
-          <div>
-            <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-white/40">Titulo</label>
+          <div className="md:col-span-2">
+            <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-white/40">Título</label>
             <input
               value={form.titulo}
               onChange={(e) => setField('titulo', e.target.value)}
-              placeholder="Ej: Presupuesto servicio tecnico mensual"
+              placeholder="Ej: Servicio técnico mensual"
               className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white placeholder:text-white/20 focus:border-[#5448EE]/60 focus:outline-none"
             />
           </div>
+
+          {/* Cliente: select simple, opcional */}
           <div>
-            <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-white/40">Cliente</label>
-            <ClienteSelect
-              clientes={clientes}
+            <div className="mb-1.5 flex items-center justify-between">
+              <label className="text-[11px] font-medium uppercase tracking-wider text-white/40">
+                Cliente <span className="text-white/20 normal-case tracking-normal font-normal">(opcional)</span>
+              </label>
+              <Link href="/dashboard/presupuestos/clientes" className="text-[11px] text-[#8880F5] hover:text-white transition-colors">
+                + Nuevo cliente
+              </Link>
+            </div>
+            <select
               value={form.clienteId}
-              onChange={(value) => setField('clienteId', value)}
-              onCreated={(cliente) => setClientes((prev) => [...prev, cliente].sort((a, b) => a.nombre.localeCompare(b.nombre)))}
-            />
+              onChange={(e) => setField('clienteId', e.target.value)}
+              className="w-full rounded-xl border border-white/[0.09] bg-[#0C0B1A] px-3 py-2.5 text-[13px] text-white focus:border-[#5448EE]/60 focus:outline-none"
+            >
+              <option value="">Sin cliente</option>
+              {clientes.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.nombre}{c.empresa ? ` · ${c.empresa}` : ''}
+                </option>
+              ))}
+            </select>
           </div>
+
+          {/* Moneda */}
           <div>
             <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-white/40">Moneda</label>
             <select
               value={form.moneda}
               onChange={(e) => setField('moneda', e.target.value)}
-              className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white focus:border-[#5448EE]/60 focus:outline-none"
+              className="w-full rounded-xl border border-white/[0.09] bg-[#0C0B1A] px-3 py-2.5 text-[13px] text-white focus:border-[#5448EE]/60 focus:outline-none"
             >
-              {MONEDAS.map((moneda) => <option key={moneda} value={moneda}>{moneda}</option>)}
+              {MONEDAS.map((m) => <option key={m} value={m}>{m}</option>)}
             </select>
           </div>
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-white/40">Fecha emision</label>
-              <input
-                type="date"
-                value={form.fechaEmision}
-                onChange={(e) => setField('fechaEmision', e.target.value)}
-                className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white focus:border-[#5448EE]/60 focus:outline-none"
-              />
-            </div>
-            <div>
-              <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-white/40">Fecha vence</label>
-              <input
-                type="date"
-                value={form.fechaVence}
-                onChange={(e) => setField('fechaVence', e.target.value)}
-                className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white focus:border-[#5448EE]/60 focus:outline-none"
-              />
-            </div>
+
+          {/* Fechas */}
+          <div>
+            <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-white/40">Fecha emisión</label>
+            <input
+              type="date"
+              value={form.fechaEmision}
+              onChange={(e) => setField('fechaEmision', e.target.value)}
+              className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white focus:border-[#5448EE]/60 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-white/40">
+              Fecha vence <span className="text-white/20 normal-case tracking-normal font-normal">(opcional)</span>
+            </label>
+            <input
+              type="date"
+              value={form.fechaVence}
+              onChange={(e) => setField('fechaVence', e.target.value)}
+              className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white focus:border-[#5448EE]/60 focus:outline-none"
+            />
           </div>
         </div>
       </div>
 
+      {/* Items */}
       <div className="rounded-2xl border border-white/[0.08] bg-white/[0.04] p-5">
         <div className="mb-4 flex items-center justify-between">
           <p className="text-[11px] font-semibold uppercase tracking-wider text-white/30">Items</p>
-          <div className="flex flex-wrap gap-2">
-            <button type="button" onClick={addItem} className="rounded-xl bg-[#5448EE] px-3 py-2 text-[12px] font-medium text-white hover:bg-[#4438DE]">
-              + Agregar item
-            </button>
-          </div>
+          <button type="button" onClick={addItem} className="rounded-xl bg-[#5448EE] px-3 py-2 text-[12px] font-medium text-white hover:bg-[#4438DE]">
+            + Agregar item
+          </button>
         </div>
 
         {template?.serviciosFrecuentes.length ? (
           <div className="mb-4 rounded-2xl border border-white/[0.06] bg-white/[0.03] p-4">
             <p className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-white/30">Servicios frecuentes</p>
             <div className="flex flex-wrap gap-2">
-              {template.serviciosFrecuentes.map((servicio) => (
+              {template.serviciosFrecuentes.map((s) => (
                 <button
-                  key={servicio.id}
+                  key={s.id}
                   type="button"
-                  onClick={() => addServicio(servicio)}
+                  onClick={() => addServicio(s)}
                   className="rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1.5 text-[12px] text-white/70 transition hover:border-[#5448EE]/40 hover:text-white"
                 >
-                  {servicio.nombre}
-                  {servicio.precioSugerido > 0 ? ` · ${formatCurrency(servicio.precioSugerido, form.moneda)}` : ''}
+                  {s.nombre}{s.precioSugerido > 0 ? ` · ${formatCurrency(s.precioSugerido, form.moneda)}` : ''}
                 </button>
               ))}
             </div>
@@ -259,11 +262,7 @@ export default function PresupuestoForm({ clientes: initialClientes, presupuesto
 
         <div className="space-y-3">
           <div className="hidden md:grid md:grid-cols-[1.8fr,0.6fr,0.8fr,0.8fr,auto] md:gap-3 md:px-1 text-[10px] font-semibold uppercase tracking-wider text-white/25">
-            <span>Descripción</span>
-            <span>Cantidad</span>
-            <span>Precio unitario</span>
-            <span>Subtotal</span>
-            <span />
+            <span>Descripción</span><span>Cantidad</span><span>Precio unitario</span><span>Subtotal</span><span />
           </div>
           {items.map((item, index) => {
             const subtotal = item.cantidad * item.precioUnitario
@@ -276,8 +275,7 @@ export default function PresupuestoForm({ clientes: initialClientes, presupuesto
                   className="rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white placeholder:text-white/20 focus:border-[#5448EE]/60 focus:outline-none"
                 />
                 <input
-                  type="number"
-                  step="any"
+                  type="number" step="any"
                   value={item.cantidad}
                   onChange={(e) => setItem(index, { cantidad: Number(e.target.value) })}
                   aria-label="Cantidad"
@@ -286,8 +284,7 @@ export default function PresupuestoForm({ clientes: initialClientes, presupuesto
                 <div className="relative">
                   <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[13px] text-white/35">$</span>
                   <input
-                    type="number"
-                    step="any"
+                    type="number" step="any"
                     value={item.precioUnitario === 0 ? '' : item.precioUnitario}
                     onChange={(e) => setItem(index, { precioUnitario: Number(e.target.value || 0) })}
                     aria-label="Precio unitario"
@@ -309,15 +306,16 @@ export default function PresupuestoForm({ clientes: initialClientes, presupuesto
         </div>
       </div>
 
+      {/* Totales + ajustes */}
       <div className="grid gap-5 lg:grid-cols-[1fr,360px]">
+        {/* Notas para el cliente + descuento/IVA */}
         <div className="rounded-2xl border border-white/[0.08] bg-white/[0.04] p-5">
-          <p className="mb-4 text-[11px] font-semibold uppercase tracking-wider text-white/30">Condiciones y notas</p>
+          <p className="mb-4 text-[11px] font-semibold uppercase tracking-wider text-white/30">Ajustes y notas</p>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-white/40">Descuento %</label>
               <input
-                type="number"
-                step="any"
+                type="number" step="any"
                 value={form.descuento}
                 onChange={(e) => setField('descuento', Number(e.target.value))}
                 className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white focus:border-[#5448EE]/60 focus:outline-none"
@@ -335,8 +333,7 @@ export default function PresupuestoForm({ clientes: initialClientes, presupuesto
                 Aplicar IVA al total
               </label>
               <input
-                type="number"
-                step="any"
+                type="number" step="any"
                 value={form.iva}
                 onChange={(e) => setField('iva', Number(e.target.value))}
                 disabled={!ivaHabilitado}
@@ -344,24 +341,21 @@ export default function PresupuestoForm({ clientes: initialClientes, presupuesto
               />
             </div>
           </div>
-          <div className="mt-4 grid gap-4">
-            <textarea
-              value={form.notas}
-              onChange={(e) => setField('notas', e.target.value)}
-              placeholder="Condiciones comerciales o notas internas..."
-              rows={3}
-              className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white placeholder:text-white/20 focus:border-[#5448EE]/60 focus:outline-none"
-            />
+          <div className="mt-4">
+            <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-white/40">
+              Notas para el cliente <span className="text-white/20 normal-case tracking-normal font-normal">(aparecen en el PDF)</span>
+            </label>
             <textarea
               value={form.notasCliente}
               onChange={(e) => setField('notasCliente', e.target.value)}
-              placeholder="Notas para el cliente (aparecen en el PDF)..."
+              placeholder="Formas de pago, aclaraciones, condiciones comerciales..."
               rows={4}
               className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white placeholder:text-white/20 focus:border-[#5448EE]/60 focus:outline-none"
             />
           </div>
         </div>
 
+        {/* Totales + acciones */}
         <div className="rounded-2xl border border-white/[0.08] bg-white/[0.04] p-5">
           <p className="mb-4 text-[11px] font-semibold uppercase tracking-wider text-white/30">Totales</p>
           <div className="space-y-3 text-[13px]">
@@ -376,7 +370,10 @@ export default function PresupuestoForm({ clientes: initialClientes, presupuesto
           </div>
 
           <div className="mt-5 flex flex-col gap-2">
-            <Link href={isEdit ? `/dashboard/presupuestos/${presupuesto!.id}` : '/dashboard/presupuestos'} className="rounded-xl border border-white/10 px-4 py-2.5 text-center text-[13px] font-medium text-white/50 hover:text-white">
+            <Link
+              href={isEdit ? `/dashboard/presupuestos/${presupuesto!.id}` : '/dashboard/presupuestos'}
+              className="rounded-xl border border-white/10 px-4 py-2.5 text-center text-[13px] font-medium text-white/50 hover:text-white"
+            >
               Cancelar
             </Link>
             <button
