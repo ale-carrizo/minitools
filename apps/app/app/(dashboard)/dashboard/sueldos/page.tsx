@@ -1,7 +1,7 @@
-import { getConfig, getRecibos } from '@/lib/actions/recibo'
-import RecibosList from '@/app/components/sueldos/RecibosList'
+import { getReciboConfig } from '@/lib/actions/sueldos'
+import SueldosClient from '@/app/components/sueldos/SueldosClient'
 
 export default async function SueldosPage() {
-  const [recibos, config] = await Promise.all([getRecibos(), getConfig()])
-  return <RecibosList recibos={recibos} config={config} />
+  const config = await getReciboConfig()
+  return <SueldosClient config={config} />
 }

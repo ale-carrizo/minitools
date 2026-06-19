@@ -55,7 +55,6 @@ model User {
   empleados    Empleado[]
   asistencias  RegistroAsistencia[]
   reciboConfig ReciboConfig?
-  recibos      Recibo[]
   garantias    GarantiaProducto[]
   reclamos     ReclamoGarantia[]
   turnoConfig  TurnoConfig?
@@ -387,36 +386,11 @@ model ReciboConfig {
   id          String   @id @default(cuid())
   userId      String   @unique
   razonSocial String
-  cuit        String
+  cuit        String?
   domicilio   String?
-  localidad   String?
-  actividad   String?
+  logoUrl     String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model Recibo {
-  id               String   @id @default(cuid())
-  userId           String
-  empleadoId       String?
-  empNombre        String
-  empCuil          String?
-  empCargo         String?
-  empFechaIngreso  String?
-  empModalidad     String
-  periodo          String
-  fechaPago        String
-  conceptos        Json
-  totalHaberes     Float    @default(0)
-  totalDeducciones Float    @default(0)
-  netoAPagar       Float    @default(0)
-  nroFactura       String?
-  estado           String   @default("borrador")
-  notas            String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

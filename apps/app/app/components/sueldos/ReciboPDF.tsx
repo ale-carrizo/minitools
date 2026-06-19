@@ -1,130 +1,193 @@
-import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
-import { formatCurrency, formatFecha, formatPeriodo, type Recibo, type ReciboConfig } from '@/types/recibo'
+import { Document, Page, StyleSheet, Text, View, Image } from '@react-pdf/renderer'
+import { formatCurrency } from '@/types/recibo'
+import type { EmpleadoRecibo, ReciboConfig } from '@/types/recibo'
 
 const styles = StyleSheet.create({
-  page: { padding: 40, fontSize: 10, color: '#111827', backgroundColor: '#ffffff' },
-  row: { flexDirection: 'row', justifyContent: 'space-between', gap: 20 },
-  title: { fontSize: 22, fontWeight: 700, color: '#5448EE' },
-  muted: { color: '#6B7280', fontSize: 10 },
-  section: { marginTop: 16 },
-  card: { borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 8, padding: 12 },
-  table: { borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 8, overflow: 'hidden' },
-  head: { backgroundColor: '#F9FAFB', borderBottomWidth: 1, borderBottomColor: '#E5E7EB', flexDirection: 'row', paddingVertical: 8 },
-  tableRow: { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: '#E5E7EB', paddingVertical: 8 },
-  colConcepto: { width: '72%', paddingHorizontal: 10 },
-  colMonto: { width: '28%', paddingHorizontal: 10, textAlign: 'right' },
-  totalGreen: { color: '#059669', fontWeight: 700 },
-  totalRed: { color: '#DC2626', fontWeight: 700 },
-  netoBox: { marginTop: 16, borderWidth: 1.5, borderColor: '#5448EE', borderRadius: 10, padding: 14, alignItems: 'center' },
-  netoLabel: { color: '#6B7280', fontSize: 10 },
-  netoValue: { color: '#5448EE', fontSize: 18, fontWeight: 700, marginTop: 4 },
-  signatures: { marginTop: 30, flexDirection: 'row', justifyContent: 'space-between', gap: 20 },
-  sign: { flex: 1, alignItems: 'center' },
-  signLine: { width: '100%', borderTopWidth: 1, borderTopColor: '#9CA3AF', borderStyle: 'dashed', marginBottom: 8 },
-  footer: { marginTop: 20, textAlign: 'center', color: '#6B7280', fontSize: 9 },
+  page:       { padding: 36, fontSize: 9, color: '#111827', backgroundColor: '#ffffff', fontFamily: 'Helvetica' },
+  // Header empresa
+  header:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16, paddingBottom: 12, borderBottomWidth: 1.5, borderBottomColor: '#5448EE' },
+  logo:       { width: 56, height: 56, objectFit: 'contain' },
+  empresaInfo:{ flex: 1, paddingLeft: 12 },
+  empresaNombre: { fontSize: 14, fontFamily: 'Helvetica-Bold', color: '#5448EE', marginBottom: 2 },
+  empresaMuted:  { color: '#6B7280', fontSize: 8.5 },
+  periodoBox: { alignItems: 'flex-end' },
+  periodoLabel: { fontSize: 8, color: '#6B7280', textTransform: 'uppercase', letterSpacing: 0.5 },
+  periodoVal:   { fontSize: 13, fontFamily: 'Helvetica-Bold', color: '#111827', marginTop: 2 },
+  fechaPago:    { fontSize: 8, color: '#6B7280', marginTop: 2 },
+  // Empleado
+  empBox:    { flexDirection: 'row', gap: 12, marginBottom: 14 },
+  empCard:   { flex: 1, borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 6, padding: 10 },
+  empLabel:  { fontSize: 7.5, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: 0.4, marginBottom: 1 },
+  empVal:    { fontSize: 9.5, fontFamily: 'Helvetica-Bold', color: '#111827' },
+  // Tabla conceptos
+  tableTitle: { fontSize: 8, fontFamily: 'Helvetica-Bold', color: '#6B7280', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 },
+  table:      { borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 6, overflow: 'hidden', marginBottom: 10 },
+  tableHead:  { flexDirection: 'row', backgroundColor: '#F9FAFB', paddingVertical: 6, paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
+  tableRow:   { flexDirection: 'row', paddingVertical: 5, paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#F3F4F6' },
+  tableRowLast: { flexDirection: 'row', paddingVertical: 5, paddingHorizontal: 10 },
+  colLabel:   { flex: 1, color: '#6B7280', fontSize: 8 },
+  colMonto:   { width: 90, textAlign: 'right', color: '#6B7280', fontSize: 8 },
+  rowLabel:   { flex: 1, color: '#111827', fontSize: 9 },
+  rowMonto:   { width: 90, textAlign: 'right', color: '#111827', fontSize: 9 },
+  // Totales
+  totalesRow: { flexDirection: 'row', gap: 10, marginBottom: 14 },
+  totalBox:   { flex: 1, borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 6, padding: 10, alignItems: 'center' },
+  totalLabel: { fontSize: 7.5, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: 0.4, marginBottom: 3 },
+  totalHaber: { fontSize: 13, fontFamily: 'Helvetica-Bold', color: '#059669' },
+  totalDedu:  { fontSize: 13, fontFamily: 'Helvetica-Bold', color: '#DC2626' },
+  // Neto
+  netoBox:    { borderWidth: 1.5, borderColor: '#5448EE', borderRadius: 8, padding: 14, alignItems: 'center', marginBottom: 18 },
+  netoLabel:  { fontSize: 8, color: '#6B7280', textTransform: 'uppercase', letterSpacing: 0.5 },
+  netoVal:    { fontSize: 20, fontFamily: 'Helvetica-Bold', color: '#5448EE', marginTop: 4 },
+  netoLetras: { fontSize: 8, color: '#9CA3AF', marginTop: 3 },
+  // Firmas
+  signaturas: { flexDirection: 'row', justifyContent: 'space-around', marginTop: 10 },
+  sigBox:     { alignItems: 'center', width: 160 },
+  sigLine:    { width: '100%', borderTopWidth: 1, borderTopColor: '#9CA3AF', borderStyle: 'dashed', marginBottom: 6 },
+  sigLabel:   { fontSize: 8, color: '#6B7280' },
+  sigNombre:  { fontSize: 9, fontFamily: 'Helvetica-Bold', color: '#111827', marginTop: 2 },
+  // Footer
+  footer:     { marginTop: 16, textAlign: 'center', color: '#D1D5DB', fontSize: 7.5, borderTopWidth: 1, borderTopColor: '#F3F4F6', paddingTop: 8 },
 })
 
-export function ReciboPDF({
-  recibo,
-  config,
-}: {
-  recibo: Recibo
-  config: ReciboConfig | null
-}) {
-  const haberes = recibo.conceptos.filter((concepto) => concepto.tipo === 'haber')
-  const deducciones = recibo.conceptos.filter((concepto) => concepto.tipo === 'deduccion')
-  const isMono = recibo.empModalidad === 'monotributista'
+function numeroALetras(n: number): string {
+  const entero = Math.floor(n)
+  const decimales = Math.round((n - entero) * 100)
+  return `Son pesos ${entero.toLocaleString('es-AR')}${decimales > 0 ? ` con ${decimales}/100` : ''}`
+}
+
+export function ReciboPDF({ empleado, config }: { empleado: EmpleadoRecibo; config: ReciboConfig | null }) {
+  const haberes    = empleado.conceptos.filter(c => c.tipo === 'haber')
+  const deducciones = empleado.conceptos.filter(c => c.tipo === 'deduccion')
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        <View style={styles.row}>
-          <View>
-            <Text style={styles.title}>{isMono ? 'RESUMEN DE PAGO' : 'RECIBO DE SUELDO'}</Text>
-            <Text style={styles.muted}>Período: {formatPeriodo(recibo.periodo)}</Text>
-            <Text style={styles.muted}>Estado: {recibo.estado === 'emitido' ? 'ORIGINAL' : 'BORRADOR'}</Text>
-            {isMono ? <Text style={styles.muted}>Documento interno. La factura es el comprobante fiscal válido.</Text> : null}
-          </View>
-          <View>
-            <Text>{config?.razonSocial ?? 'Sin configurar'}</Text>
-            <Text style={styles.muted}>CUIT: {config?.cuit ?? '—'}</Text>
-            {config?.domicilio ? <Text style={styles.muted}>{config.domicilio}</Text> : null}
-            {config?.localidad ? <Text style={styles.muted}>{config.localidad}</Text> : null}
-            {config?.actividad ? <Text style={styles.muted}>{config.actividad}</Text> : null}
-          </View>
-        </View>
-
-        <View style={[styles.section, styles.row]}>
-          <View style={[styles.card, { flex: 1 }]}>
-            <Text style={styles.muted}>EMPLEADO</Text>
-            <Text>Nombre: {recibo.empNombre}</Text>
-            <Text>CUIL: {recibo.empCuil ?? '—'}</Text>
-            <Text>Cargo: {recibo.empCargo ?? '—'}</Text>
-            <Text>Fecha ingreso: {recibo.empFechaIngreso ? formatFecha(recibo.empFechaIngreso) : '—'}</Text>
-          </View>
-          <View style={[styles.card, { flex: 1 }]}>
-            <Text style={styles.muted}>PAGO</Text>
-            <Text>Fecha de pago: {formatFecha(recibo.fechaPago)}</Text>
-            <Text>Modalidad: {recibo.empModalidad === 'dependencia' ? 'Rel. de dependencia' : 'Monotributista'}</Text>
-            {recibo.empModalidad === 'monotributista' ? <Text>N° Factura: {recibo.nroFactura ?? '—'}</Text> : null}
-          </View>
-        </View>
-
-        <View style={styles.section}>
-          <View style={styles.table}>
-            <View style={styles.head}>
-              <Text style={styles.colConcepto}>HABERES</Text>
-              <Text style={styles.colMonto}>IMPORTE</Text>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={{ flexDirection: 'row', alignItems: 'flex-start', flex: 1 }}>
+            {config?.logoUrl && (
+              <Image src={config.logoUrl} style={styles.logo} />
+            )}
+            <View style={styles.empresaInfo}>
+              <Text style={styles.empresaNombre}>{config?.razonSocial ?? 'Empresa'}</Text>
+              {config?.cuit && <Text style={styles.empresaMuted}>CUIT: {config.cuit}</Text>}
+              {config?.domicilio && <Text style={styles.empresaMuted}>{config.domicilio}</Text>}
             </View>
-            {haberes.map((concepto) => (
-              <View key={concepto.id} style={styles.tableRow}>
-                <Text style={styles.colConcepto}>{concepto.descripcion}</Text>
-                <Text style={styles.colMonto}>{formatCurrency(concepto.monto)}</Text>
+          </View>
+          <View style={styles.periodoBox}>
+            <Text style={styles.periodoLabel}>Recibo de Sueldo</Text>
+            <Text style={styles.periodoVal}>{empleado.periodo}</Text>
+            <Text style={styles.fechaPago}>Fecha de pago: {empleado.fechaPago}</Text>
+          </View>
+        </View>
+
+        {/* Datos empleado */}
+        <View style={styles.empBox}>
+          <View style={styles.empCard}>
+            <Text style={styles.empLabel}>Empleado</Text>
+            <Text style={styles.empVal}>{empleado.nombre}</Text>
+          </View>
+          <View style={styles.empCard}>
+            <Text style={styles.empLabel}>CUIL</Text>
+            <Text style={styles.empVal}>{empleado.cuil || '—'}</Text>
+          </View>
+          <View style={styles.empCard}>
+            <Text style={styles.empLabel}>Cargo</Text>
+            <Text style={styles.empVal}>{empleado.cargo || '—'}</Text>
+          </View>
+          {empleado.categoria && (
+            <View style={styles.empCard}>
+              <Text style={styles.empLabel}>Categoría</Text>
+              <Text style={styles.empVal}>{empleado.categoria}</Text>
+            </View>
+          )}
+          <View style={styles.empCard}>
+            <Text style={styles.empLabel}>Modalidad</Text>
+            <Text style={styles.empVal}>{empleado.modalidad || '—'}</Text>
+          </View>
+          {empleado.fechaIngreso && (
+            <View style={styles.empCard}>
+              <Text style={styles.empLabel}>Ingreso</Text>
+              <Text style={styles.empVal}>{empleado.fechaIngreso}</Text>
+            </View>
+          )}
+        </View>
+
+        {/* Haberes */}
+        {haberes.length > 0 && (
+          <>
+            <Text style={styles.tableTitle}>Haberes</Text>
+            <View style={styles.table}>
+              <View style={styles.tableHead}>
+                <Text style={styles.colLabel}>Concepto</Text>
+                <Text style={styles.colMonto}>Importe</Text>
               </View>
-            ))}
-            <View style={styles.tableRow}>
-              <Text style={[styles.colConcepto, styles.totalGreen]}>TOTAL HABERES</Text>
-              <Text style={[styles.colMonto, styles.totalGreen]}>{formatCurrency(recibo.totalHaberes)}</Text>
+              {haberes.map((c, i) => (
+                <View key={i} style={i === haberes.length - 1 ? styles.tableRowLast : styles.tableRow}>
+                  <Text style={styles.rowLabel}>{c.nombre}</Text>
+                  <Text style={styles.rowMonto}>{formatCurrency(c.monto)}</Text>
+                </View>
+              ))}
             </View>
-          </View>
-        </View>
+          </>
+        )}
 
-        <View style={styles.section}>
-          <View style={styles.table}>
-            <View style={styles.head}>
-              <Text style={styles.colConcepto}>DEDUCCIONES</Text>
-              <Text style={styles.colMonto}>IMPORTE</Text>
-            </View>
-            {deducciones.map((concepto) => (
-              <View key={concepto.id} style={styles.tableRow}>
-                <Text style={styles.colConcepto}>{concepto.descripcion}</Text>
-                <Text style={styles.colMonto}>{formatCurrency(concepto.monto)}</Text>
+        {/* Deducciones */}
+        {deducciones.length > 0 && (
+          <>
+            <Text style={styles.tableTitle}>Deducciones</Text>
+            <View style={styles.table}>
+              <View style={styles.tableHead}>
+                <Text style={styles.colLabel}>Concepto</Text>
+                <Text style={styles.colMonto}>Importe</Text>
               </View>
-            ))}
-            <View style={styles.tableRow}>
-              <Text style={[styles.colConcepto, styles.totalRed]}>TOTAL DEDUCCIONES</Text>
-              <Text style={[styles.colMonto, styles.totalRed]}>{formatCurrency(recibo.totalDeducciones)}</Text>
+              {deducciones.map((c, i) => (
+                <View key={i} style={i === deducciones.length - 1 ? styles.tableRowLast : styles.tableRow}>
+                  <Text style={styles.rowLabel}>{c.nombre}</Text>
+                  <Text style={styles.rowMonto}>{formatCurrency(c.monto)}</Text>
+                </View>
+              ))}
             </View>
+          </>
+        )}
+
+        {/* Totales */}
+        <View style={styles.totalesRow}>
+          <View style={styles.totalBox}>
+            <Text style={styles.totalLabel}>Total Haberes</Text>
+            <Text style={styles.totalHaber}>{formatCurrency(empleado.totalHaberes)}</Text>
+          </View>
+          <View style={styles.totalBox}>
+            <Text style={styles.totalLabel}>Total Deducciones</Text>
+            <Text style={styles.totalDedu}>{formatCurrency(empleado.totalDeducciones)}</Text>
           </View>
         </View>
 
+        {/* Neto */}
         <View style={styles.netoBox}>
-          <Text style={styles.netoLabel}>NETO A COBRAR</Text>
-          <Text style={styles.netoValue}>{formatCurrency(recibo.netoAPagar)}</Text>
+          <Text style={styles.netoLabel}>Neto a Pagar</Text>
+          <Text style={styles.netoVal}>{formatCurrency(empleado.netoAPagar)}</Text>
+          <Text style={styles.netoLetras}>{numeroALetras(empleado.netoAPagar)}</Text>
         </View>
 
-        <View style={styles.signatures}>
-          <View style={styles.sign}>
-            <View style={styles.signLine} />
-            <Text>Firma del empleador</Text>
+        {/* Firmas */}
+        <View style={styles.signaturas}>
+          <View style={styles.sigBox}>
+            <View style={styles.sigLine} />
+            <Text style={styles.sigLabel}>Firma Empleador</Text>
+            <Text style={styles.sigNombre}>{config?.razonSocial ?? ''}</Text>
           </View>
-          <View style={styles.sign}>
-            <View style={styles.signLine} />
-            <Text>Firma y aclaración del empleado</Text>
+          <View style={styles.sigBox}>
+            <View style={styles.sigLine} />
+            <Text style={styles.sigLabel}>Firma y Aclaración del Empleado</Text>
+            <Text style={styles.sigNombre}>{empleado.nombre}</Text>
           </View>
         </View>
 
-        <Text style={styles.footer}>Generado con Zimple Tools · {new Date().toLocaleDateString('es-AR')}</Text>
+        <Text style={styles.footer}>
+          Recibo generado por Zimple Tools · {new Date().toLocaleDateString('es-AR')}
+        </Text>
       </Page>
     </Document>
   )
