@@ -249,7 +249,62 @@ export default function SueldosClient({ config: initialConfig }: { config: Recib
       {/* Instrucciones formato */}
       {empleados.length === 0 && !parsing && (
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
-          <p className="text-[11px] font-semibold text-white/30 uppercase tracking-wider mb-2">Formato de la planilla</p>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-[11px] font-semibold text-white/30 uppercase tracking-wider">Formato de la planilla</p>
+            <button
+              onClick={async () => {
+                const XLSX = await import('xlsx')
+                const template = [
+                  {
+                    Nombre: 'Juan Pérez',
+                    CUIL: '20-12345678-9',
+                    Cargo: 'Empleado',
+                    'Categoría': 'A',
+                    'Fecha Ingreso': '01/03/2022',
+                    Modalidad: 'Relación de dependencia',
+                    'Período': 'Junio 2026',
+                    'Fecha Pago': '30/06/2026',
+                    'H_Básico': 350000,
+                    'H_Antigüedad': 35000,
+                    'H_Horas Extra': 0,
+                    'H_Presentismo': 17500,
+                    'D_Jubilación': 38500,
+                    'D_Obra Social': 19250,
+                    'D_Sindicato': 7000,
+                  },
+                  {
+                    Nombre: 'María García',
+                    CUIL: '27-23456789-4',
+                    Cargo: 'Supervisora',
+                    'Categoría': 'B',
+                    'Fecha Ingreso': '15/01/2020',
+                    Modalidad: 'Relación de dependencia',
+                    'Período': 'Junio 2026',
+                    'Fecha Pago': '30/06/2026',
+                    'H_Básico': 480000,
+                    'H_Antigüedad': 96000,
+                    'H_Horas Extra': 24000,
+                    'H_Presentismo': 24000,
+                    'D_Jubilación': 57600,
+                    'D_Obra Social': 28800,
+                    'D_Sindicato': 9600,
+                  },
+                ]
+                const ws = XLSX.utils.json_to_sheet(template)
+                const wb = XLSX.utils.book_new()
+                XLSX.utils.book_append_sheet(wb, ws, 'Sueldos')
+                XLSX.writeFile(wb, 'plantilla_recibos_zimple.xlsx')
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#5448EE]/10 border border-[#5448EE]/20 text-[#8880F5] text-[10px] font-semibold hover:bg-[#5448EE]/20 transition-colors"
+            >
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Descargar plantilla
+            </button>
+          </div>
           <p className="text-[11px] text-white/40 mb-2">Cada fila = un empleado. Columnas obligatorias:</p>
           <div className="flex flex-wrap gap-1.5 mb-3">
             {['Nombre', 'CUIL', 'Cargo', 'Modalidad', 'Período', 'Fecha Pago'].map(c => (
