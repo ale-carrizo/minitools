@@ -409,7 +409,7 @@ export async function marcarVencidosYGenerarCuotas(userId: string): Promise<{ ma
       where: { socioId: s.id, estado: { in: ['pendiente', 'pospuesto'] } },
     })
     if (pendientesCount < 2) {
-      await generarCuotas(userId, s, new Date(), 3)
+      await generarCuotas(userId, { ...s, frecuencia: s.frecuencia as CobroFrecuencia }, new Date(), 3)
     }
   }
 
