@@ -65,6 +65,8 @@ model User {
   socios       Socio[]
   cobros       CobroProgramado[]
   sugerencias  Sugerencia[]
+  tableros     Tablero[]
+  tareas       Tarea[]
 }
 
 model Account {
@@ -583,6 +585,54 @@ model CobroProgramado {
 
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   socio Socio @relation(fields: [socioId], references: [id], onDelete: Cascade)
+}
+
+// ── Tareas (Kanban) ───────────────────────────────────────────────────────────
+
+model Tablero {
+  id          String   @id @default(cuid())
+  userId      String
+  nombre      String
+  descripcion String?
+  color       String   @default("#5448EE")
+  columnas    Columna[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Columna {
+  id         String   @id @default(cuid())
+  tableroId  String
+  nombre     String
+  orden      Int
+  color      String   @default("#5448EE")
+  limiteWip  Int?
+  tareas     Tarea[]
+  createdAt  DateTime @default(now())
+
+  tablero Tablero @relation(fields: [tableroId], references: [id], onDelete: Cascade)
+}
+
+model Tarea {
+  id          String   @id @default(cuid())
+  columnaId   String
+  userId      String
+  titulo      String
+  descripcion String?
+  prioridad   String   @default("media")   // baja | media | alta | urgente
+  etiquetas   String   @default("[]")      // JSON [{texto, color}]
+  checklist   String   @default("[]")      // JSON [{texto, hecho}]
+  fechaVenc   String?
+  portada     String?
+  orden       Int      @default(0)
+  archivada   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  columna Columna @relation(fields: [columnaId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // ── Sugerencias de mejoras ────────────────────────────────────────────────────
