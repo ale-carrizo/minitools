@@ -1,4 +1,5 @@
 import { auth, signOut } from "@/auth";
+import SugerenciasBubble from "@/app/components/SugerenciasBubble";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 
@@ -139,6 +140,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           {children}
         </div>
       </main>
+      <SugerenciasBubble />
     </div>
   );
 }

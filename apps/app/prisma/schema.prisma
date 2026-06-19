@@ -64,6 +64,7 @@ model User {
   liquidacionItems LiquidacionItem[]
   socios       Socio[]
   cobros       CobroProgramado[]
+  sugerencias  Sugerencia[]
 }
 
 model Account {
@@ -582,4 +583,18 @@ model CobroProgramado {
 
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   socio Socio @relation(fields: [socioId], references: [id], onDelete: Cascade)
+}
+
+// ── Sugerencias de mejoras ────────────────────────────────────────────────────
+
+model Sugerencia {
+  id        String   @id @default(cuid())
+  userId    String
+  texto     String
+  categoria String   @default("mejora")  // mejora | nueva_funcion | error | otro
+  tool      String?
+  estado    String   @default("nueva")   // nueva | vista | en_progreso | descartada
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
