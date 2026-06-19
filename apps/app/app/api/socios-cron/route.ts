@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { marcarVencidosYGenerarCuotas } from '@/lib/actions/socios'
-import prisma from '@/lib/prisma'
+import { prisma } from '@/lib/prisma'
 
 export async function GET(req: NextRequest) {
   const secret = req.nextUrl.searchParams.get('secret')
