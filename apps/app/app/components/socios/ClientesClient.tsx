@@ -149,7 +149,7 @@ export default function ClientesClient({ socios }: { socios: Socio[] }) {
           selected.proximoCobro ? ['Próximo cobro', fmtFecha(selected.proximoCobro.fechaVencimiento)] : null,
           selected.deudaTotal > 0 ? ['Deuda acumulada', fmt(selected.deudaTotal)] : null,
           selected.notas ? ['Notas', selected.notas] : null,
-        ].filter(Boolean).map(([label, val]) => (
+        ].filter((r): r is [string, string] => r !== null).map(([label, val]) => (
           <div key={String(label)} className="flex items-center justify-between py-2 border-b border-white/[0.05] last:border-0">
             <span className="text-[11px] text-white/35">{label}</span>
             <span className={`text-[12px] font-medium ${label === 'Deuda acumulada' ? 'text-red-400' : 'text-white'}`}>{val}</span>
