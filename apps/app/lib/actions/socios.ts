@@ -197,7 +197,7 @@ export async function createSocio(data: {
   })
 
   if (data.frecuencia !== 'unico') {
-    await generarCuotas(userId, socio, new Date(), 3)
+    await generarCuotas(userId, { ...socio, frecuencia: socio.frecuencia as CobroFrecuencia }, new Date(), 3)
   }
 
   revalidatePath('/dashboard/socios')
