@@ -35,10 +35,11 @@ model User {
   image         String?
   password      String?
   role          Role      @default(USER)
-  suspended     Boolean   @default(false)
-  suspendedAt   DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  suspended            Boolean   @default(false)
+  suspendedAt          DateTime?
+  onboardingCompleted  Boolean   @default(false)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 
   accounts     Account[]
   sessions     Session[]
@@ -117,9 +118,12 @@ model Subscription {
   trialEndsAt          DateTime?
   priceMonthly         Float
   currency             String             @default("ARS")
-  mpPreapprovalId      String?            // Mercado Pago preapproval ID
-  mpPayerEmail         String?            // Payer email en MP
-  mpPlanId             String?            // MP preapproval_plan ID usado
+  mpPreapprovalId      String?
+  mpPayerEmail         String?
+  mpPlanId             String?
+  appsActivas          String             @default("[]")  // JSON: string[]
+  paymentMethod        String?            // "mercadopago" | "tarjeta" | "test"
+  testMode             Boolean            @default(false)
   createdAt            DateTime           @default(now())
   updatedAt            DateTime           @updatedAt
 

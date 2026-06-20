@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { registerUser } from "./actions";
@@ -9,11 +9,20 @@ import ParticleField from "../../components/ParticleField";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const emailRef    = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
   const [state, formAction, pending] = useActionState(registerUser, {});
 
   useEffect(() => {
-    if (state.success) router.push("/login?registered=1");
-  }, [state.success, router]);
+    if (state.success) {
+      signIn("credentials", {
+        email:       emailRef.current?.value,
+        password:    passwordRef.current?.value,
+        callbackUrl: "/onboarding",
+        redirect:    true,
+      });
+    }
+  }, [state.success]);
 
   return (
     <div className="min-h-screen bg-[#0C0B1A] flex items-center justify-center px-4 relative overflow-hidden grain">
@@ -35,9 +44,9 @@ export default function RegisterPage() {
       />
 
       <div className="w-full max-w-sm relative z-10">
-        {/* Logo */}
+        {/* Logo + step indicator */}
         <div className="text-center mb-8 animate-[fade-up_0.7s_cubic-bezier(0.16,1,0.3,1)_both]">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-[14px] mb-5 animate-[float_7s_ease-in-out_infinite] shadow-[0_8px_30px_-6px_rgba(84,72,238,0.7)]"
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-[14px] mb-4 animate-[float_7s_ease-in-out_infinite] shadow-[0_8px_30px_-6px_rgba(84,72,238,0.7)]"
             style={{ background: "linear-gradient(135deg, #6E63FF, #5448EE 55%, #4035d4)" }}>
             <svg width="20" height="20" viewBox="0 0 14 14" fill="none">
               <rect x="1.5" y="1.5" width="4.5" height="4.5" rx="1.2" fill="white" />
@@ -46,11 +55,23 @@ export default function RegisterPage() {
               <rect x="8" y="8" width="4.5" height="4.5" rx="1.2" fill="white" />
             </svg>
           </div>
+          {/* Step indicator */}
+          <div className="flex items-center justify-center gap-1.5 mb-4">
+            {['Registro','Tus apps','Pago','Confirmación'].map((label, i) => (
+              <div key={i} className="flex items-center gap-1.5">
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                  i === 0 ? 'bg-[#5448EE]/20 border-2 border-[#5448EE] text-[#8880F5]' : 'bg-white/[0.05] border border-white/[0.10] text-white/20'
+                }`}>{i + 1}</div>
+                {i < 3 && <div className="w-5 h-px bg-white/[0.08]" />}
+              </div>
+            ))}
+          </div>
+          <p className="text-[10px] text-white/30 mb-3">PASO 1 DE 4</p>
           <h1 className="text-[26px] font-semibold text-white tracking-[-0.035em]">
-            Creá tu cuenta gratis
+            Creá tu cuenta
           </h1>
           <p className="text-white/45 text-sm mt-2">
-            Accedé a todas tus <span className="text-gradient font-medium">herramientas de negocio</span>
+            Empezá gratis — <span className="text-gradient font-medium">7 días sin cargo</span>
           </p>
         </div>
 
@@ -73,6 +94,7 @@ export default function RegisterPage() {
                 Email
               </label>
               <input
+                ref={emailRef}
                 id="email" name="email" type="email"
                 autoComplete="email" required placeholder="tu@email.com"
                 className="w-full px-4 py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.10] text-white text-sm placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-[#5448EE]/70 focus:border-transparent focus:bg-white/[0.07]"
@@ -84,6 +106,7 @@ export default function RegisterPage() {
                 Contraseña
               </label>
               <input
+                ref={passwordRef}
                 id="password" name="password" type="password"
                 autoComplete="new-password" required minLength={8}
                 placeholder="Mínimo 8 caracteres"

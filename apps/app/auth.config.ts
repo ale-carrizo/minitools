@@ -51,6 +51,12 @@ export const authConfig = {
         return true;
       }
 
+      // Onboarding: must be logged in
+      if (pathname.startsWith("/onboarding")) {
+        if (!isLoggedIn) return Response.redirect(new URL("/login", nextUrl));
+        return true;
+      }
+
       // Auth routes: redirect to dashboard if already logged in
       if (pathname.startsWith("/login") || pathname.startsWith("/register")) {
         if (isLoggedIn) return Response.redirect(new URL("/dashboard", nextUrl));
