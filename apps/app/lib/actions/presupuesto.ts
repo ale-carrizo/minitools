@@ -641,7 +641,7 @@ export async function duplicarPresupuesto(id: string): Promise<Presupuesto> {
 
   await recalcUserStorage(userId)
   revalidatePath('/dashboard/presupuestos')
-  redirect(`/dashboard/presupuestos/${duplicado.id}`)
+  redirect(`/dashboard/presupuestos/${duplicado.id}/editar`)
 }
 
 export async function eliminarPresupuesto(id: string): Promise<void> {
