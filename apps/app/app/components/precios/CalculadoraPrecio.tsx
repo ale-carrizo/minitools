@@ -73,9 +73,38 @@ export default function CalculadoraPrecio({
     return () => window.clearTimeout(timeout)
   }, [guardado])
 
+  const [exporting, setExporting] = useState(false)
+
   const costoPct = result.precioFinal > 0 ? (costo / result.precioFinal) * 100 : 0
   const gananciaPct = result.precioFinal > 0 ? (result.ganancia / result.precioFinal) * 100 : 0
   const ivaPct = result.precioFinal > 0 ? (result.ivaMonto / result.precioFinal) * 100 : 0
+
+  async function exportarExcel() {
+    setExporting(true)
+    try {
+      const XLSX = await import('xlsx')
+      const data = [{
+        Producto: etiqueta.trim() || 'Sin nombre',
+        Costo: costo,
+        Margen: margen,
+        IVA: ivaActivo,
+        Modo: modo === 'desde_costo' ? 'Desde el costo' : 'Desde el precio',
+        'Precio sin IVA': result.precioSinIva,
+        'IVA monto': result.ivaMonto,
+        'Precio final': result.precioFinal,
+        Ganancia: result.ganancia,
+        'Margen real %': result.margenReal,
+        'Markup %': result.markupReal,
+        'Costo s/precio %': result.costoSobre,
+      }]
+      const ws = XLSX.utils.json_to_sheet(data)
+      const wb = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(wb, ws, 'Precio')
+      XLSX.writeFile(wb, `precio_${etiqueta.trim() || 'calculado'}.xlsx`)
+    } catch {} finally {
+      setExporting(false)
+    }
+  }
 
   return (
     <div className="grid gap-6 xl:grid-cols-[420px,1fr]">
@@ -258,6 +287,20 @@ export default function CalculadoraPrecio({
                 ⚠️ Margen muy bajo (menos del 10%)
               </div>
             ) : null}
+
+            <button
+              type="button"
+              onClick={exportarExcel}
+              disabled={exporting}
+              className="flex items-center justify-center gap-2 w-full rounded-xl border border-white/10 px-4 py-2.5 text-[13px] font-medium text-white/60 hover:text-white hover:border-white/20 transition-colors disabled:opacity-50"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              {exporting ? 'Exportando...' : 'Exportar Excel'}
+            </button>
           </div>
         )}
       </div>
