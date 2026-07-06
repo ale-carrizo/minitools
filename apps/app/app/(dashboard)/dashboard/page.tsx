@@ -83,8 +83,8 @@ export default async function DashboardPage() {
               style={{ "--i": idx + 2 } as React.CSSProperties}
               className={`group relative overflow-hidden border rounded-2xl p-5 h-full flex flex-col animate-[fade-up_0.5s_cubic-bezier(0.16,1,0.3,1)_both] [animation-delay:calc(var(--i)*45ms)] ${
                 isAvailable
-                  ? "card-glow bg-[#1A1830] border-white/[0.12] cursor-pointer"
-                  : "bg-[#141322] border-white/[0.07]"
+                  ? "card-glow bg-[#1A1830] light:bg-[#fff] border-white/[0.12] cursor-pointer"
+                  : "bg-[#141322] light:bg-[#F1F1F6] border-white/[0.07]"
               }`}>
               {isAvailable && (
                 <div className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"
@@ -93,7 +93,7 @@ export default async function DashboardPage() {
               <div className="relative flex items-start justify-between mb-4">
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
                   isAvailable
-                    ? "icon-pop text-white shadow-[0_4px_14px_-4px_rgba(84,72,238,0.6)]"
+                    ? "icon-pop text-[#fff] shadow-[0_4px_14px_-4px_rgba(84,72,238,0.6)]"
                     : "bg-white/[0.05] text-white/25"
                 }`}
                   style={isAvailable ? { background: "linear-gradient(135deg, #6E63FF, #5448EE 60%, #4035d4)" } : undefined}>

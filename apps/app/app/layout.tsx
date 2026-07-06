@@ -19,6 +19,14 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="es" className={`${inter.variable} h-full`}>
+      <head>
+        {/* Aplica el tema guardado antes del primer paint, para evitar flash */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(localStorage.getItem('zimple-theme')==='light'){document.documentElement.setAttribute('data-theme','light')}}catch(e){}`,
+          }}
+        />
+      </head>
       <body className="min-h-full">
         <AppSessionProvider>{children}</AppSessionProvider>
       </body>

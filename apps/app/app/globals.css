@@ -1,5 +1,18 @@
 @import "tailwindcss";
 
+/* Tema claro: activado poniendo data-theme="light" en <html> (ver ThemeProvider) */
+@custom-variant light (&:where([data-theme="light"], [data-theme="light"] *));
+
+/*
+ * Todas las utilidades "white" (text-white, bg-white/[x], border-white/[x], etc.)
+ * usan var(--color-white) por debajo. Al invertir este único token para el
+ * atributo [data-theme="light"], se invierte automáticamente el texto y los
+ * "washes" translúcidos de fondo/borde en TODA la app sin tocar cada archivo.
+ */
+[data-theme="light"] {
+  --color-white: #17162A;
+}
+
 @theme inline {
   --color-brand:        #326FEE;
   --color-brand-light:  #00BDE6;
@@ -160,11 +173,13 @@ button, a, input, select, textarea,
   pointer-events: none;
 }
 
-/* Brand gradient button with glow */
+/* Brand gradient button with glow — el texto siempre blanco literal (no usa el
+   token --color-white), porque el fondo es un color sólido, no la superficie de página */
 .btn-brand {
   background: linear-gradient(135deg, #642AEB 0%, #326FEE 55%, #00BDE6 100%);
   background-size: 180% 180%;
   box-shadow: 0 6px 22px -6px rgba(50,111,238,0.55), inset 0 1px 0 rgba(255,255,255,0.18);
+  color: #ffffff !important;
 }
 .btn-brand:hover {
   background-position: 100% 50%;
@@ -205,3 +220,29 @@ button, a, input, select, textarea,
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── Tema claro — overrides puntuales ──────────────────────── */
+/* Estas clases usan rgba(255,255,255,...) literal (no el token --color-white),
+   así que necesitan su propio override para el modo claro. */
+
+[data-theme="light"] .glass {
+  background: linear-gradient(160deg, rgba(20,18,40,0.035), rgba(20,18,40,0.015));
+}
+[data-theme="light"] .glass::before {
+  background: linear-gradient(160deg, rgba(20,18,40,0.10), rgba(20,18,40,0.02) 40%, rgba(50,111,238,0.20));
+}
+
+[data-theme="light"] .text-gradient {
+  background: linear-gradient(110deg, #17162A 0%, #642AEB 30%, #326FEE 55%, #00BDE6 75%, #17162A 95%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+[data-theme="light"] .shimmer {
+  background: linear-gradient(100deg, transparent 20%, rgba(20,18,40,0.06) 50%, transparent 80%);
+  background-size: 200% 100%;
+}
+
+[data-theme="light"] .grain::after { opacity: 0.015; }

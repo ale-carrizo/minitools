@@ -1,6 +1,7 @@
 import { auth, signOut } from "@/auth";
 import SugerenciasBubble from "@/app/components/SugerenciasBubble";
 import { ZimpleIcon } from "@/app/components/ZimpleLogo";
+import ThemeToggle from "@/app/components/ThemeToggle";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 
@@ -27,9 +28,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
   if (!session?.user) redirect("/login");
 
   return (
-    <div className="flex h-screen bg-[#0C0B1A] overflow-hidden">
+    <div className="flex h-screen bg-[#0C0B1A] light:bg-[#F7F7FB] overflow-hidden">
       {/* Sidebar — same dark as landing navbar */}
-      <aside className="w-58 flex-shrink-0 flex flex-col border-r border-white/[0.06] overflow-y-auto no-scrollbar" style={{ width: "232px" }}>
+      <aside className="w-58 flex-shrink-0 flex flex-col border-r border-white/[0.06] overflow-y-auto no-scrollbar light:bg-[#fff]" style={{ width: "232px" }}>
 
         {/* Brand */}
         <div className="flex items-center gap-2.5 px-5 h-[52px] border-b border-white/[0.06] flex-shrink-0">
@@ -93,7 +94,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             </Link>
           )}
           <div className="flex items-center gap-2.5 px-3 py-2">
-            <div className="w-6 h-6 rounded-full bg-[#5448EE] flex items-center justify-center text-white text-[10px] font-semibold flex-shrink-0">
+            <div className="w-6 h-6 rounded-full bg-[#5448EE] flex items-center justify-center text-[#fff] text-[10px] font-semibold flex-shrink-0">
               {session.user.name?.charAt(0)?.toUpperCase() ?? "U"}
             </div>
             <div className="flex-1 min-w-0">
@@ -112,13 +113,14 @@ export default async function DashboardLayout({ children }: { children: React.Re
               Cerrar sesión
             </button>
           </form>
+          <ThemeToggle />
         </div>
       </aside>
 
       {/* Main content area — slightly lighter than sidebar */}
-      <main className="relative flex-1 overflow-y-auto grain" style={{ background: "#111028" }}>
+      <main className="relative flex-1 overflow-y-auto grain bg-[#111028] light:bg-[#FBFBFF]">
         {/* Ambient aurora glow fixed behind content */}
-        <div className="pointer-events-none fixed inset-0 z-0 opacity-60">
+        <div className="pointer-events-none fixed inset-0 z-0 opacity-60 light:opacity-30">
           <div className="absolute -top-[10%] right-[2%] h-[420px] w-[520px] rounded-full"
             style={{ background: "radial-gradient(circle, rgba(84,72,238,0.18), transparent 70%)", filter: "blur(20px)" }} />
           <div className="absolute bottom-[4%] left-[6%] h-[360px] w-[460px] rounded-full"
