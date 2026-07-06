@@ -4,7 +4,9 @@ import { useRouter } from 'next/navigation'
 import { useMemo } from 'react'
 import {
   DIAS_SEMANA,
+  ESTADO_CONFIG,
   hhmm2min,
+  nombreEmpleado,
   offsetFecha,
   parseLocalDate,
   type Turno,
@@ -88,9 +90,6 @@ export default function AgendaSemana({
             return `${m0} ${d0.getDate()} — ${m6} ${d6.getDate()}, ${d6.getFullYear()}`
           })()}
         </p>
-        <span className="hidden sm:inline-flex items-center rounded-lg bg-white/[0.05] border border-white/[0.08] px-2 py-1 text-[11px] text-white/40">
-          {config.horaInicio} - {config.horaFin} hs
-        </span>
         <div className="flex gap-1">
           <a href={`/dashboard/turnos?fecha=${semana[0]}&vista=dia`} className="px-3 py-1.5 text-[12px] font-medium rounded-lg text-white/40 hover:text-white/70 transition-colors">
             Día
@@ -187,13 +186,15 @@ export default function AgendaSemana({
                     const top = ((inicioMin - horaInicio) / MIN_POR_HORA) * PX_POR_HORA
                     const height = Math.max(((finMin - horaInicio) / MIN_POR_HORA) * PX_POR_HORA - top, 18)
                     const color = turno.servicio?.color ?? '#5448EE'
+                    const estaCompletado = turno.estado === 'completado'
+                    const estadoCfg = ESTADO_CONFIG[turno.estado]
 
                     return (
                       <button
                         key={turno.id}
                         type="button"
                         onClick={(e) => { e.stopPropagation(); router.push(`/dashboard/turnos/${turno.id}`) }}
-                        className="absolute left-0.5 right-0.5 rounded-md overflow-hidden px-1 py-0.5 hover:brightness-110 transition-all z-10"
+                        className={`absolute left-0.5 right-0.5 rounded-md overflow-hidden px-1 py-0.5 hover:brightness-110 transition-all z-10 ${estaCompletado ? 'opacity-60' : ''}`}
                         style={{
                           top: `${top}px`,
                           minHeight: `${height}px`,
@@ -203,8 +204,14 @@ export default function AgendaSemana({
                       >
                         {height > 22 ? (
                           <>
-                            <p className="text-white text-[10px] font-medium truncate leading-tight">{turno.horaInicio}</p>
+                            <p className="text-white text-[10px] font-medium truncate leading-tight flex items-center gap-1">
+                              <span className={estadoCfg.color}>{estadoCfg.icon}</span>
+                              {turno.horaInicio}
+                            </p>
                             <p className="text-white/80 text-[10px] truncate leading-tight">{turno.clienteNombre}</p>
+                            {height > 38 && (
+                              <p className="text-white/50 text-[9px] truncate leading-tight">{nombreEmpleado(turno.empleado)}</p>
+                            )}
                           </>
                         ) : (
                           <p className="text-white text-[10px] font-medium truncate leading-tight">{turno.clienteNombre}</p>

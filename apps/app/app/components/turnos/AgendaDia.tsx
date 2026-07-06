@@ -5,9 +5,12 @@ import { useRouter } from 'next/navigation'
 import { useMemo } from 'react'
 import {
   DIAS_SEMANA,
+  ESTADO_CONFIG,
   formatCurrency,
   formatFechaBonita,
+  generarLinkWhatsApp,
   hhmm2min,
+  nombreEmpleado,
   offsetFecha,
   type Turno,
   type TurnoConfig,
@@ -70,9 +73,6 @@ export default function AgendaDia({
           </button>
         </div>
         <p className="text-white text-[16px] font-semibold">{formatFechaBonita(fecha)}</p>
-        <span className="hidden sm:inline-flex items-center rounded-lg bg-white/[0.05] border border-white/[0.08] px-2 py-1 text-[11px] text-white/40">
-          {config.horaInicio} - {config.horaFin} hs
-        </span>
         <div className="flex gap-1">
           <Link
             href={`/dashboard/turnos?fecha=${fecha}&vista=dia`}
@@ -161,12 +161,14 @@ export default function AgendaDia({
                 const topPx = minToPx(inicioMin)
                 const heightPx = Math.max(minToPx(finMin) - topPx, 20)
                 const color = turno.servicio?.color ?? '#5448EE'
+                const estaCompletado = turno.estado === 'completado'
+                const estadoCfg = ESTADO_CONFIG[turno.estado]
 
                 return (
                   <Link
                     key={turno.id}
                     href={`/dashboard/turnos/${turno.id}`}
-                    className="absolute left-1 right-1 rounded-lg overflow-hidden px-2 py-1 hover:brightness-110 transition-all z-10"
+                    className={`absolute left-1 right-1 rounded-lg overflow-hidden px-2 py-1 hover:brightness-110 transition-all z-10 ${estaCompletado ? 'opacity-60' : ''}`}
                     style={{
                       top: `${topPx}px`,
                       minHeight: `${heightPx}px`,
@@ -174,12 +176,19 @@ export default function AgendaDia({
                       borderLeft: `3px solid ${color}`,
                     }}
                   >
-                    <p className="text-white text-[11px] font-medium truncate leading-tight">
+                    <p className="text-white text-[11px] font-medium truncate leading-tight flex items-center gap-1.5">
+                      <span className={`text-[10px] ${estadoCfg.color}`}>{estadoCfg.icon}</span>
                       {turno.horaInicio} · {turno.clienteNombre}
                     </p>
                     {heightPx > 32 && (
                       <p className="text-white/70 text-[10px] truncate leading-tight">
-                        {turno.servicio?.nombre ?? 'Turno'} · {formatCurrency(turno.precio)}
+                        {turno.servicio?.nombre ?? 'Turno'} · {nombreEmpleado(turno.empleado)}
+                      </p>
+                    )}
+                    {heightPx > 48 && turno.precio > 0 && (
+                      <p className="text-white/50 text-[10px] truncate leading-tight">
+                        {formatCurrency(turno.precio)}
+                        {turno.senia > 0 ? ` · seña ${turno.seniaPagada ? 'pagada' : 'pendiente'}` : ''}
                       </p>
                     )}
                   </Link>
@@ -194,19 +203,10 @@ export default function AgendaDia({
       {turnos.length > 0 && (
         <div className="space-y-1.5">
           {turnos.map((turno) => {
-            const linkWhatsApp = (() => {
-              const tel = turno.clienteTel?.replace(/\D/g, '')
-              if (!tel) return ''
-              const servicio = turno.servicio?.nombre ? ` (${turno.servicio.nombre})` : ''
-              const precio = turno.precio > 0 ? ` - ${formatCurrency(turno.precio)}` : ''
-              const msg = encodeURIComponent(
-                `Hola ${turno.clienteNombre}! 👋 Te recordamos tu turno${servicio} el ${formatFechaBonita(turno.fecha)} a las ${turno.horaInicio}hs${precio}. Cualquier consulta avisanos. Gracias!`,
-              )
-              return `https://wa.me/${tel}?text=${msg}`
-            })()
+            const linkWhatsApp = generarLinkWhatsApp(turno)
 
             return (
-              <div key={turno.id} className="flex items-center gap-3 bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 hover:bg-white/[0.05] transition-colors">
+              <div key={turno.id} className={`flex items-center gap-3 bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 hover:bg-white/[0.05] transition-colors ${turno.estado === 'completado' ? 'opacity-60' : ''}`}>
                 <div
                   className="w-2 h-2 rounded-full flex-shrink-0"
                   style={{ backgroundColor: turno.servicio?.color ?? '#5448EE' }}
@@ -215,7 +215,7 @@ export default function AgendaDia({
                 <Link href={`/dashboard/turnos/${turno.id}`} className="text-white text-[13px] font-medium hover:text-[#8880F5] transition-colors truncate">
                   {turno.clienteNombre}
                 </Link>
-                <span className="text-white/30 text-[12px] truncate ml-auto hidden sm:block">{turno.servicio?.nombre ?? ''}</span>
+                <span className="text-white/30 text-[12px] truncate ml-auto hidden sm:block">{turno.servicio?.nombre ?? ''} · {nombreEmpleado(turno.empleado)}</span>
                 {linkWhatsApp && (
                   <a
                     href={linkWhatsApp}

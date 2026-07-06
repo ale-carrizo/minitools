@@ -176,6 +176,15 @@ export async function getServicios(): Promise<TurnoServicio[]> {
   return servicios.map(toServicio)
 }
 
+export async function getEmpleados(): Promise<EmpleadoTurno[]> {
+  const userId = await getUserId()
+  const empleados = await db.empleado.findMany({
+    where: { userId, activo: true },
+    orderBy: [{ nombre: 'asc' }, { apellido: 'asc' }],
+  })
+  return empleados.map(toEmpleado)
+}
+
 export async function crearServicio(data: {
   nombre: string
   duracion: number
@@ -262,6 +271,7 @@ export async function getTurno(id: string): Promise<Turno | null> {
 
 export async function crearTurno(data: {
   servicioId?: string
+  empleadoId?: string
   clienteNombre: string
   clienteTel?: string
   clienteEmail?: string
@@ -269,16 +279,19 @@ export async function crearTurno(data: {
   horaInicio: string
   duracion: number
   precio?: number
+  senia?: number
   notas?: string
 }): Promise<void> {
   const userId = await getUserId()
+  const empleadoId = data.empleadoId?.trim() || null
   const horaFin = sumarMinutos(data.horaInicio, data.duracion)
-  await verificarSuperposicion(userId, data.fecha, { horaInicio: data.horaInicio, horaFin })
+  await verificarSuperposicion(userId, data.fecha, { horaInicio: data.horaInicio, horaFin, empleadoId })
 
   await db.turno.create({
     data: {
       userId,
       servicioId: data.servicioId?.trim() || null,
+      empleadoId,
       clienteNombre: data.clienteNombre.trim(),
       clienteTel: maybeNull(data.clienteTel),
       clienteEmail: maybeNull(data.clienteEmail),
@@ -287,6 +300,7 @@ export async function crearTurno(data: {
       horaFin,
       duracion: data.duracion,
       precio: data.precio ?? 0,
+      senia: data.senia ?? 0,
       notas: maybeNull(data.notas),
       estado: 'pendiente',
     },
@@ -298,6 +312,7 @@ export async function crearTurno(data: {
 
 export async function editarTurno(id: string, data: Partial<{
   servicioId?: string
+  empleadoId?: string
   clienteNombre: string
   clienteTel?: string
   clienteEmail?: string
@@ -305,25 +320,34 @@ export async function editarTurno(id: string, data: Partial<{
   horaInicio: string
   duracion: number
   precio?: number
+  senia?: number
+  seniaPagada?: boolean
   notas?: string
 }>): Promise<void> {
   const userId = await getUserId()
-  const actual = await db.turno.findFirst({ where: { id, userId }, include: { servicio: true } })
+  const actual = await db.turno.findFirst({ where: { id, userId }, include: { servicio: true, empleado: true } })
   if (!actual) throw new Error('Turno no encontrado')
 
   const fecha = data.fecha ?? actual.fecha
   const horaInicio = data.horaInicio ?? actual.horaInicio
   const duracion = data.duracion ?? actual.duracion
+  const empleadoId = data.empleadoId === undefined ? actual.empleadoId : (data.empleadoId.trim() || null)
   const horaFin = sumarMinutos(horaInicio, duracion)
 
-  if (fecha !== actual.fecha || horaInicio !== actual.horaInicio || duracion !== actual.duracion) {
-    await verificarSuperposicion(userId, fecha, { horaInicio, horaFin }, id)
+  if (
+    fecha !== actual.fecha ||
+    horaInicio !== actual.horaInicio ||
+    duracion !== actual.duracion ||
+    empleadoId !== actual.empleadoId
+  ) {
+    await verificarSuperposicion(userId, fecha, { horaInicio, horaFin, empleadoId }, id)
   }
 
   await db.turno.update({
     where: { id },
     data: {
       servicioId: data.servicioId === undefined ? undefined : (data.servicioId.trim() || null),
+      empleadoId,
       clienteNombre: data.clienteNombre?.trim() ?? undefined,
       clienteTel: data.clienteTel === undefined ? undefined : maybeNull(data.clienteTel),
       clienteEmail: data.clienteEmail === undefined ? undefined : maybeNull(data.clienteEmail),
@@ -332,6 +356,8 @@ export async function editarTurno(id: string, data: Partial<{
       horaFin,
       duracion,
       precio: data.precio ?? undefined,
+      senia: data.senia === undefined ? undefined : data.senia,
+      seniaPagada: data.seniaPagada === undefined ? undefined : data.seniaPagada,
       notas: data.notas === undefined ? undefined : maybeNull(data.notas),
     },
   })
@@ -341,11 +367,17 @@ export async function editarTurno(id: string, data: Partial<{
   redirect(`/dashboard/turnos/${id}`)
 }
 
-export async function cambiarEstado(id: string, estado: TurnoEstado): Promise<void> {
+export async function cambiarEstado(id: string, estado: TurnoEstado, proximoRecordatorio?: string): Promise<void> {
   const userId = await getUserId()
   const actual = await db.turno.findFirst({ where: { id, userId } })
   if (!actual) throw new Error('Turno no encontrado')
-  await db.turno.update({ where: { id }, data: { estado } })
+
+  const updateData: any = { estado }
+  if (estado === 'completado' && proximoRecordatorio?.trim()) {
+    updateData.proximoRecordatorio = proximoRecordatorio.trim()
+  }
+
+  await db.turno.update({ where: { id }, data: updateData })
   revalidatePath('/dashboard/turnos')
   revalidatePath(`/dashboard/turnos/${id}`)
 }
@@ -357,6 +389,31 @@ export async function eliminarTurno(id: string): Promise<void> {
   await db.turno.delete({ where: { id } })
   revalidatePath('/dashboard/turnos')
   redirect('/dashboard/turnos')
+}
+
+export async function getRecordatoriosPendientes(fecha: string): Promise<Turno[]> {
+  const userId = await getUserId()
+  const turnos = await db.turno.findMany({
+    where: {
+      userId,
+      fecha,
+      estado: { in: ['pendiente', 'confirmado'] },
+      recordatorioEnviado: false,
+      clienteTel: { not: null },
+    },
+    include: { servicio: true, empleado: true },
+    orderBy: { horaInicio: 'asc' },
+  })
+  return turnos.map(toTurno)
+}
+
+export async function marcarRecordatorioEnviado(id: string): Promise<void> {
+  const userId = await getUserId()
+  const actual = await db.turno.findFirst({ where: { id, userId } })
+  if (!actual) throw new Error('Turno no encontrado')
+  await db.turno.update({ where: { id }, data: { recordatorioEnviado: true } })
+  revalidatePath('/dashboard/turnos')
+  revalidatePath(`/dashboard/turnos/${id}`)
 }
 
 export async function getStatsSemana(desde: string, hasta: string): Promise<{
