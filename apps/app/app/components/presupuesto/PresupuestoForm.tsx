@@ -235,8 +235,7 @@ export default function PresupuestoForm({ clientes, presupuesto, template }: Pro
 
       {/* Items */}
       <div className="rounded-2xl border border-white/[0.08] bg-white/[0.04] p-5">
-        <div className="mb-4 flex items-center justify-between">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-white/30">Items</p>
+        <div className="mb-4 flex items-center justify-end">
           <button type="button" onClick={addItem} className="rounded-xl bg-[#5448EE] px-3 py-2 text-[12px] font-medium text-white hover:bg-[#4438DE]">
             + Agregar item
           </button>
@@ -261,9 +260,6 @@ export default function PresupuestoForm({ clientes, presupuesto, template }: Pro
         ) : null}
 
         <div className="space-y-3">
-          <div className="hidden md:grid md:grid-cols-[1.8fr,0.6fr,0.8fr,0.8fr,auto] md:gap-3 md:px-1 text-[10px] font-semibold uppercase tracking-wider text-white/25">
-            <span>Descripción</span><span>Cantidad</span><span>Precio unitario</span><span>Subtotal</span><span />
-          </div>
           {items.map((item, index) => {
             const subtotal = item.cantidad * item.precioUnitario
             return (
