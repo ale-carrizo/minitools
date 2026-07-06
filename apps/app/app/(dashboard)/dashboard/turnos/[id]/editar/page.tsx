@@ -1,12 +1,11 @@
 import { notFound } from 'next/navigation'
 import TurnoForm from '@/app/components/turnos/TurnoForm'
-import { getConfig, getServicios, getTurno } from '@/lib/actions/turno'
+import { getConfig, getTurno } from '@/lib/actions/turno'
 
 export default async function EditarTurnoPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const [turno, servicios, config] = await Promise.all([
+  const [turno, config] = await Promise.all([
     getTurno(id),
-    getServicios(),
     getConfig(),
   ])
   if (!turno) notFound()
@@ -22,7 +21,6 @@ export default async function EditarTurnoPage({ params }: { params: Promise<{ id
       </div>
       <TurnoForm
         turno={turno}
-        servicios={servicios}
         config={config}
         fechaDefault={turno.fecha}
         horaDefault={turno.horaInicio}

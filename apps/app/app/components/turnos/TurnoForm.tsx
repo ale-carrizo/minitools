@@ -1,32 +1,27 @@
 'use client'
 
-import { useEffect, useMemo, useState, useTransition } from 'react'
+import { useMemo, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { crearTurno, editarTurno } from '@/lib/actions/turno'
 import {
-  formatCurrency,
   generarSlots,
   sumarMinutos,
   type Turno,
   type TurnoConfig,
-  type TurnoServicio,
 } from '@/types/turno'
 
 export default function TurnoForm({
   turno,
-  servicios,
   fechaDefault,
   horaDefault,
   config,
 }: {
   turno?: Turno
-  servicios: TurnoServicio[]
   fechaDefault: string
   horaDefault?: string
   config: TurnoConfig
 }) {
   const router = useRouter()
-  const [servicioId, setServicioId] = useState(turno?.servicioId ?? '')
   const [clienteNombre, setClienteNombre] = useState(turno?.clienteNombre ?? '')
   const [clienteTel, setClienteTel] = useState(turno?.clienteTel ?? '')
   const [clienteEmail, setClienteEmail] = useState(turno?.clienteEmail ?? '')
@@ -39,14 +34,16 @@ export default function TurnoForm({
   const [isPending, startTransition] = useTransition()
 
   const slots = useMemo(() => generarSlots(config.horaInicio, config.horaFin, config.intervalo), [config])
-  const servicioSeleccionado = useMemo(() => servicios.find((servicio) => servicio.id === servicioId) ?? null, [servicioId, servicios])
   const horaFin = horaInicio ? sumarMinutos(horaInicio, duracion) : ''
 
-  useEffect(() => {
-    if (!servicioSeleccionado) return
-    setDuracion(servicioSeleccionado.duracion)
-    setPrecio(servicioSeleccionado.precio)
-  }, [servicioSeleccionado])
+  function normalizarWhatsApp(tel: string): string {
+    const digits = tel.replace(/\D/g, '')
+    if (!digits) return ''
+    if (digits.startsWith('549')) return digits
+    if (digits.startsWith('54')) return digits
+    if (digits.startsWith('9')) return `54${digits}`
+    return `549${digits}`
+  }
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -60,13 +57,19 @@ export default function TurnoForm({
       setError('Seleccioná una hora de inicio')
       return
     }
+    if (clienteTel.trim()) {
+      const digits = clienteTel.replace(/\D/g, '')
+      if (digits.length < 10) {
+        setError('El teléfono debe tener al menos 10 dígitos para enviar recordatorios')
+        return
+      }
+    }
 
     startTransition(async () => {
       try {
         const payload = {
-          servicioId,
           clienteNombre,
-          clienteTel,
+          clienteTel: normalizarWhatsApp(clienteTel),
           clienteEmail,
           fecha,
           horaInicio,
@@ -90,50 +93,6 @@ export default function TurnoForm({
     <form onSubmit={handleSubmit} className="max-w-xl mx-auto md:mx-0 space-y-5">
       <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-4 md:p-5 space-y-4">
         <div>
-          <h2 className="text-white font-semibold text-[15px]">Servicio</h2>
-          <p className="text-white/35 text-[12px] mt-1">Seleccioná un servicio predefinido o cargá una duración personalizada.</p>
-        </div>
-        {servicios.length > 0 ? (
-          <div className="flex flex-wrap gap-2">
-            {servicios.map((servicio) => {
-              const active = servicio.id === servicioId
-              return (
-                <button
-                  key={servicio.id}
-                  type="button"
-                  onClick={() => setServicioId(servicio.id)}
-                  className={`rounded-xl border px-3 py-2 text-left transition-colors ${
-                    active ? 'text-white' : 'border-white/10 bg-white/[0.03] text-white/55 hover:text-white/80'
-                  }`}
-                  style={active ? { backgroundColor: `${servicio.color}33`, borderColor: servicio.color, color: 'white' } : undefined}
-                >
-                  <span className="block text-[12px] font-medium">{servicio.nombre}</span>
-                  <span className="block text-[11px] opacity-70">{servicio.duracion} min · {servicio.precio > 0 ? formatCurrency(servicio.precio) : 'Gratis'}</span>
-                </button>
-              )
-            })}
-          </div>
-        ) : (
-          <p className="text-[13px] text-white/40">Todavía no hay servicios creados.</p>
-        )}
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <label className="text-[12px] text-white/50">Servicio vinculado</label>
-            <select value={servicioId} onChange={(e) => setServicioId(e.target.value)} className="w-full bg-white/[0.05] border border-white/[0.09] rounded-xl text-white px-3 py-2.5 text-sm focus:outline-none focus:border-[#5448EE]/60">
-              <option value="">Sin servicio predefinido</option>
-              {servicios.map((servicio) => <option key={servicio.id} value={servicio.id}>{servicio.nombre}</option>)}
-            </select>
-          </div>
-          <div className="space-y-2">
-            <label className="text-[12px] text-white/50">Duración personalizada</label>
-            <input type="number" min="15" step="15" value={duracion} onChange={(e) => setDuracion(Number(e.target.value))} className="w-full bg-white/[0.05] border border-white/[0.09] rounded-xl text-white px-3 py-2.5 text-sm focus:outline-none focus:border-[#5448EE]/60" />
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-4 md:p-5 space-y-4">
-        <div>
           <h2 className="text-white font-semibold text-[15px]">Fecha y hora</h2>
           <p className="text-white/35 text-[12px] mt-1">Los horarios se generan según tu configuración actual.</p>
         </div>
@@ -150,6 +109,16 @@ export default function TurnoForm({
             </select>
           </div>
         </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <label className="text-[12px] text-white/50">Duración (min)</label>
+            <input type="number" min="15" step="15" value={duracion} onChange={(e) => setDuracion(Number(e.target.value))} className="w-full bg-white/[0.05] border border-white/[0.09] rounded-xl text-white px-3 py-2.5 text-sm focus:outline-none focus:border-[#5448EE]/60" />
+          </div>
+          <div className="space-y-2">
+            <label className="text-[12px] text-white/50">Precio</label>
+            <input type="number" min="0" step="1" value={precio} onChange={(e) => setPrecio(Number(e.target.value))} className="w-full bg-white/[0.05] border border-white/[0.09] rounded-xl text-white px-3 py-2.5 text-sm focus:outline-none focus:border-[#5448EE]/60" />
+          </div>
+        </div>
         {horaInicio ? <p className="text-[12px] text-[#8880F5]">Turno de {horaInicio} a {horaFin} ({duracion} min)</p> : null}
       </div>
 
@@ -164,8 +133,14 @@ export default function TurnoForm({
           </div>
           <div className="space-y-2">
             <label className="text-[12px] text-white/50">Teléfono</label>
-            <input value={clienteTel} onChange={(e) => setClienteTel(e.target.value)} placeholder="+54 9 11 1234-5678" className="w-full bg-white/[0.05] border border-white/[0.09] rounded-xl text-white px-3 py-2.5 text-sm placeholder:text-white/20 focus:outline-none focus:border-[#5448EE]/60" />
-            <p className="text-[11px] text-white/30">Para recordatorios, usá formato: 5491112345678</p>
+            <input
+              value={clienteTel}
+              onChange={(e) => setClienteTel(e.target.value)}
+              onBlur={(e) => setClienteTel(normalizarWhatsApp(e.target.value))}
+              placeholder="351 301 6944"
+              className="w-full bg-white/[0.05] border border-white/[0.09] rounded-xl text-white px-3 py-2.5 text-sm placeholder:text-white/20 focus:outline-none focus:border-[#5448EE]/60"
+            />
+            <p className="text-[11px] text-white/30">Se normaliza automáticamente a formato WhatsApp (549...)</p>
           </div>
           <div className="space-y-2">
             <label className="text-[12px] text-white/50">Email</label>
@@ -176,17 +151,10 @@ export default function TurnoForm({
 
       <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-4 md:p-5 space-y-4">
         <div>
-          <h2 className="text-white font-semibold text-[15px]">Precio y notas</h2>
+          <h2 className="text-white font-semibold text-[15px]">Notas</h2>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <label className="text-[12px] text-white/50">Precio</label>
-            <input type="number" min="0" step="1" value={precio} onChange={(e) => setPrecio(Number(e.target.value))} className="w-full bg-white/[0.05] border border-white/[0.09] rounded-xl text-white px-3 py-2.5 text-sm focus:outline-none focus:border-[#5448EE]/60" />
-          </div>
-          <div className="space-y-2 sm:col-span-2">
-            <label className="text-[12px] text-white/50">Notas</label>
-            <textarea value={notas} onChange={(e) => setNotas(e.target.value)} rows={4} className="w-full resize-none bg-white/[0.05] border border-white/[0.09] rounded-xl text-white px-3 py-2.5 text-sm placeholder:text-white/20 focus:outline-none focus:border-[#5448EE]/60" />
-          </div>
+        <div className="space-y-2">
+          <textarea value={notas} onChange={(e) => setNotas(e.target.value)} rows={3} className="w-full resize-none bg-white/[0.05] border border-white/[0.09] rounded-xl text-white px-3 py-2.5 text-sm placeholder:text-white/20 focus:outline-none focus:border-[#5448EE]/60" />
         </div>
       </div>
 
