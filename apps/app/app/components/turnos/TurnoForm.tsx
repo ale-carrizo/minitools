@@ -87,8 +87,8 @@ export default function TurnoForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-5xl space-y-6">
-      <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-5 space-y-4">
+    <form onSubmit={handleSubmit} className="max-w-xl mx-auto md:mx-0 space-y-5">
+      <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-4 md:p-5 space-y-4">
         <div>
           <h2 className="text-white font-semibold text-[15px]">Servicio</h2>
           <p className="text-white/35 text-[12px] mt-1">Seleccioná un servicio predefinido o cargá una duración personalizada.</p>
@@ -132,7 +132,7 @@ export default function TurnoForm({
         </div>
       </div>
 
-      <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-5 space-y-4">
+      <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-4 md:p-5 space-y-4">
         <div>
           <h2 className="text-white font-semibold text-[15px]">Fecha y hora</h2>
           <p className="text-white/35 text-[12px] mt-1">Los horarios se generan según tu configuración actual.</p>
@@ -153,7 +153,7 @@ export default function TurnoForm({
         {horaInicio ? <p className="text-[12px] text-[#8880F5]">Turno de {horaInicio} a {horaFin} ({duracion} min)</p> : null}
       </div>
 
-      <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-5 space-y-4">
+      <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-4 md:p-5 space-y-4">
         <div>
           <h2 className="text-white font-semibold text-[15px]">Cliente</h2>
         </div>
@@ -174,7 +174,7 @@ export default function TurnoForm({
         </div>
       </div>
 
-      <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-5 space-y-4">
+      <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-4 md:p-5 space-y-4">
         <div>
           <h2 className="text-white font-semibold text-[15px]">Precio y notas</h2>
         </div>
