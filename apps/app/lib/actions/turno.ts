@@ -8,6 +8,7 @@ import {
   CONFIG_DEFAULT,
   seSuperponen,
   sumarMinutos,
+  type EmpleadoTurno,
   type Turno,
   type TurnoConfig,
   type TurnoEstado,
@@ -64,11 +65,21 @@ function toServicio(raw: any): TurnoServicio {
   }
 }
 
+function toEmpleado(raw: any): EmpleadoTurno {
+  return {
+    id: raw.id,
+    userId: raw.userId,
+    nombre: raw.nombre,
+    apellido: raw.apellido ?? null,
+  }
+}
+
 function toTurno(raw: any): Turno {
   return {
     id: raw.id,
     userId: raw.userId,
     servicioId: raw.servicioId ?? null,
+    empleadoId: raw.empleadoId ?? null,
     clienteNombre: raw.clienteNombre,
     clienteTel: raw.clienteTel ?? null,
     clienteEmail: raw.clienteEmail ?? null,
@@ -77,18 +88,23 @@ function toTurno(raw: any): Turno {
     horaFin: raw.horaFin,
     duracion: raw.duracion,
     precio: raw.precio,
+    senia: raw.senia ?? 0,
+    seniaPagada: raw.seniaPagada ?? false,
     estado: raw.estado as TurnoEstado,
     notas: raw.notas ?? null,
+    proximoRecordatorio: raw.proximoRecordatorio ?? null,
+    recordatorioEnviado: raw.recordatorioEnviado ?? false,
     createdAt: raw.createdAt.toISOString(),
     updatedAt: raw.updatedAt.toISOString(),
     servicio: raw.servicio ? toServicio(raw.servicio) : null,
+    empleado: raw.empleado ? toEmpleado(raw.empleado) : null,
   }
 }
 
 async function verificarSuperposicion(
   userId: string,
   fecha: string,
-  nuevo: { horaInicio: string; horaFin: string },
+  nuevo: { horaInicio: string; horaFin: string; empleadoId?: string | null },
   excludeId?: string,
 ) {
   const turnos = await db.turno.findMany({
@@ -101,8 +117,19 @@ async function verificarSuperposicion(
     orderBy: { horaInicio: 'asc' },
   })
 
-  if (turnos.some((turno: any) => seSuperponen(nuevo, turno))) {
-    throw new Error('Ese horario se superpone con otro turno')
+  const conflicto = turnos.find((turno: any) => {
+    if (!seSuperponen(nuevo, turno)) return false
+    // Sin empleado asignado: se considera que comparte el mismo recurso físico.
+    if (!nuevo.empleadoId || !turno.empleadoId) return true
+    // Mismo empleado: conflicto. Distinto empleado: válido.
+    return nuevo.empleadoId === turno.empleadoId
+  })
+
+  if (conflicto) {
+    const mensaje = nuevo.empleadoId && conflicto.empleadoId && nuevo.empleadoId === conflicto.empleadoId
+      ? 'Horario no disponible para este empleado'
+      : 'Horario no disponible'
+    throw new Error(mensaje)
   }
 }
 
@@ -208,7 +235,7 @@ export async function getTurnos(fecha: string): Promise<Turno[]> {
   const userId = await getUserId()
   const turnos = await db.turno.findMany({
     where: { userId, fecha, estado: { not: 'cancelado' } },
-    include: { servicio: true },
+    include: { servicio: true, empleado: true },
     orderBy: { horaInicio: 'asc' },
   })
   return turnos.map(toTurno)
@@ -218,7 +245,7 @@ export async function getTurnosSemana(desde: string, hasta: string): Promise<Tur
   const userId = await getUserId()
   const turnos = await db.turno.findMany({
     where: { userId, fecha: { gte: desde, lte: hasta }, estado: { not: 'cancelado' } },
-    include: { servicio: true },
+    include: { servicio: true, empleado: true },
     orderBy: [{ fecha: 'asc' }, { horaInicio: 'asc' }],
   })
   return turnos.map(toTurno)
@@ -228,7 +255,7 @@ export async function getTurno(id: string): Promise<Turno | null> {
   const userId = await getUserId()
   const turno = await db.turno.findFirst({
     where: { id, userId },
-    include: { servicio: true },
+    include: { servicio: true, empleado: true },
   })
   return turno ? toTurno(turno) : null
 }
