@@ -273,3 +273,12 @@ button, a, input, select, textarea,
 [data-theme="light"] select:focus {
   border-color: #5448EE !important;
 }
+
+/*
+ * Botones con fondo de marca (#5448EE / #4438DE): usan text-white que en modo
+ * claro se vuelve #17162A (casi negro) sobre fondo morado. Forzamos blanco literal.
+ */
+[data-theme="light"] [class*="bg-[#5448EE]"][class*="text-white"],
+[data-theme="light"] [class*="bg-[#4438DE]"][class*="text-white"] {
+  color: #ffffff;
+}
