@@ -88,6 +88,9 @@ export default function AgendaSemana({
             return `${m0} ${d0.getDate()} — ${m6} ${d6.getDate()}, ${d6.getFullYear()}`
           })()}
         </p>
+        <span className="hidden sm:inline-flex items-center rounded-lg bg-white/[0.05] border border-white/[0.08] px-2 py-1 text-[11px] text-white/40">
+          {config.horaInicio} - {config.horaFin} hs
+        </span>
         <div className="flex gap-1">
           <a href={`/dashboard/turnos?fecha=${semana[0]}&vista=dia`} className="px-3 py-1.5 text-[12px] font-medium rounded-lg text-white/40 hover:text-white/70 transition-colors">
             Día

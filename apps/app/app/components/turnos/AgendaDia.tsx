@@ -70,6 +70,9 @@ export default function AgendaDia({
           </button>
         </div>
         <p className="text-white text-[16px] font-semibold">{formatFechaBonita(fecha)}</p>
+        <span className="hidden sm:inline-flex items-center rounded-lg bg-white/[0.05] border border-white/[0.08] px-2 py-1 text-[11px] text-white/40">
+          {config.horaInicio} - {config.horaFin} hs
+        </span>
         <div className="flex gap-1">
           <Link
             href={`/dashboard/turnos?fecha=${fecha}&vista=dia`}
