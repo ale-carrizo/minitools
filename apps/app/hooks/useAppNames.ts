@@ -1,38 +1,45 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useSyncExternalStore, useEffect, useCallback } from 'react'
 import { loadCustomNames, saveCustomNames, getAppLabel, type CustomAppNames } from '@/lib/apps-config'
 
+let shared: CustomAppNames = {}
+const listeners = new Set<() => void>()
+function subscribe(cb: () => void) { listeners.add(cb); return () => { listeners.delete(cb) } }
+function getSnapshot() { return shared }
+function getServerSnapshot() { return {} }
+
+function notify() { listeners.forEach(fn => fn()) }
+
 export function useAppNames() {
-  const [names, setNames] = useState<CustomAppNames>({})
+  const names = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
 
   useEffect(() => {
-    setNames(loadCustomNames())
+    shared = loadCustomNames()
+    notify()
   }, [])
 
   const setLabel = useCallback((slug: string, label: string) => {
-    setNames(prev => {
-      const next = { ...prev, [slug]: label.trim() ? label.trim() : '' }
-      saveCustomNames(next)
-      return next
-    })
+    shared = { ...shared, [slug]: label.trim() ? label.trim() : '' }
+    saveCustomNames(shared)
+    notify()
   }, [])
 
   const resetLabel = useCallback((slug: string) => {
-    setNames(prev => {
-      const next = { ...prev }
-      delete next[slug]
-      saveCustomNames(next)
-      return next
-    })
+    const next = { ...shared }
+    delete next[slug]
+    shared = next
+    saveCustomNames(shared)
+    notify()
   }, [])
 
   const resetAll = useCallback(() => {
-    setNames({})
-    saveCustomNames({})
+    shared = {}
+    saveCustomNames(shared)
+    notify()
   }, [])
 
-  const getLabel = useCallback((slug: string) => getAppLabel(slug, names), [names])
+  const getLabel = useCallback((slug: string) => getAppLabel(slug, shared), [])
 
   return { names, setLabel, resetLabel, resetAll, getLabel }
 }
