@@ -90,7 +90,7 @@ function TareaCard({
 // ── KanbanColumn ──────────────────────────────────────────────────────────────
 function KanbanColumn({
   columna, tableroId, isDragOver,
-  onDragOver, onDrop, onDragStart, onDragEnd, onCardClick, onColumnUpdate, onColumnDelete,
+  onDragOver, onDrop, onDragStart, onDragEnd, onCardClick, onColumnUpdate, onColumnDelete, onCardAdd,
 }: {
   columna:        Columna
   tableroId:      string
@@ -102,6 +102,7 @@ function KanbanColumn({
   onCardClick:    (t: Tarea) => void
   onColumnUpdate: (id: string, data: { nombre?: string; color?: string }) => void
   onColumnDelete: (id: string) => void
+  onCardAdd:      (t: Tarea) => void
 }) {
   const [editName, setEditName]   = useState(false)
   const [name, setName]           = useState(columna.nombre)
@@ -120,8 +121,9 @@ function KanbanColumn({
   function handleAddCard() {
     if (!newTitle.trim()) return
     startTrans(async () => {
-      await createTarea({ columnaId: columna.id, titulo: newTitle.trim() })
+      const tarea = await createTarea({ columnaId: columna.id, titulo: newTitle.trim() })
       setNewTitle(''); setAddingCard(false)
+      onCardAdd(tarea)
     })
   }
 
@@ -310,6 +312,17 @@ export default function KanbanBoard({ tablero: initial }: { tablero: Tablero }) 
     startTrans(async () => { await deleteColumna(id, tablero.id) })
   }
 
+  function handleCardAdd(tarea: Tarea) {
+    setTablero(tb => ({
+      ...tb,
+      columnas: tb.columnas.map(c =>
+        c.id === tarea.columnaId
+          ? { ...c, tareas: [...c.tareas, tarea] }
+          : c
+      ),
+    }))
+  }
+
   function handleAddCol() {
     if (!newColName.trim()) return
     if (tablero.columnas.length >= 8) return
@@ -355,6 +368,7 @@ export default function KanbanBoard({ tablero: initial }: { tablero: Tablero }) 
               onCardClick={t => setModal(t)}
               onColumnUpdate={handleColUpdate}
               onColumnDelete={handleColDelete}
+              onCardAdd={handleCardAdd}
             />
           ))}
 
