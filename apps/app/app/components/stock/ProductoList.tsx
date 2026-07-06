@@ -30,7 +30,7 @@ export default function ProductoList({ productos }: { productos: Producto[] }) {
         <p className="text-white/30 text-xs mb-5">Agregá tu primer producto para empezar</p>
         <Link
           href="/dashboard/stock/nuevo"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-[#5448EE] text-white text-[13px] font-medium rounded-xl hover:bg-[#4438DE] transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-[#5448EE] text-[#ffffff] text-[13px] font-medium rounded-xl hover:bg-[#4438DE] transition-colors"
         >
           + Agregar producto
         </Link>

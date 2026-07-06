@@ -188,7 +188,7 @@ export default function ProductoForm({ producto }: Props) {
         <button
           type="submit"
           disabled={loading || !form.nombre.trim()}
-          className="flex-1 px-5 py-2.5 text-[13px] font-medium bg-[#5448EE] hover:bg-[#4438DE] disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl transition-colors"
+          className="flex-1 px-5 py-2.5 text-[13px] font-medium bg-[#5448EE] hover:bg-[#4438DE] disabled:opacity-50 disabled:cursor-not-allowed text-[#ffffff] rounded-xl transition-colors"
         >
           {loading ? 'Guardando...' : isEdit ? 'Guardar cambios' : 'Crear producto'}
         </button>

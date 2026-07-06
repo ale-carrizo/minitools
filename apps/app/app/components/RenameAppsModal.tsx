@@ -62,15 +62,15 @@ export default function RenameAppsModal({ open, onClose }: Props) {
       ref={overlayRef}
       className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
     >
-      <div className="w-full max-w-lg rounded-2xl border border-white/[0.10] bg-[#13122A] shadow-2xl shadow-black/50 overflow-hidden animate-[fade-up_0.3s_cubic-bezier(0.16,1,0.3,1)_both]">
-        <div className="px-5 py-4 border-b border-white/[0.07] flex items-center justify-between">
+      <div className="w-full max-w-lg rounded-2xl border border-white/[0.10] light:border-gray-200 bg-[#13122A] light:bg-white shadow-2xl shadow-black/50 light:shadow-black/10 overflow-hidden animate-[fade-up_0.3s_cubic-bezier(0.16,1,0.3,1)_both]">
+        <div className="px-5 py-4 border-b border-white/[0.07] light:border-gray-100 flex items-center justify-between">
           <div>
-            <p className="text-[14px] font-semibold text-white">Renombrar apps</p>
-            <p className="text-[10px] text-white/30 mt-0.5">Personalizá el nombre de cada herramienta — es solo visual</p>
+            <p className="text-[14px] font-semibold text-white light:text-gray-900">Renombrar apps</p>
+            <p className="text-[10px] text-white/30 light:text-gray-400 mt-0.5">Personalizá el nombre de cada herramienta — es solo visual</p>
           </div>
           <button
             onClick={onClose}
-            className="w-7 h-7 rounded-lg flex items-center justify-center text-white/30 hover:text-white hover:bg-white/[0.08] transition-colors"
+            className="w-7 h-7 rounded-lg flex items-center justify-center text-white/30 light:text-gray-400 hover:text-white light:hover:text-gray-700 hover:bg-white/[0.08] light:hover:bg-gray-100 transition-colors"
           >
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round">
               <path d="M18 6 6 18M6 6l12 12"/>
@@ -91,15 +91,15 @@ export default function RenameAppsModal({ open, onClose }: Props) {
                     value={value}
                     onChange={e => setDraft(prev => ({ ...prev, [app.slug]: e.target.value }))}
                     placeholder={def.label}
-                    className={`w-full px-3 py-2 text-[12px] rounded-xl border bg-white/[0.04] text-white placeholder:text-white/20 focus:outline-none focus:border-[#5448EE]/50 transition-colors ${
-                      changed ? 'border-[#5448EE]/40' : 'border-white/[0.08]'
+                    className={`w-full px-3 py-2 text-[12px] rounded-xl border bg-white/[0.04] light:bg-gray-50 text-white light:text-gray-900 placeholder:text-white/20 light:placeholder:text-gray-300 focus:outline-none focus:border-[#5448EE]/50 transition-colors ${
+                      changed ? 'border-[#5448EE]/40' : 'border-white/[0.08] light:border-gray-200'
                     }`}
                   />
                 </div>
                 {changed && (
                   <button
                     onClick={() => handleReset(app.slug)}
-                    className="w-6 h-6 rounded-lg flex items-center justify-center text-white/25 hover:text-red-400 hover:bg-white/[0.06] transition-colors flex-shrink-0"
+                    className="w-6 h-6 rounded-lg flex items-center justify-center text-white/25 light:text-gray-400 hover:text-red-400 hover:bg-white/[0.06] light:hover:bg-red-50 transition-colors flex-shrink-0"
                     title="Restaurar nombre original"
                   >
                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round">
@@ -112,10 +112,10 @@ export default function RenameAppsModal({ open, onClose }: Props) {
           })}
         </div>
 
-        <div className="px-5 py-4 border-t border-white/[0.07] flex gap-2">
+        <div className="px-5 py-4 border-t border-white/[0.07] light:border-gray-100 flex gap-2">
           <button
             onClick={onClose}
-            className="flex-1 py-2.5 rounded-xl border border-white/[0.09] text-[12px] text-white/50 hover:text-white hover:bg-white/[0.04] transition-colors"
+            className="flex-1 py-2.5 rounded-xl border border-white/[0.09] light:border-gray-200 text-[12px] text-white/50 light:text-gray-400 hover:text-white light:hover:text-gray-700 hover:bg-white/[0.04] light:hover:bg-gray-50 transition-colors"
           >
             Cancelar
           </button>

@@ -128,7 +128,7 @@ export default function MovimientoForm({ producto, onDone }: Props) {
       <button
         type="submit"
         disabled={loading || !cantidad}
-        className="w-full py-2.5 text-[13px] font-medium bg-[#5448EE] hover:bg-[#4438DE] disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl transition-colors"
+        className="w-full py-2.5 text-[13px] font-medium bg-[#5448EE] hover:bg-[#4438DE] disabled:opacity-40 disabled:cursor-not-allowed text-[#ffffff] rounded-xl transition-colors"
       >
         {loading ? 'Registrando...' : `Confirmar ${tipoInfo.label}`}
       </button>

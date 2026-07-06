@@ -39,7 +39,7 @@ export default function DashboardNav() {
     <>
       <Link
         href="/dashboard"
-        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-white/60 hover:text-white hover:bg-white/[0.06] transition-colors"
+        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-white/60 light:text-gray-500 hover:text-white light:hover:text-gray-900 hover:bg-white/[0.06] light:hover:bg-gray-100 transition-colors"
       >
         <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
           <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
@@ -49,12 +49,12 @@ export default function DashboardNav() {
 
       <div>
         <div className="flex items-center justify-between px-3 mb-1">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-white/25">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-white/25 light:text-gray-400">
             Disponibles
           </p>
           <button
             onClick={() => setEditOpen(true)}
-            className="w-4 h-4 rounded flex items-center justify-center text-white/15 hover:text-[#8880F5] transition-colors"
+            className="w-4 h-4 rounded flex items-center justify-center text-white/15 light:text-gray-300 hover:text-[#8880F5] transition-colors"
             title="Renombrar apps"
           >
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">

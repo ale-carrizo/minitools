@@ -130,7 +130,7 @@ export default function ImportarProductosCard() {
             type="button"
             onClick={handleImport}
             disabled={isPending}
-            className="mt-4 bg-[#5448EE] hover:bg-[#4438DE] disabled:opacity-70 text-white rounded-xl px-4 py-2.5 text-[13px] font-medium transition-colors"
+            className="mt-4 bg-[#5448EE] hover:bg-[#4438DE] disabled:opacity-70 text-[#ffffff] rounded-xl px-4 py-2.5 text-[13px] font-medium transition-colors"
           >
             {isPending ? 'Importando...' : 'Importar productos'}
           </button>
