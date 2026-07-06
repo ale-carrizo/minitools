@@ -69,6 +69,7 @@ model User {
   socios       Socio[]
   cobros       CobroProgramado[]
   sugerencias  Sugerencia[]
+  recibos      ReciboCobro[]
   tableros     Tablero[]
   tareas       Tarea[]
 }
