@@ -186,7 +186,7 @@ export default function PresupuestoForm({ clientes, presupuesto, template }: Pro
             <select
               value={form.clienteId}
               onChange={(e) => setField('clienteId', e.target.value)}
-              className="w-full rounded-xl border border-white/[0.09] bg-[#0C0B1A] px-3 py-2.5 text-[13px] text-white focus:border-[#5448EE]/60 focus:outline-none"
+              className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white focus:border-[#5448EE]/60 focus:outline-none"
             >
               <option value="">Sin cliente</option>
               {clientes.map((c) => (
@@ -203,7 +203,7 @@ export default function PresupuestoForm({ clientes, presupuesto, template }: Pro
             <select
               value={form.moneda}
               onChange={(e) => setField('moneda', e.target.value)}
-              className="w-full rounded-xl border border-white/[0.09] bg-[#0C0B1A] px-3 py-2.5 text-[13px] text-white focus:border-[#5448EE]/60 focus:outline-none"
+              className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white focus:border-[#5448EE]/60 focus:outline-none"
             >
               {MONEDAS.map((m) => <option key={m} value={m}>{m}</option>)}
             </select>

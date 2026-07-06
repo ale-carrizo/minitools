@@ -202,7 +202,7 @@ export default function TareaModal({ tarea, columnas, onClose, onUpdate, onDelet
                 <select
                   value={tarea.columnaId}
                   onChange={e => { onMove(tarea.id, e.target.value); onClose() }}
-                  className="w-full px-2.5 py-2 rounded-xl border border-white/[0.08] bg-[#0C0B1A] text-[11px] text-white focus:outline-none focus:border-[#5448EE]/50"
+                  className="w-full px-2.5 py-2 rounded-xl border border-white/[0.08] bg-white/[0.05] text-[11px] text-white focus:outline-none focus:border-[#5448EE]/50"
                 >
                   {columnas.map(c => <option key={c.id} value={c.id}>{c.nombre}</option>)}
                 </select>

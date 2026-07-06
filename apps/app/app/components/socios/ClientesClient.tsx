@@ -274,7 +274,7 @@ function PagarModal({ cobro, onClose, onConfirm }: {
         <select
           value={medio}
           onChange={e => setMedio(e.target.value)}
-          className="w-full px-3 py-2.5 rounded-xl border border-white/[0.09] bg-[#0C0B1A] text-[12px] text-white mb-4 focus:outline-none focus:border-[#5448EE]/60"
+          className="w-full px-3 py-2.5 rounded-xl border border-white/[0.09] bg-white/[0.05] text-[12px] text-white mb-4 focus:outline-none focus:border-[#5448EE]/60"
         >
           {MEDIOS_PAGO.map(m => <option key={m}>{m}</option>)}
         </select>
