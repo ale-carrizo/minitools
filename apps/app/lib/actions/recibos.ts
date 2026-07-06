@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
+import { ReciboCobro } from '@/types/recibos'
 
 const db = prisma as any
 
@@ -13,7 +14,7 @@ async function getUserId(): Promise<string> {
   return session.user.id
 }
 
-export async function getRecibos() {
+export async function getRecibos(): Promise<ReciboCobro[]> {
   const userId = await getUserId()
   const rows = await db.reciboCobro.findMany({
     where: { userId },
@@ -22,7 +23,7 @@ export async function getRecibos() {
   return rows.map(toRecibo)
 }
 
-export async function getRecibo(id: string) {
+export async function getRecibo(id: string): Promise<ReciboCobro | null> {
   const userId = await getUserId()
   const row = await db.reciboCobro.findFirst({ where: { id, userId } })
   if (!row) return null
@@ -40,7 +41,7 @@ export async function crearRecibo(data: {
   concepto: string
   medioPago?: string
   notas?: string
-}) {
+}): Promise<ReciboCobro> {
   const userId = await getUserId()
   const last = await db.reciboCobro.findFirst({
     where: { userId },
@@ -68,7 +69,7 @@ export async function editarRecibo(id: string, data: {
   concepto: string
   medioPago?: string
   notas?: string
-}) {
+}): Promise<ReciboCobro> {
   const userId = await getUserId()
   const row = await db.reciboCobro.updateMany({
     where: { id, userId },
@@ -94,7 +95,7 @@ export async function getNextNumero(): Promise<number> {
   return (last?.numero ?? 0) + 1
 }
 
-function toRecibo(row: any) {
+function toRecibo(row: any): ReciboCobro {
   return {
     id: row.id,
     userId: row.userId,
