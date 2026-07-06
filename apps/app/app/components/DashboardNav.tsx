@@ -70,7 +70,7 @@ export default function DashboardNav() {
               <li key={tool.href}>
                 <Link
                   href={tool.href}
-                  className="group relative flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-white/60 hover:text-white hover:bg-gradient-to-r hover:from-[#5448EE]/15 hover:to-transparent"
+                  className="group relative flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-white/60 light:text-gray-500 hover:text-white light:hover:text-gray-900 hover:bg-gradient-to-r hover:from-[#5448EE]/15 hover:to-transparent light:hover:bg-gradient-to-r light:hover:from-[#5448EE]/8 light:hover:to-transparent"
                 >
                   <span className="absolute left-0 top-1/2 -translate-y-1/2 h-0 w-[2px] rounded-full bg-[#8880F5] transition-all duration-300 group-hover:h-5" />
                   <span className="flex-shrink-0 opacity-70 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:opacity-100 group-hover:text-[#8880F5]">{toolIcons[slug]}</span>
