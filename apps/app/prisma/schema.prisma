@@ -655,3 +655,25 @@ model Sugerencia {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+// ── Recibos de Cobro ──────────────────────────────────────────────────────────
+
+model ReciboCobro {
+  id            String   @id @default(cuid())
+  userId        String
+  numero        Int
+  fecha         String   // YYYY-MM-DD
+  emisorNombre  String   // quien recibe el dinero (el negocio)
+  emisorDoc     String?  // CUIT del negocio
+  emisorDireccion String?
+  receptorNombre String? // quien paga (cliente)
+  receptorDoc   String?
+  monto         Float
+  concepto      String
+  medioPago     String?  // efectivo, transferencia, etc
+  notas         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
