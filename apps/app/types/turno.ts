@@ -23,10 +23,23 @@ export interface TurnoServicio {
   updatedAt: string
 }
 
+export interface EmpleadoTurno {
+  id: string
+  userId: string
+  nombre: string
+  apellido: string | null
+}
+
+export function nombreEmpleado(empleado: EmpleadoTurno | null | undefined): string {
+  if (!empleado) return 'Sin asignar'
+  return [empleado.nombre, empleado.apellido].filter(Boolean).join(' ')
+}
+
 export interface Turno {
   id: string
   userId: string
   servicioId: string | null
+  empleadoId: string | null
   clienteNombre: string
   clienteTel: string | null
   clienteEmail: string | null
@@ -35,11 +48,16 @@ export interface Turno {
   horaFin: string
   duracion: number
   precio: number
+  senia: number
+  seniaPagada: boolean
   estado: TurnoEstado
   notas: string | null
+  proximoRecordatorio: string | null
+  recordatorioEnviado: boolean
   createdAt: string
   updatedAt: string
   servicio: TurnoServicio | null
+  empleado: EmpleadoTurno | null
 }
 
 export const ESTADO_CONFIG: Record<TurnoEstado, {
@@ -48,11 +66,12 @@ export const ESTADO_CONFIG: Record<TurnoEstado, {
   bg: string
   border: string
   dot: string
+  icon: string
 }> = {
-  pendiente: { label: 'Pendiente', color: 'text-yellow-400', bg: 'bg-yellow-500/10', border: 'border-yellow-500/30', dot: 'bg-yellow-400' },
-  confirmado: { label: 'Confirmado', color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/30', dot: 'bg-emerald-400' },
-  cancelado: { label: 'Cancelado', color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/30', dot: 'bg-red-400' },
-  completado: { label: 'Completado', color: 'text-white/40', bg: 'bg-white/[0.05]', border: 'border-white/10', dot: 'bg-white/20' },
+  pendiente: { label: 'Pendiente', color: 'text-yellow-400', bg: 'bg-yellow-500/10', border: 'border-yellow-500/30', dot: 'bg-yellow-400', icon: '⏳' },
+  confirmado: { label: 'Confirmado', color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/30', dot: 'bg-emerald-400', icon: '✓' },
+  cancelado: { label: 'Cancelado', color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/30', dot: 'bg-red-400', icon: '✗' },
+  completado: { label: 'Completado', color: 'text-[#8880F5]', bg: 'bg-[#5448EE]/10', border: 'border-[#5448EE]/30', dot: 'bg-[#8880F5]', icon: '✓✓' },
 }
 
 export const COLORES_SERVICIO = [
@@ -126,13 +145,26 @@ export function formatCurrency(value: number): string {
   }).format(value)
 }
 
-export function generarLinkWhatsApp(turno: Turno): string {
+export function generarLinkWhatsApp(turno: Turno, mensajePersonalizado?: string): string {
   const tel = turno.clienteTel?.replace(/\D/g, '')
   if (!tel) return ''
+  const msg = encodeURIComponent(mensajePersonalizado ?? generarMensajeRecordatorio(turno))
+  return `https://wa.me/${tel}?text=${msg}`
+}
+
+export function generarMensajeRecordatorio(turno: Turno): string {
   const servicio = turno.servicio?.nombre ? ` (${turno.servicio.nombre})` : ''
   const precio = turno.precio > 0 ? ` - ${formatCurrency(turno.precio)}` : ''
+  return `Hola ${turno.clienteNombre}! 👋 Te recordamos tu turno${servicio} el ${formatFechaBonita(turno.fecha)} a las ${turno.horaInicio}hs${precio}. Cualquier consulta avisanos. Gracias!`
+}
+
+export function generarLinkWhatsAppSenia(turno: Turno, monto?: number): string {
+  const tel = turno.clienteTel?.replace(/\D/g, '')
+  if (!tel) return ''
+  const montoSenia = monto ?? turno.senia ?? turno.precio * 0.3
+  const servicio = turno.servicio?.nombre ? ` (${turno.servicio.nombre})` : ''
   const msg = encodeURIComponent(
-    `Hola ${turno.clienteNombre}! 👋 Te recordamos tu turno${servicio} el ${formatFechaBonita(turno.fecha)} a las ${turno.horaInicio}hs${precio}. Cualquier consulta avisanos. Gracias!`,
+    `Hola ${turno.clienteNombre}! 👋 Para confirmar tu turno${servicio} del ${formatFechaBonita(turno.fecha)} a las ${turno.horaInicio}hs, te pedimos una seña de ${formatCurrency(montoSenia)}. Avísame por aquí para coordinar el pago. Gracias!`,
   )
   return `https://wa.me/${tel}?text=${msg}`
 }

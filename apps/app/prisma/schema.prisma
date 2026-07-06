@@ -370,6 +370,7 @@ model Empleado {
   user        User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   asistencias RegistroAsistencia[]
   liquidacionItems LiquidacionItem[]
+  turnos      Turno[]
 }
 
 model RegistroAsistencia {
@@ -478,24 +479,30 @@ model TurnoServicio {
 }
 
 model Turno {
-  id            String   @id @default(cuid())
-  userId        String
-  servicioId    String?
-  clienteNombre String
-  clienteTel    String?
-  clienteEmail  String?
-  fecha         String
-  horaInicio    String
-  horaFin       String
-  duracion      Int
-  precio        Float    @default(0)
-  estado        String   @default("pendiente")
-  notas         String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                  String   @id @default(cuid())
+  userId              String
+  servicioId          String?
+  empleadoId          String?
+  clienteNombre       String
+  clienteTel          String?
+  clienteEmail        String?
+  fecha               String
+  horaInicio          String
+  horaFin             String
+  duracion            Int
+  precio              Float    @default(0)
+  senia               Float    @default(0)
+  seniaPagada         Boolean  @default(false)
+  estado              String   @default("pendiente")
+  notas               String?
+  proximoRecordatorio String?
+  recordatorioEnviado Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
   user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   servicio TurnoServicio? @relation(fields: [servicioId], references: [id], onDelete: SetNull)
+  empleado Empleado?      @relation(fields: [empleadoId], references: [id], onDelete: SetNull)
 }
 
 // ── Liquidación de Sueldos ────────────────────────────────────────────────────
