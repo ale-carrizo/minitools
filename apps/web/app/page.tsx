@@ -4,17 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import ParticleField from "./components/ParticleField";
 
 // Inline SVG icons — lucide-style line art
-function IconFacturacion() {
-  return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>;
-}
 function IconPresupuestos() {
   return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>;
-}
-function IconGastos() {
-  return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>;
-}
-function IconCobranzas() {
-  return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>;
 }
 function IconStock() {
   return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>;
@@ -22,8 +13,8 @@ function IconStock() {
 function IconProyectos() {
   return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>;
 }
-function IconReportes() {
-  return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>;
+function IconCobranzas() {
+  return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>;
 }
 function IconSueldos() {
   return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>;
@@ -34,11 +25,11 @@ function IconCRM() {
 function IconAgenda() {
   return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>;
 }
-function IconDocumentos() {
-  return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>;
+function IconCalculadora() {
+  return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><circle cx="8" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="16" cy="12" r="1"/><circle cx="8" cy="17" r="1"/><circle cx="12" cy="17" r="1"/><circle cx="16" cy="17" r="1"/></svg>;
 }
-function IconTienda() {
-  return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>;
+function IconGarantia() {
+  return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>;
 }
 function IconCheck() {
   return <svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="#5448EE" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>;
@@ -67,33 +58,29 @@ function ZimpleIcon({ size = 28 }: { size?: number }) {
   );
 }
 
-const chipColors = ["#3B82F6","#14B8A6","#22C55E","#F59E0B","#EC4899","#8B5CF6","#3B82F6","#14B8A6","#22C55E","#F59E0B","#EC4899","#3B82F6"];
+const chipColors = ["#3B82F6","#14B8A6","#22C55E","#F59E0B","#EC4899","#8B5CF6","#3B82F6","#14B8A6","#22C55E"];
 
 const chips = [
-  "Facturación","Presupuestos","Control de Gastos","Cobranzas",
-  "Stock e Inventario","Proyectos","Reportes","Sueldos & RRHH",
-  "CRM de Clientes","Agenda & Turnos","Documentos","Tienda Online",
+  "Control de Stock","Presupuestos","Caja + Pagos","Calculadora de Precios",
+  "Recibo de Sueldo","Gestión de Turnos","Garantías","Clientes y Pagos","Tareas / Kanban",
 ];
 
-const categories = ["Todos","Finanzas","Operaciones","RRHH","Productividad","Comercio"];
+const categories = ["Todos","Finanzas","Operaciones","Productividad","Comercio"];
 
 const tools = [
-  { id: "facturacion", Icon: IconFacturacion, name: "Facturación", desc: "Emití facturas y tickets en segundos. Listo para integrarse con AFIP.", category: "Finanzas" },
+  { id: "stock", Icon: IconStock, name: "Control de Stock", desc: "Controlá el stock en tiempo real. Alertas de bajo inventario.", category: "Operaciones" },
   { id: "presupuestos", Icon: IconPresupuestos, name: "Presupuestos", desc: "Creá cotizaciones profesionales y haceles seguimiento de estado.", category: "Finanzas" },
-  { id: "gastos", Icon: IconGastos, name: "Control de Gastos", desc: "Registrá y categorizá los gastos de tu negocio en un solo lugar.", category: "Finanzas" },
-  { id: "cobranzas", Icon: IconCobranzas, name: "Cobranzas", desc: "Recordatorios automáticos y seguimiento de pagos pendientes.", category: "Finanzas" },
-  { id: "stock", Icon: IconStock, name: "Stock e Inventario", desc: "Controlá el stock en tiempo real. Alertas de bajo inventario.", category: "Operaciones" },
-  { id: "proyectos", Icon: IconProyectos, name: "Proyectos", desc: "Organizá tareas y equipos. Tableros kanban y seguimiento de progreso.", category: "Productividad" },
-  { id: "reportes", Icon: IconReportes, name: "Reportes", desc: "Dashboards y reportes automáticos para tomar mejores decisiones.", category: "Operaciones" },
-  { id: "sueldos", Icon: IconSueldos, name: "Sueldos & RRHH", desc: "Liquidá sueldos y gestioná tu equipo en un solo lugar.", category: "RRHH" },
-  { id: "crm", Icon: IconCRM, name: "CRM de Clientes", desc: "Registrá contactos, historial y seguimiento de oportunidades.", category: "Comercio" },
-  { id: "agenda", Icon: IconAgenda, name: "Agenda & Turnos", desc: "Sistema de turnos online con recordatorios automáticos.", category: "Productividad" },
-  { id: "documentos", Icon: IconDocumentos, name: "Documentos", desc: "Creá, firmá y almacená documentos importantes de tu empresa.", category: "Productividad" },
-  { id: "tienda", Icon: IconTienda, name: "Tienda Online", desc: "Tu catálogo online con pagos integrados y gestión de pedidos.", category: "Comercio" },
+  { id: "caja", Icon: IconCobranzas, name: "Caja + Pagos", desc: "Registrá ingresos y egresos. Lectura de comprobantes por IA.", category: "Finanzas" },
+  { id: "precios", Icon: IconCalculadora, name: "Calculadora de Precios", desc: "Calculá precio de venta desde costo, IVA, margen y punto de equilibrio.", category: "Finanzas" },
+  { id: "sueldos", Icon: IconSueldos, name: "Recibo de Sueldo", desc: "Generá recibos de sueldo PDF para empleados y monotributistas.", category: "Finanzas" },
+  { id: "turnos", Icon: IconAgenda, name: "Gestión de Turnos", desc: "Sistema de turnos online con recordatorios automáticos.", category: "Productividad" },
+  { id: "garantias", Icon: IconGarantia, name: "Garantías", desc: "Seguimiento de garantías con alertas de vencimiento e historial.", category: "Operaciones" },
+  { id: "socios", Icon: IconCRM, name: "Clientes y Pagos", desc: "Cobranza recurrente, recordatorios y seguimiento de clientes.", category: "Comercio" },
+  { id: "tareas", Icon: IconProyectos, name: "Tareas / Kanban", desc: "Organizá tareas en tableros kanban con hasta 8 columnas.", category: "Productividad" },
 ];
 
-const monthlyFeatures = ["Acceso a las 12 herramientas","Actualizaciones automáticas","Soporte por email","Cancelá en cualquier momento"];
-const annualFeatures = ["Todo lo del plan Mensual","Soporte prioritario 24/7","Acceso anticipado a nuevas tools","Ahorrás $48 al año"];
+const monthlyFeatures = ["Acceso a las 9 herramientas","Actualizaciones automáticas","Soporte por email","Cancelá en cualquier momento"];
+const annualFeatures = ["Todo lo del plan Mensual","Soporte prioritario 24/7","Acceso anticipado a nuevas tools","Ahorrás $36 al año"];
 
 export default function Home() {
   const [scrolled, setScrolled] = useState(false);
@@ -151,7 +138,7 @@ export default function Home() {
               <span className="absolute inline-flex h-full w-full rounded-full bg-[#8880F5] opacity-75 animate-ping" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-[#8880F5]" />
             </span>
-            <span className="text-white/70 text-[12.5px] font-medium">12 herramientas · una sola suscripción</span>
+            <span className="text-white/70 text-[12.5px] font-medium">9 herramientas · una sola suscripción</span>
           </div>
 
           <h1 className="font-display text-5xl sm:text-[70px] lg:text-[82px] font-semibold leading-[1.04] tracking-[-0.045em] mb-5">
@@ -196,7 +183,7 @@ export default function Home() {
       {/* ── TOOLS GRID ─────────────────────────────── */}
       <section className="bg-[#F6F6FB] pt-16 pb-24 px-6">
         <div className="text-center mb-10">
-          <p className="text-[#5448EE] text-[11px] font-semibold tracking-[0.12em] uppercase mb-3">12 HERRAMIENTAS INCLUIDAS</p>
+          <p className="text-[#5448EE] text-[11px] font-semibold tracking-[0.12em] uppercase mb-3">9 HERRAMIENTAS INCLUIDAS</p>
           <h2 className="text-[36px] sm:text-[42px] font-semibold text-[#1a1a2e] tracking-[-0.03em] mb-3">
             Todo lo que necesita tu negocio
           </h2>
