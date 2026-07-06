@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
+import { recalcUserStorage } from '@/lib/storage'
 import {
   calcularTotales,
   type Cliente,
@@ -314,6 +315,7 @@ export async function guardarPresupuestoTemplate(data: {
     },
   })
 
+  await recalcUserStorage(userId)
   revalidatePath('/dashboard/presupuestos')
   revalidatePath('/dashboard/presupuestos/nuevo')
   revalidatePath('/dashboard/presupuestos/template')
@@ -637,6 +639,7 @@ export async function duplicarPresupuesto(id: string): Promise<Presupuesto> {
     })
   })
 
+  await recalcUserStorage(userId)
   revalidatePath('/dashboard/presupuestos')
   redirect(`/dashboard/presupuestos/${duplicado.id}`)
 }

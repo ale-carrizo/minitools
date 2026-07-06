@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import Link from "next/link";
+import StorageWidget from "@/app/components/StorageWidget";
 
 const tools = [
   { num: "01", label: "Control de Stock", href: "/dashboard/stock", status: "available" as const, icon: <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor"><path d="M4 3a2 2 0 100 4h12a2 2 0 100-4H4z"/><path fillRule="evenodd" d="M3 8h14v7a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm5 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" clipRule="evenodd"/></svg>, desc: "Inventario con alertas automáticas de stock mínimo" },
@@ -68,6 +69,8 @@ export default async function DashboardPage() {
           ))}
         </div>
       </div>
+
+      <StorageWidget />
 
       {/* Tools grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">

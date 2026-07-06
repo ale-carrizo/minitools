@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
+import { recalcUserStorage } from '@/lib/storage'
 import type { ReciboConfig } from '@/types/recibo'
 
 async function getUserId() {
@@ -37,6 +38,7 @@ export async function saveReciboConfig(data: {
     update: { ...data, updatedAt: new Date() },
     create: { userId, razonSocial: data.razonSocial, cuit: data.cuit ?? null, domicilio: data.domicilio ?? null, logoUrl: data.logoUrl ?? null },
   })
+  await recalcUserStorage(userId)
   revalidatePath('/dashboard/sueldos')
   return { id: raw.id, userId: raw.userId, razonSocial: raw.razonSocial, cuit: raw.cuit, domicilio: raw.domicilio, logoUrl: raw.logoUrl ?? null }
 }
