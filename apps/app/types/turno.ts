@@ -129,8 +129,10 @@ export function formatCurrency(value: number): string {
 export function generarLinkWhatsApp(turno: Turno): string {
   const tel = turno.clienteTel?.replace(/\D/g, '')
   if (!tel) return ''
+  const servicio = turno.servicio?.nombre ? ` (${turno.servicio.nombre})` : ''
+  const precio = turno.precio > 0 ? ` - ${formatCurrency(turno.precio)}` : ''
   const msg = encodeURIComponent(
-    `Hola ${turno.clienteNombre}! Te recordamos tu turno el ${formatFechaBonita(turno.fecha)} a las ${turno.horaInicio}hs. Cualquier consulta escribinos. Gracias!`,
+    `Hola ${turno.clienteNombre}! 👋 Te recordamos tu turno${servicio} el ${formatFechaBonita(turno.fecha)} a las ${turno.horaInicio}hs${precio}. Cualquier consulta avisanos. Gracias!`,
   )
   return `https://wa.me/${tel}?text=${msg}`
 }

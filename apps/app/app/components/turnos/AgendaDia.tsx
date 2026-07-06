@@ -190,21 +190,42 @@ export default function AgendaDia({
       {/* Quick list */}
       {turnos.length > 0 && (
         <div className="space-y-1.5">
-          {turnos.map((turno) => (
-            <Link
-              key={turno.id}
-              href={`/dashboard/turnos/${turno.id}`}
-              className="flex items-center gap-3 bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 hover:bg-white/[0.05] transition-colors"
-            >
-              <div
-                className="w-2 h-2 rounded-full flex-shrink-0"
-                style={{ backgroundColor: turno.servicio?.color ?? '#5448EE' }}
-              />
-              <span className="text-white/50 text-[11px] font-mono w-14">{turno.horaInicio}</span>
-              <span className="text-white text-[13px] font-medium">{turno.clienteNombre}</span>
-              <span className="text-white/30 text-[12px] truncate ml-auto">{turno.servicio?.nombre ?? ''}</span>
-            </Link>
-          ))}
+          {turnos.map((turno) => {
+            const linkWhatsApp = (() => {
+              const tel = turno.clienteTel?.replace(/\D/g, '')
+              if (!tel) return ''
+              const servicio = turno.servicio?.nombre ? ` (${turno.servicio.nombre})` : ''
+              const precio = turno.precio > 0 ? ` - ${formatCurrency(turno.precio)}` : ''
+              const msg = encodeURIComponent(
+                `Hola ${turno.clienteNombre}! 👋 Te recordamos tu turno${servicio} el ${formatFechaBonita(turno.fecha)} a las ${turno.horaInicio}hs${precio}. Cualquier consulta avisanos. Gracias!`,
+              )
+              return `https://wa.me/${tel}?text=${msg}`
+            })()
+
+            return (
+              <div key={turno.id} className="flex items-center gap-3 bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 hover:bg-white/[0.05] transition-colors">
+                <div
+                  className="w-2 h-2 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: turno.servicio?.color ?? '#5448EE' }}
+                />
+                <span className="text-white/50 text-[11px] font-mono w-14">{turno.horaInicio}</span>
+                <Link href={`/dashboard/turnos/${turno.id}`} className="text-white text-[13px] font-medium hover:text-[#8880F5] transition-colors truncate">
+                  {turno.clienteNombre}
+                </Link>
+                <span className="text-white/30 text-[12px] truncate ml-auto hidden sm:block">{turno.servicio?.nombre ?? ''}</span>
+                {linkWhatsApp && (
+                  <a
+                    href={linkWhatsApp}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex-shrink-0 rounded-lg bg-[#25D366]/15 hover:bg-[#25D366]/25 border border-[#25D366]/20 text-[#25D366] px-2.5 py-1.5 text-[11px] font-medium transition-colors"
+                  >
+                    WhatsApp
+                  </a>
+                )}
+              </div>
+            )
+          })}
         </div>
       )}
     </div>
