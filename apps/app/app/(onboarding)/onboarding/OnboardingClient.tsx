@@ -6,19 +6,7 @@ import { saveAppsSelection, savePaymentMethod, completeOnboarding } from '@/lib/
 import { calcPricing } from '@/lib/pricing'
 import { ZimpleIcon } from '@/app/components/ZimpleLogo'
 
-// ── Catálogo de apps ────────────────────────────────────────────────────────
-const APPS = [
-  { slug: 'stock',       label: 'Control de Stock',     desc: 'Inventario con alertas de stock mínimo',         icon: '📦' },
-  { slug: 'presupuestos',label: 'Presupuestos',          desc: 'PDFs con logo y seguimiento de estados',         icon: '📄' },
-  { slug: 'caja',        label: 'Caja + Pagos',          desc: 'Ingresos, egresos y lectura de comprobantes IA', icon: '💰' },
-  { slug: 'precios',     label: 'Calculadora de Precios',desc: 'Precio de venta, margen y punto de equilibrio',  icon: '🧮' },
-  { slug: 'sueldos',     label: 'Recibo de Sueldo',      desc: 'PDFs de recibos desde Excel del contador',      icon: '🧾' },
-  { slug: 'asistencia',  label: 'Control de Asistencia', desc: 'Presentismo diario con historial por empleado',  icon: '✅' },
-  { slug: 'turnos',      label: 'Gestión de Turnos',     desc: 'Agenda online con recordatorios por WhatsApp',   icon: '📅' },
-  { slug: 'garantias',   label: 'Garantías',             desc: 'Alertas de vencimiento e historial de reclamos', icon: '🛡️' },
-  { slug: 'socios',      label: 'Clientes y Pagos',      desc: 'Cobranza recurrente con avisos por WhatsApp',    icon: '👥' },
-  { slug: 'tareas',      label: 'Tareas / Kanban',       desc: 'Tableros con hasta 8 columnas al estilo Trello', icon: '📋' },
-]
+import { APPS } from '@/lib/apps-config'
 
 // ── Props ───────────────────────────────────────────────────────────────────
 interface Props {

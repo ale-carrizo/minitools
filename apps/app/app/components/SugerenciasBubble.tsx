@@ -3,6 +3,8 @@
 import { useState, useTransition, useRef, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { enviarSugerencia } from '@/lib/actions/sugerencias'
+import { getToolPathLabel } from '@/lib/apps-config'
+import { useAppNames } from '@/hooks/useAppNames'
 
 const CATEGORIAS = [
   { value: 'mejora',         label: '✨ Mejora',          color: '#8880F5' },
@@ -10,23 +12,6 @@ const CATEGORIAS = [
   { value: 'error',          label: '🐛 Error / Bug',     color: '#F87171' },
   { value: 'otro',           label: '💬 Otro',            color: '#9CA3AF' },
 ]
-
-const TOOL_LABELS: Record<string, string> = {
-  '/dashboard/stock':        'Stock',
-  '/dashboard/presupuestos': 'Presupuestos',
-  '/dashboard/precios':      'Precios',
-  '/dashboard/caja':         'Caja',
-  '/dashboard/asistencia':   'Asistencia',
-  '/dashboard/sueldos':      'Sueldos',
-  '/dashboard/garantias':    'Garantías',
-  '/dashboard/turnos':       'Turnos',
-  '/dashboard/socios':       'Clientes y Pagos',
-}
-
-function getToolFromPath(path: string): string | undefined {
-  const match = Object.keys(TOOL_LABELS).find(k => path.startsWith(k))
-  return match ? TOOL_LABELS[match] : undefined
-}
 
 export default function SugerenciasBubble() {
   const [open, setOpen]         = useState(false)
@@ -36,7 +21,8 @@ export default function SugerenciasBubble() {
   const [, startTrans]          = useTransition()
   const panelRef                = useRef<HTMLDivElement>(null)
   const pathname                = usePathname()
-  const tool                    = getToolFromPath(pathname)
+  const { names }               = useAppNames()
+  const tool                    = getToolPathLabel(pathname, names)
 
   // Cerrar al hacer clic fuera
   useEffect(() => {
