@@ -209,30 +209,29 @@ export default function TemplateForm({ template }: Props) {
         </button>
       </div>
 
-      {/* Vista rápida */}
+      {/* Vista rapida */}
       <div className="h-fit rounded-2xl border border-white/[0.08] bg-white/[0.04] p-5">
-        <p className="mb-4 text-[11px] font-semibold uppercase tracking-wider text-white/30">Vista rápida del PDF</p>
-        <div className="rounded-2xl border border-white/[0.06] bg-[#11111b] p-5">
+        <p className="mb-4 text-[11px] font-semibold uppercase tracking-wider text-white/30">Vista rapida del PDF</p>
+        <div className="rounded-2xl border border-black/10 bg-white p-5 shadow-sm">
           <div className="mb-4 flex items-center gap-3">
             {logoIsData ? (
-              <div className="h-10 w-10 rounded-lg overflow-hidden bg-white/[0.05] flex items-center justify-center">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+              <div className="h-10 w-10 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
                 <img src={form.logoUrl} alt="Logo" className="h-full w-full object-contain" />
               </div>
             ) : (
               <div className="h-2 w-2 rounded-full" style={{ backgroundColor: form.colorPrimario }} />
             )}
             <div>
-              <h3 className="text-[15px] font-semibold text-white">{form.nombreComercial || 'Tu empresa'}</h3>
-              {form.telefono ? <p className="text-[12px] text-white/45">{form.telefono}</p> : null}
+              <h3 className="text-[15px] font-semibold text-gray-900">{form.nombreComercial || 'Tu empresa'}</h3>
+              {form.telefono ? <p className="text-[12px] text-gray-500">{form.telefono}</p> : null}
             </div>
           </div>
-          <p className="text-[13px] text-white/45 italic">{form.textoEncabezado || 'Presupuestos prolijos con tu identidad.'}</p>
-          <div className="mt-5 rounded-xl border border-white/[0.06] bg-white/[0.03] p-4">
-            <p className="text-[12px] font-medium text-white/80">Defaults activos</p>
-            <p className="mt-2 text-[13px] text-white/55">Validez: {form.diasValidezDefault} días</p>
-            <p className="text-[13px] text-white/55">IVA inicial: {form.mostrarIvaDefault ? 'Activo' : 'Desactivado'}</p>
-            <p className="text-[13px] text-white/55">Servicios guardados: {servicios.filter((s) => s.nombre.trim()).length}</p>
+          <p className="text-[13px] text-gray-500 italic">{form.textoEncabezado || 'Presupuestos prolijos con tu identidad.'}</p>
+          <div className="mt-5 rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <p className="text-[12px] font-medium text-gray-800">Defaults activos</p>
+            <p className="mt-2 text-[13px] text-gray-500">Validez: {form.diasValidezDefault} dias</p>
+            <p className="text-[13px] text-gray-500">IVA inicial: {form.mostrarIvaDefault ? 'Activo' : 'Desactivado'}</p>
+            <p className="text-[13px] text-gray-500">Servicios guardados: {servicios.filter((s) => s.nombre.trim()).length}</p>
           </div>
         </div>
       </div>
