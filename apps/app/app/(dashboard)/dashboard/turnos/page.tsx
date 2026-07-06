@@ -21,5 +21,5 @@ export default async function TurnosPage({
   }
 
   const turnos = await getTurnos(fecha)
-  return <AgendaDia fecha={fecha} turnos={turnos} config={config} />
+  return <AgendaDia fecha={fecha} turnos={turnos} config={config} vista={vista as 'dia' | 'semana'} />
 }
