@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { guardarConfig } from '@/lib/actions/turno-mutate'
+import { guardarConfig } from '@/lib/actions/turno'
 import { DIAS_SEMANA, type TurnoConfig } from '@/types/turno'
 
 export default function ConfigForm({ config }: { config: TurnoConfig }) {

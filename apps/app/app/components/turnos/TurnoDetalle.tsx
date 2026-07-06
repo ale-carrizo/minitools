@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useTransition } from 'react'
-import { cambiarEstado, eliminarTurno } from '@/lib/actions/turno-mutate'
+import { cambiarEstado, eliminarTurno } from '@/lib/actions/turno'
 import { formatCurrency, formatFechaBonita, formatFecha, generarLinkWhatsApp, type Turno } from '@/types/turno'
 import EstadoBadge from './EstadoBadge'
 

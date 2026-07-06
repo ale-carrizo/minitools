@@ -1,36 +1,27 @@
 'use client'
 
-import { useEffect, useMemo, useState, useTransition } from 'react'
+import { useMemo, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { crearTurno, editarTurno } from '@/lib/actions/turno-mutate'
+import { crearTurno, editarTurno } from '@/lib/actions/turno'
 import {
-  formatCurrency,
   generarSlots,
   sumarMinutos,
-  type EmpleadoTurno,
   type Turno,
   type TurnoConfig,
-  type TurnoServicio,
 } from '@/types/turno'
 
 export default function TurnoForm({
   turno,
-  servicios,
-  empleados,
   fechaDefault,
   horaDefault,
   config,
 }: {
   turno?: Turno
-  servicios: TurnoServicio[]
-  empleados: EmpleadoTurno[]
   fechaDefault: string
   horaDefault?: string
   config: TurnoConfig
 }) {
   const router = useRouter()
-  const [servicioId, setServicioId] = useState(turno?.servicioId ?? '')
-  const [empleadoId, setEmpleadoId] = useState(turno?.empleadoId ?? '')
   const [clienteNombre, setClienteNombre] = useState(turno?.clienteNombre ?? '')
   const [clienteTel, setClienteTel] = useState(turno?.clienteTel ?? '')
   const [clienteEmail, setClienteEmail] = useState(turno?.clienteEmail ?? '')
@@ -38,21 +29,12 @@ export default function TurnoForm({
   const [horaInicio, setHoraInicio] = useState(turno?.horaInicio ?? horaDefault ?? '')
   const [duracion, setDuracion] = useState(turno?.duracion ?? 30)
   const [precio, setPrecio] = useState(turno?.precio ?? 0)
-  const [senia, setSenia] = useState(turno?.senia ?? 0)
-  const [seniaPagada, setSeniaPagada] = useState(turno?.seniaPagada ?? false)
   const [notas, setNotas] = useState(turno?.notas ?? '')
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
   const slots = useMemo(() => generarSlots(config.horaInicio, config.horaFin, config.intervalo), [config])
-  const servicioSeleccionado = useMemo(() => servicios.find((s) => s.id === servicioId) ?? null, [servicioId, servicios])
   const horaFin = horaInicio ? sumarMinutos(horaInicio, duracion) : ''
-
-  useEffect(() => {
-    if (!servicioSeleccionado) return
-    setDuracion(servicioSeleccionado.duracion)
-    setPrecio(servicioSeleccionado.precio)
-  }, [servicioSeleccionado])
 
   function normalizarWhatsApp(tel: string): string {
     const digits = tel.replace(/\D/g, '')
@@ -86,8 +68,6 @@ export default function TurnoForm({
     startTransition(async () => {
       try {
         const payload = {
-          servicioId,
-          empleadoId,
           clienteNombre,
           clienteTel: normalizarWhatsApp(clienteTel),
           clienteEmail,
@@ -95,8 +75,6 @@ export default function TurnoForm({
           horaInicio,
           duracion,
           precio,
-          senia,
-          seniaPagada,
           notas,
         }
 
@@ -115,31 +93,8 @@ export default function TurnoForm({
     <form onSubmit={handleSubmit} className="max-w-xl mx-auto md:mx-0 space-y-5">
       <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-4 md:p-5 space-y-4">
         <div>
-          <h2 className="text-white font-semibold text-[15px]">Servicio y empleado</h2>
-          <p className="text-white/35 text-[12px] mt-1">Asigná un servicio y un empleado para controlar disponibilidad.</p>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <label className="text-[12px] text-white/50">Servicio</label>
-            <select value={servicioId} onChange={(e) => setServicioId(e.target.value)} className="w-full bg-white/[0.05] border border-white/[0.09] rounded-xl text-white px-3 py-2.5 text-sm focus:outline-none focus:border-[#5448EE]/60">
-              <option value="">Sin servicio</option>
-              {servicios.map((servicio) => <option key={servicio.id} value={servicio.id}>{servicio.nombre} · {servicio.duracion} min · {servicio.precio > 0 ? formatCurrency(servicio.precio) : 'Gratis'}</option>)}
-            </select>
-          </div>
-          <div className="space-y-2">
-            <label className="text-[12px] text-white/50">Empleado</label>
-            <select value={empleadoId} onChange={(e) => setEmpleadoId(e.target.value)} className="w-full bg-white/[0.05] border border-white/[0.09] rounded-xl text-white px-3 py-2.5 text-sm focus:outline-none focus:border-[#5448EE]/60">
-              <option value="">Sin asignar</option>
-              {empleados.map((empleado) => <option key={empleado.id} value={empleado.id}>{[empleado.nombre, empleado.apellido].filter(Boolean).join(' ')}</option>)}
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-4 md:p-5 space-y-4">
-        <div>
           <h2 className="text-white font-semibold text-[15px]">Fecha y hora</h2>
-          <p className="text-white/35 text-[12px] mt-1">Los horarios se generan según tu configuración actual. Dos turnos del mismo empleado no pueden superponerse.</p>
+          <p className="text-white/35 text-[12px] mt-1">Los horarios se generan según tu configuración actual.</p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
@@ -163,21 +118,6 @@ export default function TurnoForm({
             <label className="text-[12px] text-white/50">Precio</label>
             <input type="number" min="0" step="1" value={precio} onChange={(e) => setPrecio(Number(e.target.value))} className="w-full bg-white/[0.05] border border-white/[0.09] rounded-xl text-white px-3 py-2.5 text-sm focus:outline-none focus:border-[#5448EE]/60" />
           </div>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <label className="text-[12px] text-white/50">Seña solicitada</label>
-            <input type="number" min="0" step="1" value={senia} onChange={(e) => setSenia(Number(e.target.value))} className="w-full bg-white/[0.05] border border-white/[0.09] rounded-xl text-white px-3 py-2.5 text-sm focus:outline-none focus:border-[#5448EE]/60" />
-          </div>
-          {turno ? (
-            <div className="space-y-2">
-              <label className="text-[12px] text-white/50">Estado de la seña</label>
-              <select value={String(seniaPagada)} onChange={(e) => setSeniaPagada(e.target.value === 'true')} className="w-full bg-white/[0.05] border border-white/[0.09] rounded-xl text-white px-3 py-2.5 text-sm focus:outline-none focus:border-[#5448EE]/60">
-                <option value="false">Pendiente</option>
-                <option value="true">Pagada</option>
-              </select>
-            </div>
-          ) : null}
         </div>
         {horaInicio ? <p className="text-[12px] text-[#8880F5]">Turno de {horaInicio} a {horaFin} ({duracion} min)</p> : null}
       </div>
