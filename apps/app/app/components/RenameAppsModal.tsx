@@ -62,7 +62,7 @@ export default function RenameAppsModal({ open, onClose }: Props) {
       ref={overlayRef}
       className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
     >
-      <div className="w-full max-w-lg rounded-2xl border border-white/[0.10] light:border-gray-200 bg-[#13122A] light:bg-white shadow-2xl shadow-black/50 light:shadow-black/10 overflow-hidden animate-[fade-up_0.3s_cubic-bezier(0.16,1,0.3,1)_both]">
+      <div className="w-full max-w-lg rounded-2xl border border-white/[0.10] light:border-gray-200 bg-[#13122A] light:bg-[#ffffff] shadow-2xl shadow-black/50 light:shadow-black/10 overflow-hidden animate-[fade-up_0.3s_cubic-bezier(0.16,1,0.3,1)_both]">
         <div className="px-5 py-4 border-b border-white/[0.07] light:border-gray-100 flex items-center justify-between">
           <div>
             <p className="text-[14px] font-semibold text-white light:text-gray-900">Renombrar apps</p>

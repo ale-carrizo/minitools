@@ -79,7 +79,7 @@ export default function TareaModal({ tarea, columnas, onClose, onUpdate, onDelet
 
   return (
     <div className="fixed inset-0 bg-black/70 z-50 flex items-start justify-center p-4 pt-16 overflow-y-auto">
-      <div className="w-full max-w-2xl rounded-2xl border border-white/[0.10] light:border-black/[0.10] bg-[#13122A] light:bg-white shadow-2xl overflow-hidden mb-8">
+      <div className="w-full max-w-2xl rounded-2xl border border-white/[0.10] light:border-black/[0.10] bg-[#13122A] light:bg-[#ffffff] shadow-2xl overflow-hidden mb-8">
 
         {/* Portada */}
         {portada && (
@@ -264,7 +264,7 @@ export default function TareaModal({ tarea, columnas, onClose, onUpdate, onDelet
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-between mt-5 pt-4 border-t border-white/[0.06]">
+          <div className="flex items-center justify-between mt-5 pt-4 border-t border-white/[0.06] light:border-black/[0.08]">
             <button onClick={() => { startTrans(async () => { await deleteTarea(tarea.id); onDelete(tarea.id); onClose() }) }}
               className="text-[11px] text-red-400/60 hover:text-red-400 transition-colors">
               Eliminar tarea

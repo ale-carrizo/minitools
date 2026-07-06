@@ -162,7 +162,7 @@ function KanbanColumn({
             ···
           </button>
           {showMenu && (
-            <div className="absolute right-0 top-8 w-44 rounded-xl border border-white/[0.10] light:border-black/[0.10] bg-[#1A1830] light:bg-white shadow-xl z-20 overflow-hidden">
+            <div className="absolute right-0 top-8 w-44 rounded-xl border border-white/[0.10] light:border-black/[0.10] bg-[#1A1830] light:bg-[#ffffff] shadow-xl z-20 overflow-hidden">
               {COLORES_COLUMNA.map(c => (
                 <button key={c} onClick={() => { onColumnUpdate(columna.id, { color: c }); setShowMenu(false) }}
                   className="w-full flex items-center gap-2 px-3 py-2 text-[11px] text-white/50 hover:bg-white/[0.06] hover:text-white transition-colors">
