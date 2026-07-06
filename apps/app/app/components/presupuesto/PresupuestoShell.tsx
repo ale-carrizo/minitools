@@ -19,7 +19,7 @@ export default function PresupuestoShell({
   ]
 
   return (
-    <div className="p-8">
+    <div className="px-4 py-6 md:p-8">
       <div className="mb-6">
         <h1 className="text-[24px] font-semibold tracking-[-0.03em] text-white">Generador de Presupuestos</h1>
         <p className="mt-0.5 text-sm text-white/40">Cotizaciones con estado, clientes y PDF descargable</p>

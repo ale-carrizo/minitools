@@ -3,7 +3,7 @@ import SociosTabs from '@/app/components/socios/SociosTabs'
 
 export default function SociosLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="p-8">
+    <div className="px-4 py-6 md:p-8">
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="font-display text-[28px] font-semibold tracking-[-0.035em] text-white">

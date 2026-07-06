@@ -18,7 +18,7 @@ export default function StockShell({ children, alertas = 0 }: Props) {
   ]
 
   return (
-    <div className="p-8">
+    <div className="px-4 py-6 md:p-8">
       <div className="mb-6">
         <h1 className="text-[24px] font-semibold text-white tracking-[-0.03em]">Control de Stock</h1>
         <p className="text-white/40 text-sm mt-0.5">Inventario y alertas de stock mínimo</p>
