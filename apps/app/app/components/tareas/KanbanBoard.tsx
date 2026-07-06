@@ -138,20 +138,21 @@ function KanbanColumn({
       {/* Column header */}
       <div className={`flex items-center gap-2 px-3 py-2.5 rounded-xl mb-2 transition-colors ${isDragOver ? 'bg-white/[0.08]' : 'bg-white/[0.04]'}`}>
         <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: columna.color }} />
-        {editName ? (
-          <input
-            value={name}
-            onChange={e => setName(e.target.value)}
-            onBlur={saveName}
-            onKeyDown={e => { if (e.key === 'Enter') saveName(); if (e.key === 'Escape') { setName(columna.nombre); setEditName(false) } }}
-            autoFocus
-            className="flex-1 text-[13px] font-semibold text-white bg-transparent border-none outline-none"
-          />
-        ) : (
-          <button onClick={() => setEditName(true)} className="flex-1 text-[13px] font-semibold text-white text-left hover:text-white/80">
-            {columna.nombre}
-          </button>
-        )}
+          {editName ? (
+            <input
+              value={name}
+              onChange={e => setName(e.target.value)}
+              onBlur={saveName}
+              onKeyDown={e => { if (e.key === 'Enter') saveName(); if (e.key === 'Escape') { setName(columna.nombre); setEditName(false) } }}
+              autoFocus
+              className="flex-1 text-[13px] font-semibold text-white bg-transparent border-b border-[#5448EE] outline-none pb-0.5"
+            />
+          ) : (
+            <button onClick={() => setEditName(true)} className="flex-1 text-[13px] font-semibold text-white text-left hover:text-[#8880F5] transition-colors cursor-text group" title="Click para renombrar">
+              {columna.nombre}
+              <span className="ml-1.5 opacity-0 group-hover:opacity-40 transition-opacity">✎</span>
+            </button>
+          )}
         <span className={`text-[11px] font-medium px-1.5 py-0.5 rounded-md ${overLimit ? 'bg-red-500/20 text-red-400' : 'bg-white/[0.06] text-white/35'}`}>
           {columna.tareas.length}{limite ? `/${limite}` : ''}
         </span>
@@ -170,6 +171,11 @@ function KanbanColumn({
                 </button>
               ))}
               <div className="border-t border-white/[0.06]" />
+              <button onClick={() => { setEditName(true); setShowMenu(false) }}
+                className="w-full text-left px-3 py-2.5 text-[11px] text-white/50 hover:bg-white/[0.06] hover:text-white transition-colors flex items-center gap-2">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Renombrar
+              </button>
               <button onClick={() => { onColumnDelete(columna.id); setShowMenu(false) }}
                 className="w-full text-left px-3 py-2.5 text-[11px] text-red-400/70 hover:bg-red-500/10 hover:text-red-400 transition-colors">
                 Eliminar columna
