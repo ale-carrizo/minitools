@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState, useTransition } from 'react'
-import { crearServicio, editarServicio } from '@/lib/actions/turno'
+import { crearServicio, editarServicio } from '@/lib/actions/turno-mutate'
 import { COLORES_SERVICIO, type TurnoServicio } from '@/types/turno'
 
 const QUICK_DURATIONS = [15, 30, 45, 60, 90, 120]

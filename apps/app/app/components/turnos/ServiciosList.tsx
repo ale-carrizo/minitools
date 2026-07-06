@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { eliminarServicio } from '@/lib/actions/turno'
+import { eliminarServicio } from '@/lib/actions/turno-mutate'
 import { formatCurrency, type TurnoServicio } from '@/types/turno'
 import ServicioForm from './ServicioForm'
 
