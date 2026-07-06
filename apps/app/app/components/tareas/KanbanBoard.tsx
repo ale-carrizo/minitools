@@ -30,7 +30,7 @@ function TareaCard({
       onDragStart={() => onDragStart(tarea)}
       onDragEnd={onDragEnd}
       onClick={() => onClick(tarea)}
-      className="group rounded-xl border border-white/[0.08] bg-[#13122A] hover:border-white/[0.15] hover:bg-[#16152E] cursor-pointer transition-all select-none shadow-sm hover:shadow-md hover:-translate-y-0.5"
+      className="group rounded-xl border border-white/[0.08] light:border-black/[0.08] bg-white/[0.05] light:bg-[#EBEBF5] hover:border-white/[0.15] light:hover:border-black/[0.15] hover:bg-white/[0.08] light:hover:bg-[#DEDEEB] cursor-pointer transition-all select-none shadow-sm hover:shadow-md hover:-translate-y-0.5"
     >
       {/* Portada */}
       {tarea.portada && (
@@ -162,7 +162,7 @@ function KanbanColumn({
             ···
           </button>
           {showMenu && (
-            <div className="absolute right-0 top-8 w-44 rounded-xl border border-white/[0.10] bg-[#1A1830] shadow-xl z-20 overflow-hidden">
+            <div className="absolute right-0 top-8 w-44 rounded-xl border border-white/[0.10] light:border-black/[0.10] bg-[#1A1830] light:bg-white shadow-xl z-20 overflow-hidden">
               {COLORES_COLUMNA.map(c => (
                 <button key={c} onClick={() => { onColumnUpdate(columna.id, { color: c }); setShowMenu(false) }}
                   className="w-full flex items-center gap-2 px-3 py-2 text-[11px] text-white/50 hover:bg-white/[0.06] hover:text-white transition-colors">
@@ -201,7 +201,7 @@ function KanbanColumn({
           <textarea value={newTitle} onChange={e => setNewTitle(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleAddCard() } if (e.key === 'Escape') { setAddingCard(false); setNewTitle('') } }}
             placeholder="Título de la tarea…" rows={2} autoFocus
-            className="w-full px-3 py-2.5 text-[12px] rounded-xl border border-white/[0.09] bg-[#13122A] text-white placeholder:text-white/20 focus:outline-none focus:border-[#5448EE]/50 resize-none"
+            className="w-full px-3 py-2.5 text-[12px] rounded-xl border border-white/[0.09] light:border-black/[0.10] bg-white/[0.05] light:bg-[#F7F7FB] text-white placeholder:text-white/20 light:placeholder:text-black/20 focus:outline-none focus:border-[#5448EE]/50 resize-none"
           />
           <div className="flex gap-2">
             <button onClick={handleAddCard} disabled={!newTitle.trim()}

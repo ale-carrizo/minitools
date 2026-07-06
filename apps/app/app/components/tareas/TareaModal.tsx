@@ -79,7 +79,7 @@ export default function TareaModal({ tarea, columnas, onClose, onUpdate, onDelet
 
   return (
     <div className="fixed inset-0 bg-black/70 z-50 flex items-start justify-center p-4 pt-16 overflow-y-auto">
-      <div className="w-full max-w-2xl rounded-2xl border border-white/[0.10] bg-[#13122A] shadow-2xl overflow-hidden mb-8">
+      <div className="w-full max-w-2xl rounded-2xl border border-white/[0.10] light:border-black/[0.10] bg-[#13122A] light:bg-white shadow-2xl overflow-hidden mb-8">
 
         {/* Portada */}
         {portada && (
