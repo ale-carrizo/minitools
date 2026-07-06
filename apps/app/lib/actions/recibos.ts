@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
-import { ReciboCobro } from '@/types/recibos'
+import type { ReciboCobro } from '@/types/recibos'
 
 const db = prisma as any
 

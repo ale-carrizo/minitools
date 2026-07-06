@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { getRecibos } from '@/lib/actions/recibos'
-import { formatCurrency, ReciboCobro } from '@/types/recibos'
+import { formatCurrency } from '@/types/recibos'
+import type { ReciboCobro } from '@/types/recibos'
 
 export default async function RecibosPage() {
   const recibos = await getRecibos()
