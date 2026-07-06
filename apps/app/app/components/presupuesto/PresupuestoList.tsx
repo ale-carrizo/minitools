@@ -112,7 +112,7 @@ export default function PresupuestoList({ presupuestos }: { presupuestos: Presup
       {error ? <p className="text-[12px] text-red-400">{error}</p> : null}
 
       {/* Lista fina */}
-      <div className="rounded-2xl border border-white/[0.08] overflow-hidden">
+      <div className="overflow-x-auto rounded-2xl border border-white/[0.08]">
         {filtrados.map((p, idx) => (
           <div
             key={p.id}

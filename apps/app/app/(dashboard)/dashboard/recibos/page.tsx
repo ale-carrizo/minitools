@@ -25,7 +25,8 @@ export default async function RecibosPage() {
           <p className="text-[13px] text-white/30">Creá tu primer recibo de cobro</p>
         </div>
       ) : (
-        <div className="rounded-2xl border border-white/[0.08] bg-white/[0.04] overflow-hidden">
+        <div className="overflow-x-auto rounded-2xl border border-white/[0.08] bg-white/[0.04]">
+          <div className="min-w-[500px]">
           <div className="grid grid-cols-[auto,1fr,1fr,auto,auto] items-center gap-4 px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-white/25 border-b border-white/[0.06]">
             <span>N°</span>
             <span>Recibido de</span>
@@ -51,6 +52,7 @@ export default async function RecibosPage() {
                 </Link>
               </div>
             ))}
+          </div>
           </div>
         </div>
       )}

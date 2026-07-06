@@ -77,8 +77,8 @@ export default function ProductoList({ productos }: { productos: Producto[] }) {
       </div>
 
       {/* Tabla */}
-      <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="overflow-x-auto rounded-2xl border border-white/[0.08] bg-white/[0.04]">
+        <table className="w-full text-sm min-w-[700px]">
           <thead>
             <tr className="border-b border-white/[0.06]">
               {['Producto', 'Categoría', 'Stock', 'Mínimo', 'Precio costo', 'Precio venta', ''].map(h => (
