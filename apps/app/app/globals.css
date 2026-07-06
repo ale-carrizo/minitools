@@ -246,3 +246,30 @@ button, a, input, select, textarea,
 }
 
 [data-theme="light"] .grain::after { opacity: 0.015; }
+
+/*
+ * Inputs de formulario: en toda la app usan bg-white/[0.05] + border-white/[0.09]
+ * + placeholder:text-white/20, pensados como un realce sutil de blanco sobre
+ * fondo oscuro. Con --color-white invertido en modo claro, ese mismo wash queda
+ * casi invisible sobre una página ya blanca. Override por selector de elemento
+ * (no por clase) para cubrir los ~30 archivos que repiten este patrón sin
+ * tocar cada uno.
+ */
+[data-theme="light"] input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="color"]),
+[data-theme="light"] textarea,
+[data-theme="light"] select {
+  background-color: #F7F7FB !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+[data-theme="light"] input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="color"])::placeholder,
+[data-theme="light"] textarea::placeholder {
+  color: #9295A6 !important;
+  opacity: 1;
+}
+
+[data-theme="light"] input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="color"]):focus,
+[data-theme="light"] textarea:focus,
+[data-theme="light"] select:focus {
+  border-color: #5448EE !important;
+}
