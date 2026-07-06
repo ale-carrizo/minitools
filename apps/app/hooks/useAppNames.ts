@@ -6,8 +6,8 @@ import { loadCustomNames, saveCustomNames, getAppLabel, type CustomAppNames } fr
 let shared: CustomAppNames = {}
 const listeners = new Set<() => void>()
 function subscribe(cb: () => void) { listeners.add(cb); return () => { listeners.delete(cb) } }
-function getSnapshot() { return shared }
-function getServerSnapshot() { return {} }
+function getSnapshot(): CustomAppNames { return shared }
+function getServerSnapshot(): CustomAppNames { return {} }
 
 function notify() { listeners.forEach(fn => fn()) }
 
