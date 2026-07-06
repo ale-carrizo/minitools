@@ -44,6 +44,29 @@ function IconCheck() {
   return <svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="#5448EE" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>;
 }
 
+function ZimpleIcon({ size = 28 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" fill="none">
+      <defs>
+        <linearGradient id="zimpleGradient" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#6E63FF" />
+          <stop offset="50%" stopColor="#3B6BFF" />
+          <stop offset="100%" stopColor="#00BFE6" />
+        </linearGradient>
+      </defs>
+      <rect width="100" height="100" rx="24" fill="url(#zimpleGradient)" />
+      <polyline
+        points="25,30 75,30 28,70 75,70"
+        fill="none"
+        stroke="white"
+        strokeWidth="14"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 const chipColors = ["#3B82F6","#14B8A6","#22C55E","#F59E0B","#EC4899","#8B5CF6","#3B82F6","#14B8A6","#22C55E","#F59E0B","#EC4899","#3B82F6"];
 
 const chips = [
@@ -98,14 +121,8 @@ export default function Home() {
         scrolled ? "bg-[#0C0B1A]/90 backdrop-blur-md border-b border-white/[0.06]" : "bg-white/[0.06]"
       }`}>
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-[7px] flex items-center justify-center flex-shrink-0 shadow-[0_4px_14px_-3px_rgba(84,72,238,0.7)]"
-            style={{ background: "linear-gradient(135deg, #6E63FF, #5448EE 55%, #4035d4)" }}>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <rect x="1.5" y="1.5" width="4.5" height="4.5" rx="1.2" fill="white" />
-              <rect x="8" y="1.5" width="4.5" height="4.5" rx="1.2" fill="white" fillOpacity="0.5" />
-              <rect x="1.5" y="8" width="4.5" height="4.5" rx="1.2" fill="white" fillOpacity="0.5" />
-              <rect x="8" y="8" width="4.5" height="4.5" rx="1.2" fill="white" />
-            </svg>
+          <div className="w-7 h-7 rounded-[7px] flex items-center justify-center flex-shrink-0 shadow-[0_4px_14px_-3px_rgba(84,72,238,0.7)]">
+            <ZimpleIcon size={28} />
           </div>
           <span className="font-display text-white font-semibold text-[16px] tracking-[-0.03em]">Zimple Tools</span>
         </div>
@@ -328,14 +345,8 @@ export default function Home() {
       <footer className="bg-[#0C0B1A] py-8 px-6">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-[5px] flex items-center justify-center flex-shrink-0"
-              style={{ background: "linear-gradient(135deg, #6E63FF, #5448EE 55%, #4035d4)" }}>
-              <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
-                <rect x="1.5" y="1.5" width="4.5" height="4.5" rx="1.2" fill="white" />
-                <rect x="8" y="1.5" width="4.5" height="4.5" rx="1.2" fill="white" fillOpacity="0.5" />
-                <rect x="1.5" y="8" width="4.5" height="4.5" rx="1.2" fill="white" fillOpacity="0.5" />
-                <rect x="8" y="8" width="4.5" height="4.5" rx="1.2" fill="white" />
-              </svg>
+            <div className="w-6 h-6 rounded-[5px] flex items-center justify-center flex-shrink-0">
+              <ZimpleIcon size={24} />
             </div>
             <span className="font-display text-white font-semibold text-[15px] tracking-[-0.025em]">Zimple Tools</span>
           </div>
