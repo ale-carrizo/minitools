@@ -267,35 +267,55 @@ export default function PresupuestoForm({ clientes, presupuesto, template }: Pro
           {items.map((item, index) => {
             const subtotal = item.cantidad * item.precioUnitario
             return (
-              <div key={`${item.orden}-${index}`} className="grid gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.03] p-4 md:grid-cols-[1.8fr,0.6fr,0.8fr,0.8fr,auto]">
-                <input
-                  value={item.descripcion}
-                  onChange={(e) => setItem(index, { descripcion: e.target.value })}
-                  placeholder="Descripcion del item"
-                  className="rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white placeholder:text-white/20 focus:border-[#5448EE]/60 focus:outline-none"
-                />
-                <input
-                  type="number" step="any"
-                  value={item.cantidad}
-                  onChange={(e) => setItem(index, { cantidad: Number(e.target.value) })}
-                  aria-label="Cantidad"
-                  className="rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white focus:border-[#5448EE]/60 focus:outline-none"
-                />
-                <div className="relative">
-                  <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[13px] text-white/35">$</span>
+              <div key={`${item.orden}-${index}`} className="grid grid-cols-2 gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.03] p-4 md:grid-cols-[1.8fr,0.6fr,0.8fr,0.8fr,auto]">
+                <div className="col-span-2 md:col-span-1">
+                  <label className="mb-1 block text-[11px] font-medium uppercase tracking-wider text-white/40 md:hidden">
+                    Descripción
+                  </label>
                   <input
-                    type="number" step="any"
-                    value={item.precioUnitario === 0 ? '' : item.precioUnitario}
-                    onChange={(e) => setItem(index, { precioUnitario: Number(e.target.value || 0) })}
-                    aria-label="Precio unitario"
-                    placeholder="0"
-                    className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] pl-7 pr-3 py-2.5 text-[13px] text-white placeholder:text-white/20 focus:border-[#5448EE]/60 focus:outline-none"
+                    value={item.descripcion}
+                    onChange={(e) => setItem(index, { descripcion: e.target.value })}
+                    placeholder="Descripcion del item"
+                    className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white placeholder:text-white/20 focus:border-[#5448EE]/60 focus:outline-none"
                   />
                 </div>
-                <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2.5 text-[13px] font-medium text-white/70">
-                  {formatCurrency(subtotal, form.moneda)}
+                <div className="md:col-span-1">
+                  <label className="mb-1 block text-[11px] font-medium uppercase tracking-wider text-white/40 md:hidden">
+                    Cantidad
+                  </label>
+                  <input
+                    type="number" step="any"
+                    value={item.cantidad}
+                    onChange={(e) => setItem(index, { cantidad: Number(e.target.value) })}
+                    aria-label="Cantidad"
+                    className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white focus:border-[#5448EE]/60 focus:outline-none"
+                  />
                 </div>
-                <div className="flex gap-2">
+                <div className="md:col-span-1">
+                  <label className="mb-1 block text-[11px] font-medium uppercase tracking-wider text-white/40 md:hidden">
+                    Precio unitario
+                  </label>
+                  <div className="relative">
+                    <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[13px] text-white/35">$</span>
+                    <input
+                      type="number" step="any"
+                      value={item.precioUnitario === 0 ? '' : item.precioUnitario}
+                      onChange={(e) => setItem(index, { precioUnitario: Number(e.target.value || 0) })}
+                      aria-label="Precio unitario"
+                      placeholder="0"
+                      className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] pl-7 pr-3 py-2.5 text-[13px] text-white placeholder:text-white/20 focus:border-[#5448EE]/60 focus:outline-none"
+                    />
+                  </div>
+                </div>
+                <div className="col-span-2 md:col-span-1">
+                  <label className="mb-1 block text-[11px] font-medium uppercase tracking-wider text-white/40 md:hidden">
+                    Subtotal
+                  </label>
+                  <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2.5 text-[13px] font-medium text-white/70">
+                    {formatCurrency(subtotal, form.moneda)}
+                  </div>
+                </div>
+                <div className="col-span-2 flex justify-end gap-2 md:col-span-1">
                   <button type="button" onClick={() => moveItem(index, -1)} className="rounded-xl border border-white/10 px-2.5 py-2 text-white/50 hover:text-white">↑</button>
                   <button type="button" onClick={() => moveItem(index, 1)} className="rounded-xl border border-white/10 px-2.5 py-2 text-white/50 hover:text-white">↓</button>
                   <button type="button" onClick={() => removeItem(index)} disabled={items.length === 1} className="rounded-xl border border-red-500/20 px-2.5 py-2 text-red-400 disabled:opacity-40">×</button>
