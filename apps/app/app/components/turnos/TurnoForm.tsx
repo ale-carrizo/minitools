@@ -103,7 +103,7 @@ export default function TurnoForm({
           </div>
           <div className="space-y-2">
             <label className="text-[12px] text-white/50">Hora de inicio *</label>
-            <select value={horaInicio} onChange={(e) => setHoraInicio(e.target.value)} className="w-full bg-white/[0.05] border border-white/[0.09] rounded-xl text-white px-3 py-2.5 text-sm focus:outline-none focus:border-[#5448EE]/60">
+            <select value={horaInicio} onChange={(e) => setHoraInicio(e.target.value)} className="w-full bg-[#151525] border border-white/[0.09] rounded-xl text-white px-3 py-2.5 text-sm focus:outline-none focus:border-[#5448EE]/60 [&_option]:bg-[#151525] [&_option]:text-white">
               <option value="">Seleccionar horario</option>
               {slots.map((slot) => <option key={slot} value={slot}>{slot}</option>)}
             </select>
