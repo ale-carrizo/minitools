@@ -11,7 +11,6 @@ export const APPS: AppDef[] = [
   { slug: 'caja',        label: 'Caja + Pagos',          desc: 'Ingresos, egresos y lectura de comprobantes IA', icon: '💰' },
   { slug: 'precios',     label: 'Calculadora de Precios',desc: 'Precio de venta, margen y punto de equilibrio',  icon: '🧮' },
   { slug: 'sueldos',     label: 'Recibo de Sueldo',      desc: 'PDFs de recibos desde Excel del contador',      icon: '🧾' },
-  { slug: 'asistencia',  label: 'Control de Asistencia', desc: 'Presentismo diario con historial por empleado',  icon: '✅' },
   { slug: 'turnos',      label: 'Gestión de Turnos',     desc: 'Agenda online con recordatorios por WhatsApp',   icon: '📅' },
   { slug: 'garantias',   label: 'Garantías',             desc: 'Alertas de vencimiento e historial de reclamos', icon: '🛡️' },
   { slug: 'socios',      label: 'Clientes y Pagos',      desc: 'Cobranza recurrente con avisos por WhatsApp',    icon: '👥' },
