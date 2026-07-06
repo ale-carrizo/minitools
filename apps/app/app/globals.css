@@ -1,13 +1,16 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-brand:       #5448EE;
-  --color-brand-light: #8880F5;
-  --color-brand-deep:  #3A2FB8;
-  --color-surface:     #0C0B1A;
-  --color-surface-2:   #111028;
+  --color-brand:        #326FEE;
+  --color-brand-light:  #00BDE6;
+  --color-brand-deep:   #642AEB;
+  --color-brand-purple: #642AEB;
+  --color-brand-blue:   #326FEE;
+  --color-brand-cyan:   #00BDE6;
+  --color-surface:      #0C0B1A;
+  --color-surface-2:    #111028;
 
-  --font-display: var(--font-bricolage), var(--font-dm-sans), sans-serif;
+  --font-display: var(--font-inter), sans-serif;
 
   --animate-fade-up:    fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
   --animate-fade-in:    fade-in 0.6s ease both;
@@ -69,7 +72,7 @@
 body {
   background-color: #0C0B1A;
   color: #ffffff;
-  font-family: var(--font-dm-sans), -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* Display font for headings — propagates to every tool's titles */
@@ -103,10 +106,10 @@ button, a, input, select, textarea,
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(40% 50% at 18% 20%, rgba(84,72,238,0.30), transparent 70%),
-    radial-gradient(38% 46% at 82% 26%, rgba(136,128,245,0.22), transparent 70%),
-    radial-gradient(45% 55% at 50% 88%, rgba(60,42,170,0.26), transparent 72%),
-    radial-gradient(30% 40% at 88% 78%, rgba(34,211,238,0.10), transparent 70%);
+    radial-gradient(40% 50% at 18% 20%, rgba(100,42,235,0.30), transparent 70%),
+    radial-gradient(38% 46% at 82% 26%, rgba(50,111,238,0.24), transparent 70%),
+    radial-gradient(45% 55% at 50% 88%, rgba(100,42,235,0.24), transparent 72%),
+    radial-gradient(30% 40% at 88% 78%, rgba(0,189,230,0.14), transparent 70%);
   filter: blur(8px);
   animation: aurora-drift 22s ease-in-out infinite;
 }
@@ -123,12 +126,17 @@ button, a, input, select, textarea,
 
 /* Animated gradient text */
 .text-gradient {
-  background: linear-gradient(110deg, #ffffff 0%, #b9b2ff 35%, #8880F5 55%, #ffffff 90%);
+  background: linear-gradient(110deg, #ffffff 0%, #a78bf5 30%, #326FEE 55%, #00BDE6 75%, #ffffff 95%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: gradient-pan 6s ease infinite;
+}
+
+/* Brand icon gradient — matches the Zimple "Z" mark */
+.brand-gradient {
+  background: linear-gradient(135deg, #642AEB 0%, #326FEE 50%, #00BDE6 100%);
 }
 
 /* Glass surface with gradient hairline border */
@@ -145,7 +153,7 @@ button, a, input, select, textarea,
   inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(160deg, rgba(255,255,255,0.18), rgba(255,255,255,0.02) 40%, rgba(84,72,238,0.25));
+  background: linear-gradient(160deg, rgba(255,255,255,0.18), rgba(255,255,255,0.02) 40%, rgba(50,111,238,0.25));
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
@@ -154,13 +162,13 @@ button, a, input, select, textarea,
 
 /* Brand gradient button with glow */
 .btn-brand {
-  background: linear-gradient(135deg, #6E63FF 0%, #5448EE 50%, #4035d4 100%);
+  background: linear-gradient(135deg, #642AEB 0%, #326FEE 55%, #00BDE6 100%);
   background-size: 180% 180%;
-  box-shadow: 0 6px 22px -6px rgba(84,72,238,0.55), inset 0 1px 0 rgba(255,255,255,0.18);
+  box-shadow: 0 6px 22px -6px rgba(50,111,238,0.55), inset 0 1px 0 rgba(255,255,255,0.18);
 }
 .btn-brand:hover {
   background-position: 100% 50%;
-  box-shadow: 0 10px 34px -6px rgba(84,72,238,0.75), inset 0 1px 0 rgba(255,255,255,0.25);
+  box-shadow: 0 10px 34px -6px rgba(50,111,238,0.75), inset 0 1px 0 rgba(255,255,255,0.25);
   transform: translateY(-1px);
 }
 .btn-brand:active { transform: translateY(0); }
@@ -172,8 +180,8 @@ button, a, input, select, textarea,
 }
 .card-glow:hover {
   transform: translateY(-3px);
-  border-color: rgba(84,72,238,0.55) !important;
-  box-shadow: 0 18px 50px -18px rgba(84,72,238,0.5);
+  border-color: rgba(50,111,238,0.55) !important;
+  box-shadow: 0 18px 50px -18px rgba(50,111,238,0.5);
 }
 
 /* Shimmer sweep for skeletons / highlights */
@@ -192,8 +200,8 @@ button, a, input, select, textarea,
 /* ── Scrollbar ─────────────────────────────────────────────── */
 ::-webkit-scrollbar       { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(136,128,245,0.22); border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(136,128,245,0.40); }
+::-webkit-scrollbar-thumb { background: rgba(50,111,238,0.28); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(50,111,238,0.45); }
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

@@ -2,7 +2,9 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { saveAppsSelection, savePaymentMethod, completeOnboarding, calcPricing } from '@/lib/actions/onboarding'
+import { saveAppsSelection, savePaymentMethod, completeOnboarding } from '@/lib/actions/onboarding'
+import { calcPricing } from '@/lib/pricing'
+import { ZimpleIcon } from '@/app/components/ZimpleLogo'
 
 // ── Catálogo de apps ────────────────────────────────────────────────────────
 const APPS = [
@@ -125,16 +127,8 @@ export default function OnboardingClient({ userName, initialState }: Props) {
     <div>
       {/* Logo */}
       <div className="flex items-center gap-2.5 mb-7">
-        <div className="w-9 h-9 rounded-[10px] flex items-center justify-center shadow-[0_4px_14px_-4px_rgba(84,72,238,0.7)]"
-          style={{ background: 'linear-gradient(135deg, #6E63FF, #5448EE 55%, #4035d4)' }}>
-          <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
-            <rect x="1.5" y="1.5" width="4.5" height="4.5" rx="1.2" fill="white"/>
-            <rect x="8"   y="1.5" width="4.5" height="4.5" rx="1.2" fill="white" fillOpacity="0.5"/>
-            <rect x="1.5" y="8"   width="4.5" height="4.5" rx="1.2" fill="white" fillOpacity="0.5"/>
-            <rect x="8"   y="8"   width="4.5" height="4.5" rx="1.2" fill="white"/>
-          </svg>
-        </div>
-        <span className="text-white font-semibold text-[15px] tracking-tight">Zimple</span>
+        <ZimpleIcon size={36} />
+        <span className="text-white font-extrabold text-[15px] tracking-tight">Zimple</span>
       </div>
 
       <StepBar />

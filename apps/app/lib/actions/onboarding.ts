@@ -3,11 +3,7 @@
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
-
-export function calcPricing(count: number) {
-  const pricePerApp = count >= 3 ? 6 : 7
-  return { pricePerApp, total: count * pricePerApp }
-}
+import { calcPricing } from '@/lib/pricing'
 
 export async function getOnboardingState() {
   const session = await auth()

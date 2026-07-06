@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import ParticleField from "../../components/ParticleField";
+import { ZimpleIcon } from "../../components/ZimpleLogo";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -48,7 +49,7 @@ export default function LoginPage() {
           width: "640px",
           height: "440px",
           borderRadius: "50%",
-          background: "radial-gradient(ellipse at center, #5448EE 0%, #8880F5 35%, transparent 70%)",
+          background: "radial-gradient(ellipse at center, #642AEB 0%, #326FEE 40%, #00BDE6 70%, transparent 85%)",
           filter: "blur(4px)",
           opacity: 0.16,
           top: "50%",
@@ -60,14 +61,8 @@ export default function LoginPage() {
       <div className="w-full max-w-sm relative z-10">
         {/* Logo + heading */}
         <div className="text-center mb-8 animate-[fade-up_0.7s_cubic-bezier(0.16,1,0.3,1)_both]">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-[14px] mb-5 animate-[float_7s_ease-in-out_infinite] shadow-[0_8px_30px_-6px_rgba(84,72,238,0.7)]"
-            style={{ background: "linear-gradient(135deg, #6E63FF, #5448EE 55%, #4035d4)" }}>
-            <svg width="20" height="20" viewBox="0 0 14 14" fill="none">
-              <rect x="1.5" y="1.5" width="4.5" height="4.5" rx="1.2" fill="white" />
-              <rect x="8" y="1.5" width="4.5" height="4.5" rx="1.2" fill="white" fillOpacity="0.5" />
-              <rect x="1.5" y="8" width="4.5" height="4.5" rx="1.2" fill="white" fillOpacity="0.5" />
-              <rect x="8" y="8" width="4.5" height="4.5" rx="1.2" fill="white" />
-            </svg>
+          <div className="inline-flex items-center justify-center mb-5 animate-[float_7s_ease-in-out_infinite] rounded-[14px] shadow-[0_8px_30px_-6px_rgba(50,111,238,0.7)]">
+            <ZimpleIcon size={48} />
           </div>
           <h1 className="text-[26px] font-semibold text-white tracking-[-0.035em]">
             Bienvenido de nuevo

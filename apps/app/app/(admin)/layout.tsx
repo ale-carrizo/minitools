@@ -1,4 +1,5 @@
 import { auth, signOut } from "@/auth";
+import { ZimpleIcon } from "@/app/components/ZimpleLogo";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 
@@ -20,14 +21,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <aside className="flex-shrink-0 flex flex-col border-r border-white/[0.06] overflow-y-auto no-scrollbar" style={{ width: "200px" }}>
         {/* Brand */}
         <div className="flex items-center gap-2.5 px-4 h-[52px] border-b border-white/[0.06] flex-shrink-0">
-          <div className="w-6 h-6 rounded-[5px] bg-[#5448EE] flex items-center justify-center flex-shrink-0">
-            <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
-              <rect x="1.5" y="1.5" width="4.5" height="4.5" rx="1.2" fill="white"/>
-              <rect x="8" y="1.5" width="4.5" height="4.5" rx="1.2" fill="white" fillOpacity="0.5"/>
-              <rect x="1.5" y="8" width="4.5" height="4.5" rx="1.2" fill="white" fillOpacity="0.5"/>
-              <rect x="8" y="8" width="4.5" height="4.5" rx="1.2" fill="white"/>
-            </svg>
-          </div>
+          <ZimpleIcon size={24} />
           <div className="min-w-0">
             <p className="text-white text-[12px] font-semibold leading-none tracking-[-0.02em]">Zimple Tools</p>
             <p className="text-white/30 text-[10px] mt-0.5">Admin</p>

@@ -6,7 +6,7 @@ export default function OnboardingLayout({ children }: { children: React.ReactNo
         className="absolute pointer-events-none"
         style={{
           width: '700px', height: '500px', borderRadius: '50%',
-          background: 'radial-gradient(ellipse at center, #5448EE 0%, #8880F5 30%, transparent 70%)',
+          background: 'radial-gradient(ellipse at center, #642AEB 0%, #326FEE 40%, #00BDE6 70%, transparent 85%)',
           filter: 'blur(6px)', opacity: 0.10,
           top: '50%', left: '50%', transform: 'translate(-50%, -55%)',
         }}

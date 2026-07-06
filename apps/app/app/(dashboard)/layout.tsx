@@ -1,5 +1,6 @@
 import { auth, signOut } from "@/auth";
 import SugerenciasBubble from "@/app/components/SugerenciasBubble";
+import { ZimpleIcon } from "@/app/components/ZimpleLogo";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 
@@ -32,16 +33,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
         {/* Brand */}
         <div className="flex items-center gap-2.5 px-5 h-[52px] border-b border-white/[0.06] flex-shrink-0">
-          <div className="w-7 h-7 rounded-[7px] flex items-center justify-center flex-shrink-0 shadow-[0_4px_14px_-3px_rgba(84,72,238,0.7)]"
-            style={{ background: "linear-gradient(135deg, #6E63FF, #5448EE 55%, #4035d4)" }}>
-            <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
-              <rect x="1.5" y="1.5" width="4.5" height="4.5" rx="1.2" fill="white"/>
-              <rect x="8" y="1.5" width="4.5" height="4.5" rx="1.2" fill="white" fillOpacity="0.5"/>
-              <rect x="1.5" y="8" width="4.5" height="4.5" rx="1.2" fill="white" fillOpacity="0.5"/>
-              <rect x="8" y="8" width="4.5" height="4.5" rx="1.2" fill="white"/>
-            </svg>
-          </div>
-          <span className="font-display text-white font-semibold text-[15px] tracking-[-0.02em]">Zimple Tools</span>
+          <ZimpleIcon size={28} />
+          <span className="font-display text-white font-extrabold text-[15px] tracking-[-0.02em]">Zimple Tools</span>
         </div>
 
         {/* Nav */}
