@@ -139,10 +139,32 @@ function ComprobanteUnificado({ onSuccess }: { onSuccess: () => void }) {
 
   return (
     <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl overflow-hidden">
-      <div className="px-4 py-3 border-b border-white/[0.06]">
+      <div className="px-4 py-3 border-b border-white/[0.06] flex items-center justify-between">
         <p className="text-[11px] font-semibold uppercase tracking-wider text-white/30">
           Comprobante de transferencia
         </p>
+        <button
+          type="button"
+          onClick={async () => {
+            const XLSX = await import('xlsx')
+            const template = [
+              { Fecha: '2026-07-01', Hora: '14:30', Descripción: 'Juan Perez — Cuota julio', Monto: 35000, Referencia: '00012345' },
+              { Fecha: '2026-07-02', Hora: '10:15', Descripción: 'María Gomez — Servicio técnico', Monto: 18200, Referencia: '' },
+            ]
+            const ws = XLSX.utils.json_to_sheet(template)
+            const wb = XLSX.utils.book_new()
+            XLSX.utils.book_append_sheet(wb, ws, 'Movimientos')
+            XLSX.writeFile(wb, 'plantilla_movimientos_caja.xlsx')
+          }}
+          className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#5448EE]/10 border border-[#5448EE]/20 text-[#8880F5] text-[10px] font-semibold hover:bg-[#5448EE]/20 transition-colors"
+        >
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Descargar plantilla
+        </button>
       </div>
 
       <div className="p-4 space-y-4">
