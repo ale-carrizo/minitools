@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { getRecibos } from '@/lib/actions/recibos'
-import { formatCurrency } from '@/types/recibos'
+import { formatCurrency, ReciboCobro } from '@/types/recibos'
 
 export default async function RecibosPage() {
   const recibos = await getRecibos()
@@ -33,7 +33,7 @@ export default async function RecibosPage() {
             <span />
           </div>
           <div className="divide-y divide-white/[0.04]">
-            {recibos.map((r) => (
+            {recibos.map((r: ReciboCobro) => (
               <div key={r.id} className="grid grid-cols-[auto,1fr,1fr,auto,auto] items-center gap-4 px-5 py-4 text-[13px] hover:bg-white/[0.02]">
                 <span className="text-white/50 font-mono text-[12px]">#{String(r.numero).padStart(4, '0')}</span>
                 <div>
