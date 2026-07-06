@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useAppNames } from '@/hooks/useAppNames'
 import RenameAppsModal from './RenameAppsModal'
 
@@ -18,7 +19,8 @@ const toolIcons: Record<string, React.ReactNode> = {
   recibos: <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm3 1h6v2H7V5zm0 4h6v2H7V9zm0 4h3v2H7v-2z"/></svg>,
 }
 
-export default function DashboardNav() {
+export default function DashboardNav({ onNavigate }: { onNavigate?: () => void }) {
+  const pathname = usePathname()
   const { getLabel } = useAppNames()
   const [editOpen, setEditOpen] = useState(false)
 
@@ -39,7 +41,12 @@ export default function DashboardNav() {
     <>
       <Link
         href="/dashboard"
-        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-white/60 light:text-gray-500 hover:text-white light:hover:text-gray-900 hover:bg-white/[0.06] light:hover:bg-gray-100 transition-colors"
+        onClick={onNavigate}
+        className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-colors ${
+          pathname === '/dashboard'
+            ? 'text-[#8880F5] bg-white/[0.08] light:bg-gray-100'
+            : 'text-white/60 light:text-gray-500 hover:text-white light:hover:text-gray-900 hover:bg-white/[0.06] light:hover:bg-gray-100'
+        }`}
       >
         <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
           <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
@@ -66,14 +73,24 @@ export default function DashboardNav() {
         <ul className="space-y-0.5">
           {tools.map(tool => {
             const slug = tool.href.split('/').pop()!
+            const isActive = pathname.startsWith(tool.href)
             return (
               <li key={tool.href}>
                 <Link
                   href={tool.href}
-                  className="group relative flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-white/60 light:text-gray-500 hover:text-white light:hover:text-gray-900 hover:bg-gradient-to-r hover:from-[#5448EE]/15 hover:to-transparent light:hover:bg-gradient-to-r light:hover:from-[#5448EE]/8 light:hover:to-transparent"
+                  onClick={onNavigate}
+                  className={`group relative flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-colors ${
+                    isActive
+                      ? 'text-[#8880F5] bg-gradient-to-r from-[#5448EE]/20 to-transparent light:bg-gradient-to-r light:from-[#5448EE]/10 light:to-transparent'
+                      : 'text-white/60 light:text-gray-500 hover:text-white light:hover:text-gray-900 hover:bg-gradient-to-r hover:from-[#5448EE]/15 hover:to-transparent light:hover:bg-gradient-to-r light:hover:from-[#5448EE]/8 light:hover:to-transparent'
+                  }`}
                 >
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-0 w-[2px] rounded-full bg-[#8880F5] transition-all duration-300 group-hover:h-5" />
-                  <span className="flex-shrink-0 opacity-70 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:opacity-100 group-hover:text-[#8880F5]">{toolIcons[slug]}</span>
+                  <span className={`absolute left-0 top-1/2 -translate-y-1/2 w-[2px] rounded-full bg-[#8880F5] transition-all duration-300 ${
+                    isActive ? 'h-5' : 'h-0 group-hover:h-5'
+                  }`} />
+                  <span className={`flex-shrink-0 transition-transform duration-300 ${
+                    isActive ? 'opacity-100 text-[#8880F5]' : 'opacity-70 group-hover:translate-x-0.5 group-hover:opacity-100 group-hover:text-[#8880F5]'
+                  }`}>{toolIcons[slug]}</span>
                   {getLabel(slug)}
                 </Link>
               </li>

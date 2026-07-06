@@ -51,7 +51,7 @@ export default function DashboardShell({
 
         {/* Nav */}
         <nav className="flex-1 px-3 py-4 space-y-4">
-          <DashboardNav />
+          <DashboardNav onNavigate={() => setSidebarOpen(false)} />
         </nav>
 
         {/* Footer */}
