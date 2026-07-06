@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useTransition } from 'react'
-import { pagarCobro, posponerCobro } from '@/lib/actions/socios'
+import { useState } from 'react'
+import { posponerCobro } from '@/lib/actions/socios'
 import { WAButton } from './WAButton'
+import PagarModal from './PagarModal'
 import type { CobroProgramado, Socio } from '@/types/socios'
 import Link from 'next/link'
 
@@ -25,17 +26,10 @@ interface Props {
 
 export default function CobrosHoyClient({ vencidos, estaSemana, totalVencido, totalEstaSemana }: Props) {
   const [pagados, setPagados]     = useState<Set<string>>(new Set())
-  const [, startTrans]            = useTransition()
   const [pospModal, setPospModal] = useState<CobroProgramado | null>(null)
+  const [pagarCobroSel, setPagar] = useState<CobroProgramado | null>(null)
 
   const isEmpty = vencidos.length === 0 && estaSemana.length === 0
-
-  function handlePagar(cobro: CobroProgramado) {
-    startTrans(async () => {
-      await pagarCobro(cobro.id)
-      setPagados(prev => new Set(prev).add(cobro.id))
-    })
-  }
 
   if (isEmpty) {
     return (
@@ -77,7 +71,7 @@ export default function CobrosHoyClient({ vencidos, estaSemana, totalVencido, to
       {vencidosActivos.length > 0 && (
         <div>
           <p className="text-[11px] font-semibold text-red-400 uppercase tracking-wide mb-2">⚠ Vencidos</p>
-          <CobroGroup cobros={vencidosActivos} onPagar={handlePagar} onPosponer={setPospModal} showSnooze={false} />
+          <CobroGroup cobros={vencidosActivos} onPagar={setPagar} onPosponer={setPospModal} showSnooze={false} />
         </div>
       )}
 
@@ -85,8 +79,21 @@ export default function CobrosHoyClient({ vencidos, estaSemana, totalVencido, to
       {semanaActivos.length > 0 && (
         <div>
           <p className="text-[11px] font-semibold text-amber-400 uppercase tracking-wide mb-2">📅 Esta semana</p>
-          <CobroGroup cobros={semanaActivos} onPagar={handlePagar} onPosponer={setPospModal} showSnooze />
+          <CobroGroup cobros={semanaActivos} onPagar={setPagar} onPosponer={setPospModal} showSnooze />
         </div>
+      )}
+
+      {/* Modal pagar */}
+      {pagarCobroSel && (
+        <PagarModal
+          cobro={pagarCobroSel}
+          nombre={(pagarCobroSel.socio as any)?.nombre ?? ''}
+          onClose={() => setPagar(null)}
+          onDone={() => {
+            setPagados(prev => new Set(prev).add(pagarCobroSel!.id))
+            setPagar(null)
+          }}
+        />
       )}
 
       {/* Modal posponer */}

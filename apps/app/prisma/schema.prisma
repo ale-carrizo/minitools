@@ -586,6 +586,7 @@ model CobroProgramado {
   fechaPago        String?
   medioPago        String?
   notaPago         String?
+  comprobanteUrl   String?
   fechaOriginal    String?
   vecesPospuesto   Int      @default(0)
   createdAt        DateTime @default(now())

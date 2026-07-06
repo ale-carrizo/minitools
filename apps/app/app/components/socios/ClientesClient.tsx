@@ -7,8 +7,9 @@ import {
   getSocioStatus, STATUS_UI_CONFIG, COBRO_STATUS_CONFIG,
   initials, MEDIOS_PAGO,
 } from '@/types/socios'
-import { pagarCobro, posponerCobro, agregarCobroPuntual } from '@/lib/actions/socios'
+import { agregarCobroPuntual } from '@/lib/actions/socios'
 import { WAButton } from './WAButton'
+import PagarModal from './PagarModal'
 
 function fmt(n: number) {
   return new Intl.NumberFormat('es-AR', {
@@ -235,11 +236,9 @@ export default function ClientesClient({ socios }: { socios: Socio[] }) {
       {modal === 'pagar' && activeCobro && (
         <PagarModal
           cobro={activeCobro}
+          nombre={selected.nombre}
           onClose={() => { setModal(null); setActive(null) }}
-          onConfirm={async (medio) => {
-            await pagarCobro(activeCobro.id, medio)
-            setModal(null); setSelected(null)
-          }}
+          onDone={() => { setModal(null); setSelected(null) }}
         />
       )}
 
@@ -254,41 +253,6 @@ export default function ClientesClient({ socios }: { socios: Socio[] }) {
           }}
         />
       )}
-    </div>
-  )
-}
-
-// ── Modal pagar ───────────────────────────────────────────────────────────────
-function PagarModal({ cobro, onClose, onConfirm }: {
-  cobro: CobroProgramado; onClose: () => void; onConfirm: (medio: string) => Promise<void>
-}) {
-  const [medio, setMedio]   = useState('Efectivo')
-  const [loading, setLoading] = useState(false)
-  const fmtN = (n: number) => new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n)
-  return (
-    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-      <div className="rounded-2xl border border-white/[0.10] bg-[#1A1830] p-5 w-full max-w-xs shadow-xl">
-        <h3 className="text-[14px] font-semibold text-white mb-1">Registrar pago</h3>
-        <p className="text-[11px] text-white/40 mb-4">{fmtN(cobro.monto)} · {new Date(cobro.fechaVencimiento + 'T12:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'long' })}</p>
-        <label className="block text-[11px] text-white/40 mb-1.5">Medio de pago</label>
-        <select
-          value={medio}
-          onChange={e => setMedio(e.target.value)}
-          className="w-full px-3 py-2.5 rounded-xl border border-white/[0.09] bg-white/[0.05] text-[12px] text-white mb-4 focus:outline-none focus:border-[#5448EE]/60"
-        >
-          {MEDIOS_PAGO.map(m => <option key={m}>{m}</option>)}
-        </select>
-        <div className="flex gap-2">
-          <button onClick={onClose} className="flex-1 py-2.5 text-[12px] text-white/50 border border-white/10 rounded-xl hover:text-white transition-colors">Cancelar</button>
-          <button
-            disabled={loading}
-            onClick={async () => { setLoading(true); await onConfirm(medio) }}
-            className="flex-[2] py-2.5 text-[12px] font-medium text-white bg-emerald-600 rounded-xl hover:bg-emerald-500 disabled:opacity-50"
-          >
-            {loading ? 'Guardando…' : '✓ Confirmar pago'}
-          </button>
-        </div>
-      </div>
     </div>
   )
 }

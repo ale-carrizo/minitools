@@ -38,6 +38,7 @@ export interface CobroProgramado {
   fechaPago:        string | null
   medioPago:        string | null
   notaPago:         string | null
+  comprobanteUrl:   string | null
   fechaOriginal:    string | null
   vecesPospuesto:   number
   createdAt:        string

@@ -60,6 +60,7 @@ function mapCobro(raw: any): CobroProgramado {
     fechaPago:        raw.fechaPago,
     medioPago:        raw.medioPago,
     notaPago:         raw.notaPago,
+    comprobanteUrl:   raw.comprobanteUrl ?? null,
     fechaOriginal:    raw.fechaOriginal,
     vecesPospuesto:   raw.vecesPospuesto,
     createdAt:        raw.createdAt?.toISOString?.() ?? raw.createdAt,
@@ -276,9 +277,10 @@ export async function getCobrosHoy(): Promise<{
 }
 
 export async function pagarCobro(
-  cobroId:   string,
-  medioPago?: string,
-  nota?:     string
+  cobroId:        string,
+  medioPago?:     string,
+  nota?:          string,
+  comprobanteUrl?: string
 ): Promise<CobroProgramado> {
   const userId = await getUserId()
 
@@ -292,6 +294,7 @@ export async function pagarCobro(
       fechaPago: dateStr(new Date()),
       medioPago: medioPago ?? null,
       notaPago:  nota ?? null,
+      comprobanteUrl: comprobanteUrl ?? null,
     },
   })
 
