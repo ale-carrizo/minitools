@@ -9,6 +9,7 @@ export interface Empleado {
   turnoInicio: string | null
   turnoFin: string | null
   tolerancia: number
+  color: string
   activo: boolean
   createdAt: string
   updatedAt: string

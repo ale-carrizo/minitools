@@ -28,6 +28,7 @@ export interface EmpleadoTurno {
   userId: string
   nombre: string
   apellido: string | null
+  color: string
 }
 
 export function nombreEmpleado(empleado: EmpleadoTurno | null | undefined): string {
@@ -95,6 +96,50 @@ export function min2hhmm(minutos: number): string {
 
 export function sumarMinutos(hhmm: string, minutos: number): string {
   return min2hhmm(hhmm2min(hhmm) + minutos)
+}
+
+/**
+ * Agrupa turnos superpuestos en "clusters" y les asigna un carril (lane) dentro
+ * de cada uno, tipo Google Calendar, para que se vean lado a lado en vez de
+ * uno tapando al otro cuando hay más de un empleado con turnos simultáneos.
+ */
+export function asignarCarriles(turnos: Turno[]): Map<string, { lane: number; lanes: number }> {
+  const ordenados = [...turnos].sort((a, b) => hhmm2min(a.horaInicio) - hhmm2min(b.horaInicio))
+  const resultado = new Map<string, { lane: number; lanes: number }>()
+
+  let cluster: Turno[] = []
+  let clusterFin = -Infinity
+
+  function flush() {
+    if (cluster.length === 0) return
+    const carrilFin: number[] = []
+    const asignados: { turno: Turno; lane: number }[] = []
+    for (const t of cluster) {
+      const inicio = hhmm2min(t.horaInicio)
+      const fin = inicio + t.duracion
+      let lane = carrilFin.findIndex((f) => f <= inicio)
+      if (lane === -1) {
+        lane = carrilFin.length
+        carrilFin.push(fin)
+      } else {
+        carrilFin[lane] = fin
+      }
+      asignados.push({ turno: t, lane })
+    }
+    const lanes = carrilFin.length
+    for (const { turno, lane } of asignados) resultado.set(turno.id, { lane, lanes })
+    cluster = []
+  }
+
+  for (const t of ordenados) {
+    const inicio = hhmm2min(t.horaInicio)
+    if (cluster.length > 0 && inicio >= clusterFin) flush()
+    cluster.push(t)
+    clusterFin = Math.max(clusterFin, inicio + t.duracion)
+  }
+  flush()
+
+  return resultado
 }
 
 export function generarSlots(horaInicio: string, horaFin: string, intervalo: number): string[] {

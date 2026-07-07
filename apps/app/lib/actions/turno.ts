@@ -71,6 +71,7 @@ function toEmpleado(raw: any): EmpleadoTurno {
     userId: raw.userId,
     nombre: raw.nombre,
     apellido: raw.apellido ?? null,
+    color: raw.color ?? '#5448EE',
   }
 }
 
@@ -101,10 +102,12 @@ function toTurno(raw: any): Turno {
   }
 }
 
+const MAX_TURNOS_SIMULTANEOS = 3
+
 async function verificarSuperposicion(
   userId: string,
   fecha: string,
-  nuevo: { horaInicio: string; horaFin: string },
+  nuevo: { horaInicio: string; horaFin: string; empleadoId?: string | null },
   excludeId?: string,
 ) {
   const turnos = await db.turno.findMany({
@@ -117,8 +120,25 @@ async function verificarSuperposicion(
     orderBy: { horaInicio: 'asc' },
   })
 
-  if (turnos.some((turno: any) => seSuperponen(nuevo, turno))) {
+  const solapados = turnos.filter((turno: any) => seSuperponen(nuevo, turno))
+  if (solapados.length === 0) return
+
+  // Mismo empleado ya ocupado en ese horario: conflicto directo, sin excepción.
+  if (nuevo.empleadoId && solapados.some((t: any) => t.empleadoId === nuevo.empleadoId)) {
+    throw new Error('Este empleado ya tiene un turno en ese horario')
+  }
+
+  // Sin empleado asignado (en el turno nuevo o en alguno de los existentes que se
+  // superponen): se considera que comparte el mismo recurso físico, no se puede
+  // distinguir capacidad real → conflicto.
+  if (!nuevo.empleadoId || solapados.some((t: any) => !t.empleadoId)) {
     throw new Error('Horario no disponible')
+  }
+
+  // Distintos empleados asignados: se permite superponer, con un tope de turnos
+  // simultáneos (ej. cantidad de sillas/puestos de atención del negocio).
+  if (solapados.length >= MAX_TURNOS_SIMULTANEOS) {
+    throw new Error(`Ya hay ${MAX_TURNOS_SIMULTANEOS} turnos simultáneos en ese horario (máximo permitido)`)
   }
 }
 
@@ -274,7 +294,7 @@ export async function crearTurno(data: {
   const userId = await getUserId()
   const empleadoId = data.empleadoId?.trim() || null
   const horaFin = sumarMinutos(data.horaInicio, data.duracion)
-  await verificarSuperposicion(userId, data.fecha, { horaInicio: data.horaInicio, horaFin })
+  await verificarSuperposicion(userId, data.fecha, { horaInicio: data.horaInicio, horaFin, empleadoId })
 
   await db.turno.create({
     data: {
@@ -329,7 +349,7 @@ export async function editarTurno(id: string, data: Partial<{
     duracion !== actual.duracion ||
     empleadoId !== actual.empleadoId
   ) {
-    await verificarSuperposicion(userId, fecha, { horaInicio, horaFin }, id)
+    await verificarSuperposicion(userId, fecha, { horaInicio, horaFin, empleadoId }, id)
   }
 
   await db.turno.update({

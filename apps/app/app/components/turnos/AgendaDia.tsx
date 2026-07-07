@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useMemo, useTransition } from 'react'
 import { cambiarEstado } from '@/lib/actions/turno'
 import {
+  asignarCarriles,
   DIAS_SEMANA,
   ESTADO_CONFIG,
   formatCurrency,
@@ -54,6 +55,8 @@ export default function AgendaDia({
   function minToPx(minutos: number) {
     return ((minutos - horaInicio) / duracionTotalMin) * timelineHeight
   }
+
+  const carriles = useMemo(() => asignarCarriles(turnos), [turnos])
 
   function goTo(nextFecha: string) {
     router.push(`/dashboard/turnos?fecha=${nextFecha}&vista=${vista}`)
@@ -162,18 +165,22 @@ export default function AgendaDia({
                 const finMin = inicioMin + turno.duracion
                 const topPx = minToPx(inicioMin)
                 const heightPx = Math.max(minToPx(finMin) - topPx, 20)
-                const color = turno.servicio?.color ?? '#5448EE'
+                const color = turno.empleado?.color ?? turno.servicio?.color ?? '#5448EE'
                 const estaCompletado = turno.estado === 'completado'
                 const estadoCfg = ESTADO_CONFIG[turno.estado]
+                const { lane, lanes } = carriles.get(turno.id) ?? { lane: 0, lanes: 1 }
+                const widthPct = 100 / lanes
 
                 return (
                   <Link
                     key={turno.id}
                     href={`/dashboard/turnos/${turno.id}`}
-                    className={`absolute left-1 right-1 rounded-lg overflow-hidden px-2 py-1 hover:brightness-110 transition-all z-10 ${estaCompletado ? 'opacity-60' : ''}`}
+                    className={`absolute rounded-lg overflow-hidden px-2 py-1 hover:brightness-110 hover:z-20 transition-all z-10 ${estaCompletado ? 'opacity-60' : ''}`}
                     style={{
                       top: `${topPx}px`,
                       minHeight: `${heightPx}px`,
+                      left: `calc(${lane * widthPct}% + 4px)`,
+                      width: `calc(${widthPct}% - 8px)`,
                       backgroundColor: `${color}30`,
                       borderLeft: `3px solid ${color}`,
                     }}
@@ -207,12 +214,18 @@ export default function AgendaDia({
           {turnos.map((turno) => {
             const linkWhatsApp = generarLinkWhatsApp(turno)
             const showActions = turno.estado === 'pendiente' || turno.estado === 'confirmado'
+            const colorEmpleado = turno.empleado?.color
 
             return (
-              <div key={turno.id} className={`flex items-center gap-3 bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 hover:bg-white/[0.05] transition-colors ${turno.estado === 'completado' ? 'opacity-60' : ''}`}>
+              <div
+                key={turno.id}
+                className={`flex items-center gap-3 bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 hover:bg-white/[0.05] transition-colors ${turno.estado === 'completado' ? 'opacity-60' : ''}`}
+                style={colorEmpleado ? { borderLeftColor: colorEmpleado, borderLeftWidth: '3px' } : undefined}
+              >
                 <div
                   className="w-2 h-2 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: turno.servicio?.color ?? '#5448EE' }}
+                  style={{ backgroundColor: colorEmpleado ?? turno.servicio?.color ?? '#5448EE' }}
+                  title={turno.empleado ? nombreEmpleado(turno.empleado) : undefined}
                 />
                 <span className="text-white/50 text-[11px] font-mono w-14">{turno.horaInicio}</span>
                 <Link href={`/dashboard/turnos/${turno.id}`} className="text-white text-[13px] font-medium hover:text-[#8880F5] transition-colors truncate">

@@ -39,7 +39,7 @@ export default function EmpleadoRapidoModal({ open, onClose, onCreated, empleado
     setError(null)
     try {
       const created = await crearEmpleado({ nombre: trimmed })
-      onCreated({ id: created.id, userId: created.userId, nombre: created.nombre, apellido: created.apellido })
+      onCreated({ id: created.id, userId: created.userId, nombre: created.nombre, apellido: created.apellido, color: created.color })
       setNombre('')
       onClose()
     } catch (err: any) {

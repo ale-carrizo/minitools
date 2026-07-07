@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useMemo } from 'react'
 import {
+  asignarCarriles,
   DIAS_SEMANA,
   ESTADO_CONFIG,
   hhmm2min,
@@ -143,6 +144,7 @@ export default function AgendaSemana({
             {/* Day columns */}
             {dias.map((fecha) => {
               const ofTheDay = turnosEnDia(fecha)
+              const carriles = asignarCarriles(ofTheDay)
               return (
                 <div key={fecha} className="flex-1 relative border-r border-white/[0.04] last:border-r-0" style={{ minHeight: `${horas.length * PX_POR_HORA}px` }}>
                   {/* Hour lines */}
@@ -185,19 +187,23 @@ export default function AgendaSemana({
                     const finMin = inicioMin + turno.duracion
                     const top = ((inicioMin - horaInicio) / MIN_POR_HORA) * PX_POR_HORA
                     const height = Math.max(((finMin - horaInicio) / MIN_POR_HORA) * PX_POR_HORA - top, 18)
-                    const color = turno.servicio?.color ?? '#5448EE'
+                    const color = turno.empleado?.color ?? turno.servicio?.color ?? '#5448EE'
                     const estaCompletado = turno.estado === 'completado'
                     const estadoCfg = ESTADO_CONFIG[turno.estado]
+                    const { lane, lanes } = carriles.get(turno.id) ?? { lane: 0, lanes: 1 }
+                    const widthPct = 100 / lanes
 
                     return (
                       <button
                         key={turno.id}
                         type="button"
                         onClick={(e) => { e.stopPropagation(); router.push(`/dashboard/turnos/${turno.id}`) }}
-                        className={`absolute left-0.5 right-0.5 rounded-md overflow-hidden px-1 py-0.5 hover:brightness-110 transition-all z-10 ${estaCompletado ? 'opacity-60' : ''}`}
+                        className={`absolute rounded-md overflow-hidden px-1 py-0.5 hover:brightness-110 hover:z-20 transition-all z-10 ${estaCompletado ? 'opacity-60' : ''}`}
                         style={{
                           top: `${top}px`,
                           minHeight: `${height}px`,
+                          left: `calc(${lane * widthPct}% + 2px)`,
+                          width: `calc(${widthPct}% - 4px)`,
                           backgroundColor: `${color}40`,
                           borderLeft: `3px solid ${color}`,
                         }}

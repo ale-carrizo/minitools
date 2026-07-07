@@ -363,6 +363,7 @@ model Empleado {
   turnoInicio String?
   turnoFin    String?
   tolerancia  Int      @default(15)
+  color       String   @default("#5448EE")
   activo      Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

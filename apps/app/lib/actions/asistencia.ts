@@ -30,6 +30,14 @@ function maybeNull(value?: string) {
   return trimmed ? trimmed : null
 }
 
+// Paleta rotativa para diferenciar empleados por color en la agenda de turnos.
+const PALETA_EMPLEADO = ['#5448EE', '#06B6D4', '#059669', '#D97706', '#DC2626', '#7C3AED', '#DB2777', '#0EA5E9']
+
+async function siguienteColor(userId: string): Promise<string> {
+  const total = await db.empleado.count({ where: { userId } })
+  return PALETA_EMPLEADO[total % PALETA_EMPLEADO.length]
+}
+
 function toEmpleado(empleado: any): Empleado {
   return {
     id: empleado.id,
@@ -40,6 +48,7 @@ function toEmpleado(empleado: any): Empleado {
     turnoInicio: empleado.turnoInicio ?? null,
     turnoFin: empleado.turnoFin ?? null,
     tolerancia: empleado.tolerancia,
+    color: empleado.color ?? '#5448EE',
     activo: empleado.activo,
     createdAt: empleado.createdAt.toISOString(),
     updatedAt: empleado.updatedAt.toISOString(),
@@ -94,6 +103,7 @@ export async function crearEmpleado(data: {
       turnoInicio: maybeTrim(data.turnoInicio),
       turnoFin: maybeTrim(data.turnoFin),
       tolerancia: data.tolerancia ?? 15,
+      color: await siguienteColor(userId),
     },
   })
   revalidatePath('/dashboard/asistencia')
