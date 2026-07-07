@@ -2,11 +2,12 @@
 
 import { useState, useRef } from 'react'
 import { crearEmpleado } from '@/lib/actions/asistencia'
+import { type EmpleadoTurno } from '@/types/turno'
 
 interface Props {
   open: boolean
   onClose: () => void
-  onCreated: (empleado: { id: string; userId: string; nombre: string; apellido: string | null }) => void
+  onCreated: (empleado: EmpleadoTurno) => void
   empleadosActuales: string[]
 }
 
