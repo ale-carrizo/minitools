@@ -12,6 +12,7 @@ import {
   type TurnoConfig,
   type TurnoServicio,
 } from '@/types/turno'
+import EmpleadoRapidoModal from './EmpleadoRapidoModal'
 
 export default function TurnoForm({
   turno,
@@ -43,6 +44,8 @@ export default function TurnoForm({
   const [notas, setNotas] = useState(turno?.notas ?? '')
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
+  const [localEmpleados, setLocalEmpleados] = useState(empleados)
+  const [showEmpleadoModal, setShowEmpleadoModal] = useState(false)
 
   const slots = useMemo(() => generarSlots(config.horaInicio, config.horaFin, config.intervalo), [config])
   const servicioSeleccionado = useMemo(() => servicios.find((s) => s.id === servicioId) ?? null, [servicioId, servicios])
@@ -112,7 +115,8 @@ export default function TurnoForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-xl mx-auto md:mx-0 space-y-5">
+    <>
+      <form onSubmit={handleSubmit} className="max-w-xl mx-auto md:mx-0 space-y-5">
       <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-4 md:p-5 space-y-4">
         <div>
           <h2 className="text-white font-semibold text-[15px]">Servicio y empleado</h2>
@@ -128,10 +132,20 @@ export default function TurnoForm({
           </div>
           <div className="space-y-2">
             <label className="text-[12px] text-white/50">Empleado</label>
-            <select value={empleadoId} onChange={(e) => setEmpleadoId(e.target.value)} className="w-full bg-white/[0.05] border border-white/[0.09] rounded-xl text-white px-3 py-2.5 text-sm focus:outline-none focus:border-[#5448EE]/60">
-              <option value="">Sin asignar</option>
-              {empleados.map((empleado) => <option key={empleado.id} value={empleado.id}>{[empleado.nombre, empleado.apellido].filter(Boolean).join(' ')}</option>)}
-            </select>
+            <div className="flex gap-2">
+              <select value={empleadoId} onChange={(e) => setEmpleadoId(e.target.value)} className="flex-1 bg-white/[0.05] border border-white/[0.09] rounded-xl text-white px-3 py-2.5 text-sm focus:outline-none focus:border-[#5448EE]/60">
+                <option value="">Sin asignar</option>
+                {localEmpleados.map((empleado) => <option key={empleado.id} value={empleado.id}>{[empleado.nombre, empleado.apellido].filter(Boolean).join(' ')}</option>)}
+              </select>
+              <button
+                type="button"
+                onClick={() => setShowEmpleadoModal(true)}
+                className="shrink-0 w-10 h-10 rounded-xl border border-white/[0.09] flex items-center justify-center text-white/40 hover:text-white hover:border-white/20 transition-colors"
+                title="Agregar empleado"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -229,5 +243,16 @@ export default function TurnoForm({
         </button>
       </div>
     </form>
+
+      <EmpleadoRapidoModal
+        open={showEmpleadoModal}
+        onClose={() => setShowEmpleadoModal(false)}
+        onCreated={(nuevo) => {
+          setLocalEmpleados((prev) => [...prev, nuevo])
+          setEmpleadoId(nuevo.id)
+        }}
+        empleadosActuales={localEmpleados.map((e) => e.nombre)}
+      />
+    </>
   )
 }
