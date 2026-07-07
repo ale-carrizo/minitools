@@ -4,6 +4,7 @@ export interface Empleado {
   id: string
   userId: string
   nombre: string
+  apellido: string | null
   cargo: string | null
   turnoInicio: string | null
   turnoFin: string | null
