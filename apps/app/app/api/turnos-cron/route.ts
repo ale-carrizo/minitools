@@ -23,11 +23,13 @@ export async function GET(req: NextRequest) {
     select: { id: true },
   })
 
-  const ids = turnos.map((t: { id: string }) => t.id)
-
-  if (ids.length > 0) {
+  if (turnos.length > 0) {
+    // Punto de integración con proveedor de WhatsApp (Twilio, Wati, Meta Cloud API).
+    // Por ahora solo marcamos los turnos como procesados; en producción iterar
+    // sobre turnos y llamar a generarMensajeRecordatorio + enviar por API antes
+    // del updateMany.
     await db.turno.updateMany({
-      where: { id: { in: ids } },
+      where: { id: { in: turnos.map((t: { id: string }) => t.id) } },
       data: { recordatorioEnviado: true },
     })
   }
