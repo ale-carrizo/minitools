@@ -17,7 +17,6 @@ const toolIcons: Record<string, React.ReactNode> = {
   socios: <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 14.094A5.973 5.973 0 004 17v1H1v-1a3 3 0 013.75-2.906z"/></svg>,
   tareas: <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor"><path d="M2 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1H3a1 1 0 01-1-1V4zM8 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1H9a1 1 0 01-1-1V4zM15 3a1 1 0 00-1 1v12a1 1 0 001 1h2a1 1 0 001-1V4a1 1 0 00-1-1h-2z"/></svg>,
   recibos: <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm3 1h6v2H7V5zm0 4h6v2H7V9zm0 4h3v2H7v-2z"/></svg>,
-  asistencia: <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor"><path d="M10 9a3 3 0 100-6 3 3 0 000 6zM6 8a2 2 0 11-4 0 2 2 0 014 0zM1.49 15.326a.78.78 0 01-.358-.442 3 3 0 014.308-3.516 6.484 6.484 0 00-1.905 3.959c-.023.222-.014.444.025.663a2.97 2.97 0 01-2.07-.664zM17 8a2 2 0 11-4 0 2 2 0 014 0zM13.094 15.8a2.002 2.002 0 01-.32.672 4 4 0 01-.789.842c-.393.287-.823.483-1.237.585a.752.752 0 01-.072.017A5.91 5.91 0 0110 18a5.97 5.97 0 01-3.444-1.124 4 4 0 01-.75-.546 4.974 4.974 0 01-.395-.472A4.002 4.002 0 009 13c1.238 0 2.33.562 3.056 1.44.32.386.522.854.663 1.36.07.25.078.508.028.766a5.04 5.04 0 01-.653-.766zM8.84 16.224a3.001 3.001 0 00-1.388 1.285c.773.319 1.64.49 2.548.49.442 0 .876-.04 1.296-.115a3.002 3.002 0 00-1.312-1.375A2.97 2.97 0 009 16.5a2.96 2.96 0 00-.16-.276z"/></svg>,
 }
 
 export default function DashboardNav({ onNavigate }: { onNavigate?: () => void }) {
@@ -36,7 +35,6 @@ export default function DashboardNav({ onNavigate }: { onNavigate?: () => void }
     { href: "/dashboard/socios" },
     { href: "/dashboard/tareas" },
     { href: "/dashboard/recibos" },
-    { href: "/dashboard/asistencia" },
   ]
 
   return (
