@@ -16,6 +16,16 @@ export default function DashboardShell({
   children: React.ReactNode
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [signingOut, setSigningOut] = useState(false)
+
+  async function handleSignOut() {
+    setSigningOut(true)
+    try {
+      await signOut({ redirectTo: '/login' })
+    } catch {
+      setSigningOut(false)
+    }
+  }
 
   return (
     <div className="flex h-screen bg-[#0C0B1A] light:bg-[#F7F7FB] overflow-hidden">
@@ -79,13 +89,14 @@ export default function DashboardShell({
           </div>
           <button
               type="button"
-              onClick={() => signOut({ redirectTo: '/login' })}
-              className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-white/30 hover:text-red-400 hover:bg-white/[0.04] transition-colors text-left"
+              onClick={handleSignOut}
+              disabled={signingOut}
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-white/30 hover:text-red-400 hover:bg-white/[0.04] transition-colors text-left disabled:opacity-50"
             >
               <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h6a1 1 0 100-2H4V5h5a1 1 0 100-2H3zm10.293 3.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L14.586 11H8a1 1 0 110-2h6.586l-1.293-1.293a1 1 0 010-1.414z" clipRule="evenodd"/>
               </svg>
-              Cerrar sesión
+              {signingOut ? 'Cerrando sesión...' : 'Cerrar sesión'}
             </button>
           <ThemeToggle />
         </div>
