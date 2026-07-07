@@ -35,6 +35,7 @@ function toEmpleado(empleado: any): Empleado {
     id: empleado.id,
     userId: empleado.userId,
     nombre: empleado.nombre,
+    apellido: empleado.apellido ?? null,
     cargo: empleado.cargo ?? null,
     turnoInicio: empleado.turnoInicio ?? null,
     turnoFin: empleado.turnoFin ?? null,

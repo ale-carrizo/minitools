@@ -6,7 +6,7 @@ import { crearEmpleado } from '@/lib/actions/asistencia'
 interface Props {
   open: boolean
   onClose: () => void
-  onCreated: (empleado: { id: string; nombre: string; apellido: string | null }) => void
+  onCreated: (empleado: { id: string; userId: string; nombre: string; apellido: string | null }) => void
   empleadosActuales: string[]
 }
 
@@ -38,7 +38,7 @@ export default function EmpleadoRapidoModal({ open, onClose, onCreated, empleado
     setError(null)
     try {
       const created = await crearEmpleado({ nombre: trimmed })
-      onCreated({ id: created.id, nombre: created.nombre, apellido: created.apellido })
+      onCreated({ id: created.id, userId: created.userId, nombre: created.nombre, apellido: created.apellido })
       setNombre('')
       onClose()
     } catch (err: any) {
