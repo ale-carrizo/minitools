@@ -71,12 +71,12 @@ export async function editarRecibo(id: string, data: {
   notas?: string
 }): Promise<ReciboCobro> {
   const userId = await getUserId()
-  const row = await db.reciboCobro.updateMany({
+  const row = await db.reciboCobro.update({
     where: { id, userId },
     data,
   })
   revalidatePath('/dashboard/recibos')
-  return toRecibo({ ...row, ...data, id, userId })
+  return toRecibo(row)
 }
 
 export async function eliminarRecibo(id: string) {
