@@ -161,7 +161,7 @@ export function generarMensajeRecordatorio(turno: Turno): string {
 export function generarLinkWhatsAppSenia(turno: Turno, monto?: number): string {
   const tel = turno.clienteTel?.replace(/\D/g, '')
   if (!tel) return ''
-  const montoSenia = monto ?? turno.senia ?? turno.precio * 0.3
+  const montoSenia = monto || turno.senia || turno.precio * 0.3
   const servicio = turno.servicio?.nombre ? ` (${turno.servicio.nombre})` : ''
   const msg = encodeURIComponent(
     `Hola ${turno.clienteNombre}! 👋 Para confirmar tu turno${servicio} del ${formatFechaBonita(turno.fecha)} a las ${turno.horaInicio}hs, te pedimos una seña de ${formatCurrency(montoSenia)}. Avísame por aquí para coordinar el pago. Gracias!`,
