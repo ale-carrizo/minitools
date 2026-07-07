@@ -253,13 +253,23 @@ export async function getCobrosHoy(): Promise<{
   const [vencidosRaw, proximosRaw] = await Promise.all([
     prisma.cobroProgramado.findMany({
       where:   { userId, estado: 'vencido' },
-      include: { socio: { select: { nombre: true, telefono: true, mensajeTemplate: true, avatarColor: true } } },
+      select: {
+        id: true, userId: true, socioId: true, monto: true, fechaVencimiento: true, estado: true,
+        concepto: true, fechaPago: true, medioPago: true, notaPago: true,
+        fechaOriginal: true, vecesPospuesto: true, createdAt: true, updatedAt: true,
+        socio: { select: { nombre: true, telefono: true, mensajeTemplate: true, avatarColor: true } },
+      },
       orderBy: { fechaVencimiento: 'asc' },
       take:    50,
     }),
     prisma.cobroProgramado.findMany({
       where:   { userId, estado: { in: ['pendiente', 'pospuesto'] }, fechaVencimiento: { gte: hoy, lte: en7 } },
-      include: { socio: { select: { nombre: true, telefono: true, mensajeTemplate: true, avatarColor: true } } },
+      select: {
+        id: true, userId: true, socioId: true, monto: true, fechaVencimiento: true, estado: true,
+        concepto: true, fechaPago: true, medioPago: true, notaPago: true,
+        fechaOriginal: true, vecesPospuesto: true, createdAt: true, updatedAt: true,
+        socio: { select: { nombre: true, telefono: true, mensajeTemplate: true, avatarColor: true } },
+      },
       orderBy: { fechaVencimiento: 'asc' },
       take:    50,
     }),
