@@ -20,12 +20,14 @@ export async function GET(req: NextRequest) {
       recordatorioEnviado: false,
       clienteTel: { not: null },
     },
-    select: { id: true, clienteNombre: true, clienteTel: true },
+    select: { id: true },
   })
 
-  for (const turno of turnos) {
-    await db.turno.update({
-      where: { id: turno.id },
+  const ids = turnos.map((t: { id: string }) => t.id)
+
+  if (ids.length > 0) {
+    await db.turno.updateMany({
+      where: { id: { in: ids } },
       data: { recordatorioEnviado: true },
     })
   }
