@@ -150,15 +150,25 @@ export default function TurnoDetalle({ turno }: { turno: Turno }) {
             </button>
 
             {whatsapp ? (
-              <a
-                href={whatsapp}
-                target="_blank"
-                rel="noreferrer"
-                onClick={handleMarcarRecordatorioEnviado}
-                className="block text-center bg-[#5448EE] hover:bg-[#4438DE] text-white rounded-xl px-4 py-2.5 text-[13px] font-medium transition-colors"
-              >
-                💬 Recordatorio WhatsApp
-              </a>
+              <>
+                <a
+                  href={whatsapp}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="block text-center bg-[#5448EE] hover:bg-[#4438DE] text-white rounded-xl px-4 py-2.5 text-[13px] font-medium transition-colors"
+                >
+                  💬 Recordatorio WhatsApp
+                </a>
+                {!turno.recordatorioEnviado && (
+                  <button
+                    onClick={handleMarcarRecordatorioEnviado}
+                    disabled={isPending}
+                    className="w-full text-center border border-white/10 hover:border-white/20 text-white/40 hover:text-white/70 rounded-xl px-4 py-2 text-[11px] font-medium transition-colors disabled:opacity-40"
+                  >
+                    Marcar como enviado
+                  </button>
+                )}
+              </>
             ) : null}
 
             {turno.senia > 0 && !turno.seniaPagada && whatsappSenia ? (

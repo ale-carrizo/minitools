@@ -2,7 +2,8 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useMemo } from 'react'
+import { useMemo, useTransition } from 'react'
+import { cambiarEstado } from '@/lib/actions/turno'
 import {
   DIAS_SEMANA,
   ESTADO_CONFIG,
@@ -31,6 +32,7 @@ export default function AgendaDia({
   vista: 'dia' | 'semana'
 }) {
   const router = useRouter()
+  const [isPending, startTransition] = useTransition()
   const dayOfWeek = new Date(`${fecha}T00:00:00`).getDay()
   const esHabil = config.diasHabiles.includes(dayOfWeek)
 
@@ -204,6 +206,7 @@ export default function AgendaDia({
         <div className="space-y-1.5">
           {turnos.map((turno) => {
             const linkWhatsApp = generarLinkWhatsApp(turno)
+            const showActions = turno.estado === 'pendiente' || turno.estado === 'confirmado'
 
             return (
               <div key={turno.id} className={`flex items-center gap-3 bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 hover:bg-white/[0.05] transition-colors ${turno.estado === 'completado' ? 'opacity-60' : ''}`}>
@@ -225,6 +228,41 @@ export default function AgendaDia({
                   >
                     WhatsApp
                   </a>
+                )}
+                {showActions && (
+                  <div className="flex-shrink-0 flex items-center gap-1.5">
+                    {turno.estado === 'pendiente' && (
+                      <button
+                        type="button"
+                        disabled={isPending}
+                        onClick={() => startTransition(async () => { await cambiarEstado(turno.id, 'confirmado') })}
+                        className="rounded-lg border border-emerald-500/20 hover:border-emerald-500/40 text-emerald-300 px-2 py-1 text-[10px] font-medium transition-colors disabled:opacity-40"
+                        title="Confirmar turno"
+                      >
+                        ✓
+                      </button>
+                    )}
+                    {turno.estado === 'confirmado' && (
+                      <button
+                        type="button"
+                        disabled={isPending}
+                        onClick={() => startTransition(async () => { await cambiarEstado(turno.id, 'completado') })}
+                        className="rounded-lg border border-[#5448EE]/25 hover:border-[#5448EE]/45 text-[#8880F5] px-2 py-1 text-[10px] font-medium transition-colors disabled:opacity-40"
+                        title="Completar turno"
+                      >
+                        ✓
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      disabled={isPending}
+                      onClick={() => startTransition(async () => { await cambiarEstado(turno.id, 'cancelado') })}
+                      className="rounded-lg border border-red-500/15 hover:border-red-500/30 text-red-300 px-2 py-1 text-[10px] font-medium transition-colors disabled:opacity-40"
+                      title="Cancelar turno"
+                    >
+                      ✗
+                    </button>
+                  </div>
                 )}
               </div>
             )
