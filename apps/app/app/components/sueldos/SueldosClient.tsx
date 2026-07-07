@@ -28,7 +28,11 @@ async function parseExcel(file: File): Promise<EmpleadoRecibo[]> {
       .filter(([k]) => k.startsWith('H_') || k.startsWith('D_'))
       .map(([k, v]) => ({
         nombre: k.slice(2).trim(),
-        monto:  parseFloat(String(v).replace(',', '.')) || 0,
+        // Celdas numéricas de Excel llegan como `number` (ej. 1234.56) y no deben
+        // pasar por el reemplazo de separadores AR, que es solo para texto como
+        // "350.000,00". Aplicarlo a un number ya parseado le borraría el punto
+        // decimal real.
+        monto:  typeof v === 'number' ? v : (parseFloat(String(v).replace(/\./g, '').replace(',', '.')) || 0),
         tipo:   k.startsWith('H_') ? 'haber' as const : 'deduccion' as const,
       }))
       .filter(c => c.monto !== 0)

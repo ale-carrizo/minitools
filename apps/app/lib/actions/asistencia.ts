@@ -280,6 +280,9 @@ export async function registrarAusencia(
   notas?: string,
 ): Promise<RegistroAsistencia> {
   const userId = await getUserId()
+  const empleado = await db.empleado.findFirst({ where: { id: empleadoId, userId } })
+  if (!empleado) throw new Error('Empleado no encontrado')
+
   const registro = await db.registroAsistencia.upsert({
     where: { empleadoId_fecha: { empleadoId, fecha } },
     create: {
@@ -358,8 +361,10 @@ export async function registrarDiaBulk(fecha: string, registros: Array<{
   })
   const empleadosMap = new Map(empleados.map((empleado: any) => [empleado.id, toEmpleado(empleado)]))
 
+  const validos = registros.filter((registro) => empleadosMap.has(registro.empleadoId))
+
   await db.$transaction(
-    registros.map((registro) => {
+    validos.map((registro) => {
       const empleado = empleadosMap.get(registro.empleadoId) as Empleado | undefined
       const estado = registro.horaEntrada && empleado
         ? detectarEstado(empleado, registro.horaEntrada, null)

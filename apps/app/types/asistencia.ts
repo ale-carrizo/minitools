@@ -44,7 +44,8 @@ export function calcularHoras(entrada: string | null, salida: string | null): nu
   if (!entrada || !salida) return null
   const [eh, em] = entrada.split(':').map(Number)
   const [sh, sm] = salida.split(':').map(Number)
-  const minutos = (sh * 60 + sm) - (eh * 60 + em)
+  let minutos = (sh * 60 + sm) - (eh * 60 + em)
+  if (minutos < 0) minutos += 24 * 60
   if (minutos <= 0) return null
   return Math.round(minutos) / 60
 }

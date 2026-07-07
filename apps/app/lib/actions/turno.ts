@@ -105,12 +105,13 @@ function toTurno(raw: any): Turno {
 const MAX_TURNOS_SIMULTANEOS = 3
 
 async function verificarSuperposicion(
+  tx: any,
   userId: string,
   fecha: string,
   nuevo: { horaInicio: string; horaFin: string; empleadoId?: string | null },
   excludeId?: string,
 ) {
-  const turnos = await db.turno.findMany({
+  const turnos = await tx.turno.findMany({
     where: {
       userId,
       fecha,
@@ -201,6 +202,9 @@ export async function crearServicio(data: {
   color?: string
 }): Promise<TurnoServicio> {
   const userId = await getUserId()
+  if (!Number.isFinite(data.duracion) || data.duracion <= 0) throw new Error('La duración debe ser mayor a cero')
+  if (data.precio !== undefined && (!Number.isFinite(data.precio) || data.precio < 0)) throw new Error('El precio no es válido')
+
   const servicio = await db.turnoServicio.create({
     data: {
       userId,
@@ -224,6 +228,8 @@ export async function editarServicio(id: string, data: Partial<{
   const userId = await getUserId()
   const actual = await db.turnoServicio.findFirst({ where: { id, userId, activo: true } })
   if (!actual) throw new Error('Servicio no encontrado')
+  if (data.duracion !== undefined && (!Number.isFinite(data.duracion) || data.duracion <= 0)) throw new Error('La duración debe ser mayor a cero')
+  if (data.precio !== undefined && (!Number.isFinite(data.precio) || data.precio < 0)) throw new Error('El precio no es válido')
 
   const servicio = await db.turnoServicio.update({
     where: { id },
@@ -294,26 +300,33 @@ export async function crearTurno(data: {
   const userId = await getUserId()
   const empleadoId = data.empleadoId?.trim() || null
   const horaFin = sumarMinutos(data.horaInicio, data.duracion)
-  await verificarSuperposicion(userId, data.fecha, { horaInicio: data.horaInicio, horaFin, empleadoId })
 
-  await db.turno.create({
-    data: {
-      userId,
-      servicioId: data.servicioId?.trim() || null,
-      empleadoId,
-      clienteNombre: data.clienteNombre.trim(),
-      clienteTel: maybeNull(data.clienteTel),
-      clienteEmail: maybeNull(data.clienteEmail),
-      fecha: data.fecha,
-      horaInicio: data.horaInicio,
-      horaFin,
-      duracion: data.duracion,
-      precio: data.precio ?? 0,
-      senia: data.senia ?? 0,
-      notas: maybeNull(data.notas),
-      estado: 'pendiente',
-    },
-  })
+  if (!Number.isFinite(data.duracion) || data.duracion <= 0) throw new Error('La duración debe ser mayor a cero')
+  if (data.precio !== undefined && (!Number.isFinite(data.precio) || data.precio < 0)) throw new Error('El precio no es válido')
+  if (data.senia !== undefined && (!Number.isFinite(data.senia) || data.senia < 0)) throw new Error('La seña no es válida')
+
+  await prisma.$transaction(async (tx) => {
+    await verificarSuperposicion(tx, userId, data.fecha, { horaInicio: data.horaInicio, horaFin, empleadoId })
+
+    await tx.turno.create({
+      data: {
+        userId,
+        servicioId: data.servicioId?.trim() || null,
+        empleadoId,
+        clienteNombre: data.clienteNombre.trim(),
+        clienteTel: maybeNull(data.clienteTel),
+        clienteEmail: maybeNull(data.clienteEmail),
+        fecha: data.fecha,
+        horaInicio: data.horaInicio,
+        horaFin,
+        duracion: data.duracion,
+        precio: data.precio ?? 0,
+        senia: data.senia ?? 0,
+        notas: maybeNull(data.notas),
+        estado: 'pendiente',
+      },
+    })
+  }, { isolationLevel: 'Serializable' })
 
   revalidatePath('/dashboard/turnos')
   redirect(`/dashboard/turnos?fecha=${data.fecha}`)
@@ -337,39 +350,50 @@ export async function editarTurno(id: string, data: Partial<{
   const actual = await db.turno.findFirst({ where: { id, userId }, include: { servicio: true, empleado: true } })
   if (!actual) throw new Error('Turno no encontrado')
 
+  if (data.duracion !== undefined && (!Number.isFinite(data.duracion) || data.duracion <= 0)) throw new Error('La duración debe ser mayor a cero')
+  if (data.precio !== undefined && (!Number.isFinite(data.precio) || data.precio < 0)) throw new Error('El precio no es válido')
+  if (data.senia !== undefined && (!Number.isFinite(data.senia) || data.senia < 0)) throw new Error('La seña no es válida')
+
   const fecha = data.fecha ?? actual.fecha
   const horaInicio = data.horaInicio ?? actual.horaInicio
   const duracion = data.duracion ?? actual.duracion
   const empleadoId = data.empleadoId === undefined ? actual.empleadoId : (data.empleadoId.trim() || null)
   const horaFin = sumarMinutos(horaInicio, duracion)
 
+  let cambioHorario = false
   if (
     fecha !== actual.fecha ||
     horaInicio !== actual.horaInicio ||
     duracion !== actual.duracion ||
     empleadoId !== actual.empleadoId
   ) {
-    await verificarSuperposicion(userId, fecha, { horaInicio, horaFin, empleadoId }, id)
+    cambioHorario = true
   }
 
-  await db.turno.update({
-    where: { id },
-    data: {
-      servicioId: data.servicioId === undefined ? undefined : (data.servicioId.trim() || null),
-      empleadoId,
-      clienteNombre: data.clienteNombre?.trim() ?? undefined,
-      clienteTel: data.clienteTel === undefined ? undefined : maybeNull(data.clienteTel),
-      clienteEmail: data.clienteEmail === undefined ? undefined : maybeNull(data.clienteEmail),
-      fecha,
-      horaInicio,
-      horaFin,
-      duracion,
-      precio: data.precio ?? undefined,
-      senia: data.senia === undefined ? undefined : data.senia,
-      seniaPagada: data.seniaPagada === undefined ? undefined : data.seniaPagada,
-      notas: data.notas === undefined ? undefined : maybeNull(data.notas),
-    },
-  })
+  await prisma.$transaction(async (tx) => {
+    if (cambioHorario) {
+      await verificarSuperposicion(tx, userId, fecha, { horaInicio, horaFin, empleadoId }, id)
+    }
+
+    await tx.turno.update({
+      where: { id },
+      data: {
+        servicioId: data.servicioId === undefined ? undefined : (data.servicioId.trim() || null),
+        empleadoId,
+        clienteNombre: data.clienteNombre?.trim() ?? undefined,
+        clienteTel: data.clienteTel === undefined ? undefined : maybeNull(data.clienteTel),
+        clienteEmail: data.clienteEmail === undefined ? undefined : maybeNull(data.clienteEmail),
+        fecha,
+        horaInicio,
+        horaFin,
+        duracion,
+        precio: data.precio ?? undefined,
+        senia: data.senia === undefined ? undefined : data.senia,
+        seniaPagada: data.seniaPagada === undefined ? undefined : data.seniaPagada,
+        notas: data.notas === undefined ? undefined : maybeNull(data.notas),
+      },
+    })
+  }, { isolationLevel: 'Serializable' })
 
   revalidatePath('/dashboard/turnos')
   revalidatePath(`/dashboard/turnos/${id}`)

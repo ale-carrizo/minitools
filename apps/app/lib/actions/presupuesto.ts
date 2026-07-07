@@ -159,6 +159,10 @@ function normalizeInput(data: PresupuestoInput) {
 
   if (!data.titulo.trim()) throw new Error('El titulo es obligatorio')
   if (items.length === 0) throw new Error('Agrega al menos un item')
+  if (items.some((item) => !Number.isFinite(item.cantidad) || item.cantidad <= 0)) throw new Error('La cantidad de cada item debe ser mayor a cero')
+  if (items.some((item) => !Number.isFinite(item.precioUnitario) || item.precioUnitario < 0)) throw new Error('El precio unitario no es válido')
+  if (!Number.isFinite(Number(data.descuento)) || Number(data.descuento) < 0) throw new Error('El descuento no es válido')
+  if (!Number.isFinite(Number(data.iva)) || Number(data.iva) < 0) throw new Error('El IVA no es válido')
 
   return {
     clienteId: maybeTrim(data.clienteId),

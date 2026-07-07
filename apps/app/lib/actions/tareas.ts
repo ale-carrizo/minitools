@@ -120,17 +120,30 @@ export async function addColumna(tableroId: string, nombre: string, color: strin
 }
 
 export async function updateColumna(id: string, data: { nombre?: string; color?: string; limiteWip?: number | null }): Promise<void> {
+  const userId = await uid()
+  const col = await prisma.columna.findFirst({ where: { id, tablero: { userId } } })
+  if (!col) throw new Error('No autorizado')
   await prisma.columna.update({ where: { id }, data })
   revalidatePath('/dashboard/tareas')
 }
 
 export async function deleteColumna(id: string, tableroId: string): Promise<void> {
+  const userId = await uid()
+  const col = await prisma.columna.findFirst({ where: { id, tablero: { userId } } })
+  if (!col) throw new Error('No autorizado')
   await prisma.columna.delete({ where: { id } })
   revalidatePath(`/dashboard/tareas/${tableroId}`)
 }
 
 export async function reorderColumnas(tableroId: string, ids: string[]): Promise<void> {
-  await Promise.all(ids.map((id, orden) => prisma.columna.update({ where: { id }, data: { orden } })))
+  const userId = await uid()
+  await prisma.$transaction(async (tx) => {
+    const board = await tx.tablero.findFirst({ where: { id: tableroId, userId }, include: { columnas: true } })
+    if (!board) throw new Error('No autorizado')
+    const ownedIds = new Set(board.columnas.map((c) => c.id))
+    if (ids.some((id) => !ownedIds.has(id))) throw new Error('Columna no pertenece al tablero')
+    await Promise.all(ids.map((id, orden) => tx.columna.update({ where: { id }, data: { orden } })))
+  })
   revalidatePath(`/dashboard/tareas/${tableroId}`)
 }
 
@@ -144,6 +157,8 @@ export async function createTarea(data: {
   portada?:    string
 }): Promise<Tarea> {
   const userId = await uid()
+  const col = await prisma.columna.findFirst({ where: { id: data.columnaId, tablero: { userId } } })
+  if (!col) throw new Error('No autorizado')
   const count = await prisma.tarea.count({ where: { columnaId: data.columnaId } })
   const r = await prisma.tarea.create({
     data: {
@@ -172,25 +187,40 @@ export async function updateTarea(id: string, data: Partial<{
   orden:       number
   archivada:   boolean
 }>): Promise<Tarea> {
+  const userId = await uid()
+  const t = await prisma.tarea.findFirst({ where: { id, columna: { tablero: { userId } } } })
+  if (!t) throw new Error('No autorizado')
   const r = await prisma.tarea.update({ where: { id }, data: { ...data, updatedAt: new Date() } })
   revalidatePath('/dashboard/tareas')
   return mapTarea(r)
 }
 
 export async function deleteTarea(id: string): Promise<void> {
+  const userId = await uid()
+  const t = await prisma.tarea.findFirst({ where: { id, columna: { tablero: { userId } } } })
+  if (!t) throw new Error('No autorizado')
   await prisma.tarea.delete({ where: { id } })
   revalidatePath('/dashboard/tareas')
 }
 
 export async function moverTarea(tareaId: string, destColumnaId: string, destOrden: number, tableroId: string): Promise<void> {
-  // Shift tareas en destino
-  await prisma.tarea.updateMany({
-    where: { columnaId: destColumnaId, orden: { gte: destOrden }, archivada: false },
-    data: { orden: { increment: 1 } },
-  })
-  await prisma.tarea.update({
-    where: { id: tareaId },
-    data: { columnaId: destColumnaId, orden: destOrden, updatedAt: new Date() },
+  const userId = await uid()
+  await prisma.$transaction(async (tx) => {
+    const [tarea, destCol] = await Promise.all([
+      tx.tarea.findFirst({ where: { id: tareaId, columna: { tablero: { userId } } } }),
+      tx.columna.findFirst({ where: { id: destColumnaId, tablero: { userId } } }),
+    ])
+    if (!tarea) throw new Error('Tarea no encontrada')
+    if (!destCol) throw new Error('Columna destino no válida')
+
+    await tx.tarea.updateMany({
+      where: { columnaId: destColumnaId, orden: { gte: destOrden }, archivada: false },
+      data: { orden: { increment: 1 } },
+    })
+    await tx.tarea.update({
+      where: { id: tareaId },
+      data: { columnaId: destColumnaId, orden: destOrden, updatedAt: new Date() },
+    })
   })
   revalidatePath(`/dashboard/tareas/${tableroId}`)
 }

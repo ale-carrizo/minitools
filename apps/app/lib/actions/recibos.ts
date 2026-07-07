@@ -43,6 +43,8 @@ export async function crearRecibo(data: {
   notas?: string
 }): Promise<ReciboCobro> {
   const userId = await getUserId()
+  if (!Number.isFinite(data.monto) || data.monto < 0) throw new Error('Monto inválido')
+
   const last = await db.reciboCobro.findFirst({
     where: { userId },
     orderBy: { numero: 'desc' },
@@ -71,6 +73,8 @@ export async function editarRecibo(id: string, data: {
   notas?: string
 }): Promise<ReciboCobro> {
   const userId = await getUserId()
+  if (!Number.isFinite(data.monto) || data.monto < 0) throw new Error('Monto inválido')
+
   const row = await db.reciboCobro.update({
     where: { id, userId },
     data,

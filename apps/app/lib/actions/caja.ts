@@ -184,6 +184,8 @@ export async function registrarCobro(payload: RegistrarCobroPayload): Promise<Ca
       }))
       .filter((item) => item.productoId && item.cantidad > 0)
 
+    if (!Number.isFinite(payload.monto) || payload.monto < 0) throw new Error('Monto inválido')
+
     const cobro = await (tx.cajaCobro as any).create({
       data: {
         userId,
@@ -219,7 +221,12 @@ export async function registrarCobro(payload: RegistrarCobroPayload): Promise<Ca
       })
 
       if (!producto) throw new Error('Producto no encontrado')
-      if (item.cantidad > producto.stock) {
+
+      const updated = await tx.producto.updateMany({
+        where: { id: producto.id, userId, stock: { gte: item.cantidad } },
+        data: { stock: { decrement: item.cantidad } },
+      })
+      if (updated.count === 0) {
         throw new Error(`Stock insuficiente para ${producto.nombre} (disponible: ${producto.stock})`)
       }
 
@@ -242,11 +249,6 @@ export async function registrarCobro(payload: RegistrarCobroPayload): Promise<Ca
           stockAntes: producto.stock,
           motivo: `Venta por caja${payload.concepto ? ` · ${payload.concepto}` : ''}`,
         },
-      })
-
-      await tx.producto.update({
-        where: { id: producto.id },
-        data: { stock: producto.stock - item.cantidad },
       })
     }
 
@@ -295,8 +297,9 @@ export async function anularCobro(id: string, motivo?: string): Promise<void> {
     include: { dia: true },
   })
 
-  if (!cobro)          throw new Error('Cobro no encontrado')
+  if (!cobro)            throw new Error('Cobro no encontrado')
   if (cobro.dia.cerrada) throw new Error('No se puede anular un cobro de una caja cerrada')
+  if (cobro.anulado)     return
 
   await prisma.$transaction([
     prisma.cajaCobro.update({

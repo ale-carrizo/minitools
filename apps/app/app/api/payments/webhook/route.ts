@@ -15,13 +15,16 @@ export async function POST(req: NextRequest) {
   const xSignature = req.headers.get("x-signature");
   const xRequestId = req.headers.get("x-request-id");
 
-  // Verificar firma (cuando MP_WEBHOOK_SECRET esté configurado)
-  if (process.env.MP_WEBHOOK_SECRET) {
-    const valid = verifyWebhookSignature(xSignature, xRequestId, body);
-    if (!valid) {
-      console.warn("[Webhook] Firma inválida — request rechazado");
-      return NextResponse.json({ error: "Firma inválida" }, { status: 401 });
-    }
+  // Verificación de firma es obligatoria. Sin MP_WEBHOOK_SECRET rechazamos todo.
+  if (!process.env.MP_WEBHOOK_SECRET) {
+    console.error("[Webhook] MP_WEBHOOK_SECRET no está configurado — request rechazado");
+    return NextResponse.json({ error: "Webhook no configurado" }, { status: 500 });
+  }
+
+  const valid = verifyWebhookSignature(xSignature, xRequestId, body);
+  if (!valid) {
+    console.warn("[Webhook] Firma inválida — request rechazado");
+    return NextResponse.json({ error: "Firma inválida" }, { status: 401 });
   }
 
   let event: { type: string; data: { id: string } };
@@ -66,23 +69,40 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Si se activó, crear factura
+    // Si se activó, crear factura (con idempotencia por preapprovalId)
     if (internalStatus === "ACTIVE" && mpSub.auto_recurring?.transaction_amount) {
       const sub = await prisma.subscription.findUnique({
         where: { userId: externalRef },
       });
       if (sub) {
-        await prisma.invoice.create({
-          data: {
+        // mpPreapprovalId identifica a la SUSCRIPCIÓN, no al cobro puntual — es el
+        // mismo en cada renovación mensual. Deduplicar solo por ese id bloquearía
+        // toda factura después de la primera. En cambio, tratamos como reintento
+        // del mismo webhook únicamente si ya se creó una factura para esta misma
+        // suscripción en las últimas horas (una renovación real llega ~30 días
+        // después, muy por fuera de esta ventana).
+        const ventanaReintento = new Date(Date.now() - 6 * 60 * 60 * 1000);
+        const existing = await prisma.invoice.findFirst({
+          where: {
             subscriptionId: sub.id,
-            amount: mpSub.auto_recurring.transaction_amount,
-            currency: mpSub.auto_recurring.currency_id ?? "ARS",
-            status: "paid",
-            dueDate: new Date(),
-            paidAt: new Date(),
-            description: `Suscripción ${sub.plan === "ANNUAL" ? "Anual" : "Mensual"} — Zimple Tools`,
+            mpPreapprovalId: preapprovalId,
+            createdAt: { gte: ventanaReintento },
           },
         });
+        if (!existing) {
+          await prisma.invoice.create({
+            data: {
+              subscriptionId: sub.id,
+              mpPreapprovalId: preapprovalId,
+              amount: mpSub.auto_recurring.transaction_amount,
+              currency: mpSub.auto_recurring.currency_id ?? "ARS",
+              status: "paid",
+              dueDate: new Date(),
+              paidAt: new Date(),
+              description: `Suscripción ${sub.plan === "ANNUAL" ? "Anual" : "Mensual"} — Zimple Tools`,
+            },
+          });
+        }
       }
     }
 

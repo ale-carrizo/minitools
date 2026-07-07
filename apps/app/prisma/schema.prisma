@@ -136,15 +136,16 @@ model Subscription {
 }
 
 model Invoice {
-  id             String    @id @default(cuid())
-  subscriptionId String
-  amount         Float
-  currency       String    @default("USD")
-  status         String    // paid, pending, failed
-  dueDate        DateTime
-  paidAt         DateTime?
-  description    String?
-  createdAt      DateTime  @default(now())
+  id              String    @id @default(cuid())
+  subscriptionId  String
+  mpPreapprovalId String?
+  amount          Float
+  currency        String    @default("USD")
+  status          String    // paid, pending, failed
+  dueDate         DateTime
+  paidAt          DateTime?
+  description     String?
+  createdAt       DateTime  @default(now())
 
   subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
 }

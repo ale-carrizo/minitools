@@ -180,6 +180,8 @@ export async function createSocio(data: {
 }): Promise<Socio> {
   const userId = await getUserId()
 
+  if (!Number.isFinite(data.monto) || data.monto < 0) throw new Error('Monto inválido')
+
   const socio = await prisma.socio.create({
     data: {
       userId,
@@ -219,11 +221,12 @@ export async function updateSocio(id: string, data: Partial<{
 }>): Promise<Socio> {
   const userId = await getUserId()
 
+  if (data.monto !== undefined && (!Number.isFinite(data.monto) || data.monto < 0)) throw new Error('Monto inválido')
+
   const socio = await prisma.socio.update({
-    where: { id },
+    where: { id, userId },
     data: { ...data, updatedAt: new Date() },
   })
-  if (socio.userId !== userId) throw new Error('No autorizado')
 
   revalidatePath('/dashboard/socios')
   return mapSocio(socio)
@@ -296,31 +299,43 @@ export async function pagarCobro(
 
   const cobro = await prisma.cobroProgramado.findFirst({ where: { id: cobroId, userId } })
   if (!cobro) throw new Error('Cobro no encontrado')
+  if (cobro.estado === 'pagado') return mapCobro(cobro)
 
-  const updated = await prisma.cobroProgramado.update({
-    where: { id: cobroId },
-    data: {
-      estado:    'pagado',
-      fechaPago: dateStr(new Date()),
-      medioPago: medioPago ?? null,
-      notaPago:  nota ?? null,
-      comprobanteUrl: comprobanteUrl ?? null,
-    },
-  })
-
-  const socio = await prisma.socio.findUnique({ where: { id: cobro.socioId } })
-  if (socio) {
-    await prisma.socio.update({
-      where: { id: cobro.socioId },
+  const result = await prisma.$transaction(async (tx) => {
+    // Update condicional: si dos requests llegan casi al mismo tiempo, solo una
+    // gana la transición pendiente→pagado; la otra ve count=0 y no duplica el pago.
+    const { count } = await tx.cobroProgramado.updateMany({
+      where: { id: cobroId, userId, estado: { not: 'pagado' } },
       data: {
-        totalCobrado: socio.totalCobrado + cobro.monto,
-        deudaTotal:   Math.max(0, socio.deudaTotal - cobro.monto),
+        estado:    'pagado',
+        fechaPago: dateStr(new Date()),
+        medioPago: medioPago ?? null,
+        notaPago:  nota ?? null,
+        comprobanteUrl: comprobanteUrl ?? null,
       },
     })
-  }
+    if (count === 0) {
+      const actual = await tx.cobroProgramado.findFirstOrThrow({ where: { id: cobroId, userId } })
+      return mapCobro(actual)
+    }
+    const updated = await tx.cobroProgramado.findFirstOrThrow({ where: { id: cobroId, userId } })
+
+    const socio = await tx.socio.findUnique({ where: { id: cobro.socioId } })
+    if (socio) {
+      await tx.socio.update({
+        where: { id: cobro.socioId },
+        data: {
+          totalCobrado: socio.totalCobrado + cobro.monto,
+          deudaTotal:   Math.max(0, socio.deudaTotal - cobro.monto),
+        },
+      })
+    }
+
+    return mapCobro(updated)
+  })
 
   revalidatePath('/dashboard/socios')
-  return mapCobro(updated)
+  return result
 }
 
 export async function posponerCobro(cobroId: string, nuevaFecha: string): Promise<CobroProgramado> {
@@ -350,6 +365,8 @@ export async function agregarCobroPuntual(opts: {
   concepto?:        string
 }): Promise<CobroProgramado> {
   const userId = await getUserId()
+
+  if (!Number.isFinite(opts.monto) || opts.monto < 0) throw new Error('Monto inválido')
 
   const cobro = await prisma.cobroProgramado.create({
     data: {

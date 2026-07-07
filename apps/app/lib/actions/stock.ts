@@ -98,6 +98,11 @@ interface ProductoPayload {
 export async function crearProducto(data: ProductoPayload): Promise<Producto> {
   const userId = await getUserId()
 
+  if (!Number.isFinite(data.precioCosto) || data.precioCosto < 0) throw new Error('El precio de costo no es válido')
+  if (!Number.isFinite(data.precioVenta) || data.precioVenta < 0) throw new Error('El precio de venta no es válido')
+  if (!Number.isFinite(data.stock) || data.stock < 0) throw new Error('El stock no es válido')
+  if (!Number.isFinite(data.stockMinimo) || data.stockMinimo < 0) throw new Error('El stock mínimo no es válido')
+
   const producto = await prisma.producto.create({
     data: {
       userId,
@@ -133,6 +138,10 @@ export async function crearProducto(data: ProductoPayload): Promise<Producto> {
 
 export async function editarProducto(id: string, data: Partial<ProductoPayload>): Promise<Producto> {
   const userId = await getUserId()
+
+  if (data.precioCosto !== undefined && (!Number.isFinite(data.precioCosto) || data.precioCosto < 0)) throw new Error('El precio de costo no es válido')
+  if (data.precioVenta !== undefined && (!Number.isFinite(data.precioVenta) || data.precioVenta < 0)) throw new Error('El precio de venta no es válido')
+  if (data.stockMinimo !== undefined && (!Number.isFinite(data.stockMinimo) || data.stockMinimo < 0)) throw new Error('El stock mínimo no es válido')
 
   const producto = await prisma.producto.findFirst({ where: { id, userId } })
   if (!producto) throw new Error('Producto no encontrado')
@@ -172,6 +181,8 @@ export async function registrarMovimiento(
 ): Promise<Producto> {
   const userId = await getUserId()
 
+  if (!Number.isFinite(cantidad) || cantidad <= 0) throw new Error('La cantidad debe ser mayor a cero')
+
   const producto = await prisma.$transaction(async (tx) => {
     const p = await tx.producto.findFirst({ where: { id: productoId, userId } })
     if (!p) throw new Error('Producto no encontrado')
@@ -179,7 +190,11 @@ export async function registrarMovimiento(
     let nuevoStock: number
     if (tipo === 'entrada') nuevoStock = p.stock + cantidad
     else if (tipo === 'salida') {
-      if (cantidad > p.stock) throw new Error(`Stock insuficiente (disponible: ${p.stock})`)
+      const updated = await tx.producto.updateMany({
+        where: { id: productoId, userId, stock: { gte: cantidad } },
+        data: { stock: { decrement: cantidad } },
+      })
+      if (updated.count === 0) throw new Error(`Stock insuficiente (disponible: ${p.stock})`)
       nuevoStock = p.stock - cantidad
     } else {
       // ajuste: cantidad es el nuevo valor absoluto
@@ -190,10 +205,14 @@ export async function registrarMovimiento(
       data: { userId, productoId, tipo, cantidad, stockAntes: p.stock, motivo: motivo || null },
     })
 
-    return tx.producto.update({
-      where: { id: productoId },
-      data:  { stock: nuevoStock },
-    })
+    if (tipo !== 'salida') {
+      await tx.producto.update({
+        where: { id: productoId },
+        data:  { stock: nuevoStock },
+      })
+    }
+
+    return tx.producto.findFirstOrThrow({ where: { id: productoId, userId } })
   })
 
   revalidatePath('/dashboard/stock')
