@@ -104,7 +104,7 @@ function toTurno(raw: any): Turno {
 async function verificarSuperposicion(
   userId: string,
   fecha: string,
-  nuevo: { horaInicio: string; horaFin: string; empleadoId?: string | null },
+  nuevo: { horaInicio: string; horaFin: string },
   excludeId?: string,
 ) {
   const turnos = await db.turno.findMany({
@@ -117,19 +117,8 @@ async function verificarSuperposicion(
     orderBy: { horaInicio: 'asc' },
   })
 
-  const conflicto = turnos.find((turno: any) => {
-    if (!seSuperponen(nuevo, turno)) return false
-    // Sin empleado asignado: se considera que comparte el mismo recurso físico.
-    if (!nuevo.empleadoId || !turno.empleadoId) return true
-    // Mismo empleado: conflicto. Distinto empleado: válido.
-    return nuevo.empleadoId === turno.empleadoId
-  })
-
-  if (conflicto) {
-    const mensaje = nuevo.empleadoId && conflicto.empleadoId && nuevo.empleadoId === conflicto.empleadoId
-      ? 'Horario no disponible para este empleado'
-      : 'Horario no disponible'
-    throw new Error(mensaje)
+  if (turnos.some((turno: any) => seSuperponen(nuevo, turno))) {
+    throw new Error('Horario no disponible')
   }
 }
 
@@ -285,7 +274,7 @@ export async function crearTurno(data: {
   const userId = await getUserId()
   const empleadoId = data.empleadoId?.trim() || null
   const horaFin = sumarMinutos(data.horaInicio, data.duracion)
-  await verificarSuperposicion(userId, data.fecha, { horaInicio: data.horaInicio, horaFin, empleadoId })
+  await verificarSuperposicion(userId, data.fecha, { horaInicio: data.horaInicio, horaFin })
 
   await db.turno.create({
     data: {
@@ -340,7 +329,7 @@ export async function editarTurno(id: string, data: Partial<{
     duracion !== actual.duracion ||
     empleadoId !== actual.empleadoId
   ) {
-    await verificarSuperposicion(userId, fecha, { horaInicio, horaFin, empleadoId }, id)
+    await verificarSuperposicion(userId, fecha, { horaInicio, horaFin }, id)
   }
 
   await db.turno.update({
