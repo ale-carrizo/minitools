@@ -455,48 +455,71 @@ export async function getProximoNumero(): Promise<number> {
 export async function crearPresupuesto(data: PresupuestoInput): Promise<Presupuesto> {
   const userId = await getUserId()
   const payload = normalizeInput(data)
-  const numero = await getProximoNumero()
   const totals = calcularTotales(payload.items, payload.descuento, payload.iva)
 
-  const created = await prisma.$transaction(async (tx) => {
-    const presupuesto = await tx.presupuesto.create({
-      data: {
-        userId,
-        clienteId: payload.clienteId ?? null,
-        numero,
-        titulo: payload.titulo,
-        estado: 'borrador',
-        fechaEmision: payload.fechaEmision,
-        fechaVence: payload.fechaVence ?? null,
-        moneda: payload.moneda,
-        descuento: payload.descuento,
-        iva: payload.iva,
-        notas: payload.notas,
-        notasCliente: payload.notasCliente,
-        subtotal: totals.subtotal,
-        totalFinal: totals.totalFinal,
-      },
-      include: {
-        cliente: true,
-        items: { orderBy: { orden: 'asc' } },
-      },
-    })
+  async function attempt(): Promise<Presupuesto> {
+    return prisma.$transaction(async (tx) => {
+      const ultimo = await tx.presupuesto.findFirst({
+        where: { userId },
+        orderBy: { numero: 'desc' },
+      })
+      const numero = (ultimo?.numero ?? 0) + 1
 
-    await tx.presupuestoItem.createMany({
-      data: buildItemsCreateMany(payload.items).map((item) => ({
-        ...item,
-        presupuestoId: presupuesto.id,
-      })),
-    })
+      const presupuesto = await tx.presupuesto.create({
+        data: {
+          userId,
+          clienteId: payload.clienteId ?? null,
+          numero,
+          titulo: payload.titulo,
+          estado: 'borrador',
+          fechaEmision: payload.fechaEmision,
+          fechaVence: payload.fechaVence ?? null,
+          moneda: payload.moneda,
+          descuento: payload.descuento,
+          iva: payload.iva,
+          notas: payload.notas,
+          notasCliente: payload.notasCliente,
+          subtotal: totals.subtotal,
+          totalFinal: totals.totalFinal,
+        },
+        include: {
+          cliente: true,
+          items: { orderBy: { orden: 'asc' } },
+        },
+      })
 
-    return tx.presupuesto.findUniqueOrThrow({
-      where: { id: presupuesto.id },
-      include: {
-        cliente: true,
-        items: { orderBy: { orden: 'asc' } },
-      },
+      await tx.presupuestoItem.createMany({
+        data: buildItemsCreateMany(payload.items).map((item) => ({
+          ...item,
+          presupuestoId: presupuesto.id,
+        })),
+      })
+
+      const result = await tx.presupuesto.findUniqueOrThrow({
+        where: { id: presupuesto.id },
+        include: {
+          cliente: true,
+          items: { orderBy: { orden: 'asc' } },
+        },
+      })
+      return result as unknown as Presupuesto
     })
-  })
+  }
+
+  let created: Presupuesto
+  try {
+    created = await attempt()
+  } catch (err: any) {
+    if (err?.code === 'P2002') {
+      try {
+        created = await attempt()
+      } catch {
+        throw new Error('No se pudo generar el número de presupuesto, intentá de nuevo')
+      }
+    } else {
+      throw err
+    }
+  }
 
   revalidatePath('/dashboard/presupuestos')
   redirect(`/dashboard/presupuestos/${created.id}`)
@@ -599,49 +622,73 @@ export async function duplicarPresupuesto(id: string): Promise<Presupuesto> {
   })
 
   if (!actual) throw new Error('Presupuesto no encontrado')
+  const source = actual
 
-  const numero = await getProximoNumero()
-  const duplicado = await prisma.$transaction(async (tx) => {
-    const created = await tx.presupuesto.create({
-      data: {
-        userId,
-        clienteId: actual.clienteId,
-        numero,
-        titulo: `${actual.titulo} (copia)`,
-        estado: 'borrador',
-        fechaEmision: todayDate(),
-        fechaVence: actual.fechaVence,
-        moneda: actual.moneda,
-        descuento: actual.descuento,
-        iva: actual.iva,
-        notas: actual.notas,
-        notasCliente: actual.notasCliente,
-        subtotal: actual.subtotal,
-        totalFinal: actual.totalFinal,
-        logoUrl: actual.logoUrl,
-        pdfUrl: null,
-      },
-    })
+  async function attempt(): Promise<Presupuesto> {
+    return prisma.$transaction(async (tx) => {
+      const ultimo = await tx.presupuesto.findFirst({
+        where: { userId },
+        orderBy: { numero: 'desc' },
+      })
+      const numero = (ultimo?.numero ?? 0) + 1
 
-    await tx.presupuestoItem.createMany({
-      data: actual.items.map((item) => ({
-        presupuestoId: created.id,
-        orden: item.orden,
-        descripcion: item.descripcion,
-        cantidad: item.cantidad,
-        precioUnitario: item.precioUnitario,
-        subtotal: item.subtotal,
-      })),
-    })
+      const created = await tx.presupuesto.create({
+        data: {
+          userId,
+          clienteId: source.clienteId,
+          numero,
+          titulo: `${source.titulo} (copia)`,
+          estado: 'borrador',
+          fechaEmision: todayDate(),
+          fechaVence: source.fechaVence,
+          moneda: source.moneda,
+          descuento: source.descuento,
+          iva: source.iva,
+          notas: source.notas,
+          notasCliente: source.notasCliente,
+          subtotal: source.subtotal,
+          totalFinal: source.totalFinal,
+          logoUrl: source.logoUrl,
+          pdfUrl: null,
+        },
+      })
 
-    return tx.presupuesto.findUniqueOrThrow({
-      where: { id: created.id },
-      include: {
-        cliente: true,
-        items: { orderBy: { orden: 'asc' } },
-      },
+      await tx.presupuestoItem.createMany({
+        data: source.items.map((item) => ({
+          presupuestoId: created.id,
+          orden: item.orden,
+          descripcion: item.descripcion,
+          cantidad: item.cantidad,
+          precioUnitario: item.precioUnitario,
+          subtotal: item.subtotal,
+        })),
+      })
+
+      const result = await tx.presupuesto.findUniqueOrThrow({
+        where: { id: created.id },
+        include: {
+          cliente: true,
+          items: { orderBy: { orden: 'asc' } },
+        },
+      })
+      return result as unknown as Presupuesto
     })
-  })
+  }
+
+  let duplicado: Presupuesto
+  try {
+    duplicado = await attempt()
+  } catch (err: any) {
+    if (err?.code === 'P2002') {
+      try {
+        duplicado = await attempt()
+      } catch {
+        throw new Error('No se pudo generar el número de presupuesto, intentá de nuevo')
+      }
+    } else {
+      throw err
+    }
+  }
 
   await recalcUserStorage(userId)
   revalidatePath('/dashboard/presupuestos')

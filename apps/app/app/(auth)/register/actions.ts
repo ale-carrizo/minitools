@@ -12,8 +12,8 @@ export async function registerUser(
   _prev: RegisterState,
   formData: FormData
 ): Promise<RegisterState> {
-  const name = formData.get("name") as string;
-  const email = formData.get("email") as string;
+  const name = (formData.get("name") as string)?.trim();
+  let email = (formData.get("email") as string)?.trim().toLowerCase();
   const password = formData.get("password") as string;
 
   if (!name || !email || !password) {

@@ -68,6 +68,7 @@ function toItem(raw: any): LiquidacionItem {
     artMonto: raw.artMonto,
     totalContribEmp: raw.totalContribEmp,
     costoTotalEmp: raw.costoTotalEmp,
+    tasasSnapshot: raw.tasasSnapshot ?? null,
     createdAt: raw.createdAt.toISOString(),
     updatedAt: raw.updatedAt.toISOString(),
     empleado: raw.empleado ? toEmpleadoMin(raw.empleado) : null,
@@ -252,6 +253,7 @@ export async function agregarItem(liquidacionId: string, data: {
       artMonto: calc.artMonto,
       totalContribEmp: calc.totalContribEmp,
       costoTotalEmp: calc.costoTotalEmp,
+      tasasSnapshot: calc.tasasSnapshot,
     },
   })
   revalidatePath(`/dashboard/liquidacion/${liquidacionId}`)
@@ -300,6 +302,7 @@ export async function editarItem(itemId: string, data: {
       artMonto: calc.artMonto,
       totalContribEmp: calc.totalContribEmp,
       costoTotalEmp: calc.costoTotalEmp,
+      tasasSnapshot: calc.tasasSnapshot,
     },
   })
   revalidatePath(`/dashboard/liquidacion/${item.liquidacionId}`)

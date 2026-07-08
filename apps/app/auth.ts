@@ -23,8 +23,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
+        const email = String(credentials.email).trim().toLowerCase();
+
         const user = await prisma.user.findUnique({
-          where: { email: credentials.email as string },
+          where: { email },
         });
 
         if (!user || !user.password) return null;
@@ -38,7 +40,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         return {
           id: user.id,
-          email: user.email,
+          email: user.email?.trim().toLowerCase(),
           name: user.name,
           image: user.image,
           role: user.role,
@@ -50,8 +52,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async signIn({ user, account }) {
       // Block suspended users (Google OAuth)
       if (account?.provider === "google" && user.email) {
+        const email = user.email.trim().toLowerCase();
         const dbUser = await prisma.user.findUnique({
-          where: { email: user.email },
+          where: { email },
         });
         if (dbUser?.suspended) return false;
       }

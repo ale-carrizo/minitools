@@ -46,6 +46,7 @@ export interface LiquidacionItem {
   artMonto: number
   totalContribEmp: number
   costoTotalEmp: number
+  tasasSnapshot: Record<string, number> | null
   createdAt: string
   updatedAt: string
   empleado: EmpleadoMin | null
@@ -59,6 +60,13 @@ export const TASAS = {
   FNE: 0.015,
   OBRA_SOCIAL_EMP: 0.06,
 } as const
+
+/**
+ * Tope máximo imponible para aportes de jubilación y PAMI.
+ * Cambia todos los años; consultar el valor vigente en ANSES/AFIP.
+ * Dejar en `null` para no aplicar tope (comportamiento actual).
+ */
+export const TOPE_IMPONIBLE_JUBILACION_PAMI: number | null = null
 
 export const ESTADO_CONFIG: Record<LiquidacionEstado, {
   label: string
@@ -111,20 +119,27 @@ export interface ItemCalculado {
   artMonto: number
   totalContribEmp: number
   costoTotalEmp: number
+  tasasSnapshot: Record<string, number>
 }
 
-export function calcularItem(input: ItemInput): ItemCalculado {
+export function calcularItem(
+  input: ItemInput,
+  tasas: Record<string, number> = TASAS,
+  topeImponible: number | null = TOPE_IMPONIBLE_JUBILACION_PAMI,
+): ItemCalculado {
   const { salarioBruto, diasTrabajados, diasHabiles, horasExtraMonto, adicionalesMonto, otrasDeduccs, artPorcentaje } = input
   const salarioCalculado = diasHabiles > 0 ? (salarioBruto / diasHabiles) * diasTrabajados : salarioBruto
   const totalBruto = salarioCalculado + horasExtraMonto + adicionalesMonto
-  const jubilacionEmpl = totalBruto * TASAS.JUBILACION_EMPL
-  const obraSocialEmpl = totalBruto * TASAS.OBRA_SOCIAL_EMPL
-  const pamiEmpl = totalBruto * TASAS.PAMI_EMPL
+  const baseImponibleJubilacionPami = topeImponible !== null ? Math.min(totalBruto, topeImponible) : totalBruto
+
+  const jubilacionEmpl = baseImponibleJubilacionPami * tasas.JUBILACION_EMPL
+  const obraSocialEmpl = totalBruto * tasas.OBRA_SOCIAL_EMPL
+  const pamiEmpl = baseImponibleJubilacionPami * tasas.PAMI_EMPL
   const totalDeduccs = jubilacionEmpl + obraSocialEmpl + pamiEmpl + otrasDeduccs
   const netoAPagar = totalBruto - totalDeduccs
-  const jubilacionEmp = totalBruto * TASAS.JUBILACION_EMP
-  const fne = totalBruto * TASAS.FNE
-  const obraSocialEmp = totalBruto * TASAS.OBRA_SOCIAL_EMP
+  const jubilacionEmp = baseImponibleJubilacionPami * tasas.JUBILACION_EMP
+  const fne = totalBruto * tasas.FNE
+  const obraSocialEmp = totalBruto * tasas.OBRA_SOCIAL_EMP
   const artMonto = totalBruto * (artPorcentaje / 100)
   const totalContribEmp = jubilacionEmp + fne + obraSocialEmp + artMonto
   const costoTotalEmp = totalBruto + totalContribEmp
@@ -143,6 +158,7 @@ export function calcularItem(input: ItemInput): ItemCalculado {
     artMonto,
     totalContribEmp,
     costoTotalEmp,
+    tasasSnapshot: { ...tasas },
   }
 }
 

@@ -551,6 +551,7 @@ model LiquidacionItem {
   artMonto         Float    @default(0)
   totalContribEmp  Float
   costoTotalEmp    Float
+  tasasSnapshot    Json?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 

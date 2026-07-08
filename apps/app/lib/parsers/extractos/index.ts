@@ -35,20 +35,37 @@ function parseHora(val: any): string | null {
   return m ? `${m[1].padStart(2,'0')}:${m[2]}` : null
 }
 
+/**
+ * Mitigación contra CSV/formula injection: si un valor empieza con caracteres
+ * que Excel/Sheets interpretan como fórmula (=, +, -, @) o con whitespace
+ * de control (tab, CR), le antepone un apóstrofe para forzar texto plano.
+ */
+function sanitizeCsvCell(value: string): string {
+  if (!value) return value
+  const first = value.charAt(0)
+  if (['=', '+', '-', '@', '\t', '\r'].includes(first)) {
+    return `'${value}`
+  }
+  return value
+}
+
 // ── Banco Nación ──────────────────────────────────────────────────────────────
 // Columnas: Fecha | Hora | Descripción | Débito | Crédito | Saldo
 const parseBancoNacion: Parser = (rows) =>
   rows.slice(8)
     .filter(r => r[4] && parseMonto(r[4]) > 0)
-    .map(r => ({
-      fecha:       parseFecha(r[0]),
-      hora:        parseHora(r[1]),
-      descripcion: String(r[2] ?? '').trim(),
-      monto:       parseMonto(r[4]),
-      tipo:        'credito' as const,
-      referencia:  String(r[2] ?? '').match(/\d{8,}/)?.[0] ?? null,
-      raw:         { cols: r }
-    }))
+    .map(r => {
+      const descripcion = sanitizeCsvCell(String(r[2] ?? '').trim())
+      return {
+        fecha:       parseFecha(r[0]),
+        hora:        parseHora(r[1]),
+        descripcion,
+        monto:       parseMonto(r[4]),
+        tipo:        'credito' as const,
+        referencia:  descripcion.match(/\d{8,}/)?.[0] ?? null,
+        raw:         { cols: r }
+      }
+    })
 
 // ── BBVA ──────────────────────────────────────────────────────────────────────
 // Columnas: Fecha | Concepto | Referencia | Importe | Saldo
@@ -58,10 +75,10 @@ const parseBBVA: Parser = (rows) =>
     .map(r => ({
       fecha:       parseFecha(r[0]),
       hora:        null,
-      descripcion: String(r[1] ?? '').trim(),
+      descripcion: sanitizeCsvCell(String(r[1] ?? '').trim()),
       monto:       parseMonto(r[3]),
       tipo:        'credito' as const,
-      referencia:  String(r[2] ?? '').trim() || null,
+      referencia:  sanitizeCsvCell(String(r[2] ?? '').trim()) || null,
       raw:         { cols: r }
     }))
 
@@ -70,30 +87,36 @@ const parseBBVA: Parser = (rows) =>
 const parseSantander: Parser = (rows) =>
   rows.slice(5)
     .filter(r => r[2] && parseMonto(r[2]) > 0 && parseFloat(String(r[2])) > 0)
-    .map(r => ({
-      fecha:       parseFecha(r[0]),
-      hora:        null,
-      descripcion: String(r[1] ?? '').trim(),
-      monto:       parseMonto(r[2]),
-      tipo:        'credito' as const,
-      referencia:  String(r[1] ?? '').match(/\d{6,}/)?.[0] ?? null,
-      raw:         { cols: r }
-    }))
+    .map(r => {
+      const descripcion = sanitizeCsvCell(String(r[1] ?? '').trim())
+      return {
+        fecha:       parseFecha(r[0]),
+        hora:        null,
+        descripcion,
+        monto:       parseMonto(r[2]),
+        tipo:        'credito' as const,
+        referencia:  descripcion.match(/\d{6,}/)?.[0] ?? null,
+        raw:         { cols: r }
+      }
+    })
 
 // ── Galicia ───────────────────────────────────────────────────────────────────
 // Columnas: Fecha | Hora | Descripción | Monto | Tipo | Saldo
 const parseGalicia: Parser = (rows) =>
   rows.slice(4)
     .filter(r => r[4] && String(r[4]).toLowerCase() === 'haber')
-    .map(r => ({
-      fecha:       parseFecha(r[0]),
-      hora:        parseHora(r[1]),
-      descripcion: String(r[2] ?? '').trim(),
-      monto:       parseMonto(r[3]),
-      tipo:        'credito' as const,
-      referencia:  String(r[2] ?? '').match(/\d{8,}/)?.[0] ?? null,
-      raw:         { cols: r }
-    }))
+    .map(r => {
+      const descripcion = sanitizeCsvCell(String(r[2] ?? '').trim())
+      return {
+        fecha:       parseFecha(r[0]),
+        hora:        parseHora(r[1]),
+        descripcion,
+        monto:       parseMonto(r[3]),
+        tipo:        'credito' as const,
+        referencia:  descripcion.match(/\d{8,}/)?.[0] ?? null,
+        raw:         { cols: r }
+      }
+    })
 
 // ── Brubank ───────────────────────────────────────────────────────────────────
 // CSV: fecha,hora,descripcion,monto,saldo
@@ -103,7 +126,7 @@ const parseBrubank: Parser = (rows) =>
     .map(r => ({
       fecha:       parseFecha(r[0]),
       hora:        parseHora(r[1]),
-      descripcion: String(r[2] ?? '').trim(),
+      descripcion: sanitizeCsvCell(String(r[2] ?? '').trim()),
       monto:       parseMonto(r[3]),
       tipo:        'credito' as const,
       referencia:  null,
@@ -122,10 +145,10 @@ const parseMercadoPago: Parser = (rows) =>
     .map(r => ({
       fecha:       parseFecha(r[0]),
       hora:        parseHora(r[1]),
-      descripcion: `${r[3] ?? ''} — ${r[4] ?? ''}`.trim(),
+      descripcion: sanitizeCsvCell(`${r[3] ?? ''} — ${r[4] ?? ''}`.trim()),
       monto:       parseMonto(r[5]),
       tipo:        'credito' as const,
-      referencia:  String(r[6] ?? '').trim() || null,
+      referencia:  sanitizeCsvCell(String(r[6] ?? '').trim()) || null,
       raw:         { cols: r }
     }))
 
@@ -143,7 +166,7 @@ const parseGenerico: Parser = (rows) => {
     .map(r => ({
       fecha:       fechaCol >= 0 ? parseFecha(r[fechaCol]) : new Date().toISOString().split('T')[0],
       hora:        null,
-      descripcion: descCol >= 0 ? String(r[descCol] ?? '').trim() : '',
+      descripcion: descCol >= 0 ? sanitizeCsvCell(String(r[descCol] ?? '').trim()) : '',
       monto:       parseMonto(r[montoCol]),
       tipo:        'credito' as const,
       referencia:  null,
