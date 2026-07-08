@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useMemo, useTransition } from 'react'
-import { cambiarEstado } from '@/lib/actions/turno'
+import { cambiarEstado, marcarRecordatorioEnviado } from '@/lib/actions/turno'
 import {
   asignarCarriles,
   DIAS_SEMANA,
@@ -241,6 +241,17 @@ export default function AgendaDia({
                   >
                     WhatsApp
                   </a>
+                )}
+                {linkWhatsApp && !turno.recordatorioEnviado && (
+                  <button
+                    type="button"
+                    disabled={isPending}
+                    title="Marcar recordatorio como enviado"
+                    onClick={() => startTransition(async () => { await marcarRecordatorioEnviado(turno.id) })}
+                    className="flex-shrink-0 rounded-lg border border-white/10 hover:border-white/20 text-white/30 hover:text-white/60 px-2 py-1.5 text-[11px] font-medium transition-colors disabled:opacity-40"
+                  >
+                    ✓
+                  </button>
                 )}
                 {showActions && (
                   <div className="flex-shrink-0 flex items-center gap-1.5">

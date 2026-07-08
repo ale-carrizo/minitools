@@ -9,11 +9,6 @@
   },
   "cron": [
     {
-      "name": "turnos-cron",
-      "schedule": "0 8 * * *",
-      "command": "curl -s http://localhost:${PORT:-3002}/api/turnos-cron?secret=${CRON_SECRET}"
-    },
-    {
       "name": "socios-cron",
       "schedule": "0 9 * * *",
       "command": "curl -s http://localhost:${PORT:-3002}/api/socios-cron?secret=${CRON_SECRET}"
