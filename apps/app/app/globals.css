@@ -188,6 +188,15 @@ button, a, input, select, textarea,
 }
 .btn-brand:active { transform: translateY(0); }
 
+/* Botones con fondo de color sólido/saturado (rojo, azul, verde, whatsapp, etc.)
+   que usan text-white: en modo claro --color-white se invierte a oscuro y el
+   texto desaparece sobre el fondo de color. Esta clase fuerza blanco literal
+   sin depender del token. Aplicar junto con text-white para mantener el markup
+   legible. */
+.btn-solid-text {
+  color: #ffffff !important;
+}
+
 /* Card that lifts and lights its border on hover */
 .card-glow {
   position: relative;

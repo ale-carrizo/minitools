@@ -59,11 +59,11 @@ export default function PresupuestoAcciones({ presupuesto }: { presupuesto: Pres
     <div className="space-y-3">
       {actions.map((action) => {
         const className = action.kind === 'primary'
-          ? 'bg-blue-500/90 hover:bg-blue-500 text-white'
+          ? 'bg-blue-500/90 hover:bg-blue-500 text-white btn-solid-text'
           : action.kind === 'success'
-            ? 'bg-emerald-500/90 hover:bg-emerald-500 text-white'
+            ? 'bg-emerald-500/90 hover:bg-emerald-500 text-white btn-solid-text'
             : action.kind === 'danger'
-              ? 'bg-red-500/90 hover:bg-red-500 text-white'
+              ? 'bg-red-500/90 hover:bg-red-500 text-white btn-solid-text'
               : action.kind === 'ghost'
                 ? 'border border-white/10 text-white/70 hover:border-white/20 hover:text-white'
                 : 'border border-white/10 text-white/70 hover:border-white/20 hover:text-white'

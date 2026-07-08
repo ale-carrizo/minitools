@@ -230,26 +230,71 @@ export async function importarProductos(rows: Array<{
   stock?: number
   stockMinimo?: number
   unidad?: string
-}>): Promise<{ creados: number }> {
+}>): Promise<{ creados: number; saltadas: number; errores: string[] }> {
   const userId = await getUserId()
-  const sanitized = rows
-    .map((row) => ({
-      nombre: row.nombre?.trim() ?? '',
+
+  const errores: string[] = []
+  const validas: Array<{
+    nombre: string
+    sku: string | null
+    categoria: string | null
+    descripcion: string | null
+    precioCosto: number
+    precioVenta: number
+    stock: number
+    stockMinimo: number
+    unidad: string
+  }> = []
+
+  rows.forEach((row, index) => {
+    const fila = index + 1
+    const nombre = row.nombre?.trim() ?? ''
+    if (!nombre) {
+      errores.push(`Fila ${fila}: nombre faltante`)
+      return
+    }
+
+    const precioCosto = Number(row.precioCosto ?? 0)
+    const precioVenta = Number(row.precioVenta ?? 0)
+    const stock = Number(row.stock ?? 0)
+    const stockMinimo = Number(row.stockMinimo ?? 0)
+
+    if (Number.isNaN(precioCosto) || precioCosto < 0) {
+      errores.push(`Fila ${fila}: precioCosto inválido (${row.precioCosto})`)
+      return
+    }
+    if (Number.isNaN(precioVenta) || precioVenta < 0) {
+      errores.push(`Fila ${fila}: precioVenta inválido (${row.precioVenta})`)
+      return
+    }
+    if (Number.isNaN(stock) || stock < 0) {
+      errores.push(`Fila ${fila}: stock inválido (${row.stock})`)
+      return
+    }
+    if (Number.isNaN(stockMinimo) || stockMinimo < 0) {
+      errores.push(`Fila ${fila}: stockMinimo inválido (${row.stockMinimo})`)
+      return
+    }
+
+    validas.push({
+      nombre,
       sku: row.sku?.trim() || null,
       categoria: row.categoria?.trim() || null,
       descripcion: row.descripcion?.trim() || null,
-      precioCosto: Number(row.precioCosto ?? 0),
-      precioVenta: Number(row.precioVenta ?? 0),
-      stock: Number(row.stock ?? 0),
-      stockMinimo: Number(row.stockMinimo ?? 0),
+      precioCosto,
+      precioVenta,
+      stock,
+      stockMinimo,
       unidad: row.unidad?.trim() || 'unidad',
-    }))
-    .filter((row) => row.nombre)
+    })
+  })
 
-  if (sanitized.length === 0) throw new Error('No se encontraron filas válidas para importar')
+  if (validas.length === 0) {
+    return { creados: 0, saltadas: rows.length, errores }
+  }
 
   await prisma.$transaction(async (tx) => {
-    for (const row of sanitized) {
+    for (const row of validas) {
       const producto = await tx.producto.create({
         data: {
           userId,
@@ -281,5 +326,5 @@ export async function importarProductos(rows: Array<{
   })
 
   revalidatePath('/dashboard/stock')
-  return { creados: sanitized.length }
+  return { creados: validas.length, saltadas: rows.length - validas.length, errores }
 }

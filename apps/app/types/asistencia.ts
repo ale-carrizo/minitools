@@ -1,5 +1,7 @@
 export type AsistenciaEstado = 'presente' | 'ausente' | 'tardanza' | 'medio_dia' | 'libre'
 
+export const PALETA_EMPLEADO = ['#5448EE', '#06B6D4', '#059669', '#D97706', '#DC2626', '#7C3AED', '#DB2777', '#0EA5E9']
+
 export interface Empleado {
   id: string
   userId: string

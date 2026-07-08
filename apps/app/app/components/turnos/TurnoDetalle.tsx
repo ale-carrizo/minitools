@@ -193,7 +193,7 @@ export default function TurnoDetalle({ turno }: { turno: Turno }) {
                   className="w-full bg-white/[0.05] border border-white/[0.09] rounded-xl text-white px-3 py-2 text-sm focus:outline-none focus:border-[#25D366]/60"
                 />
                 {whatsappSenia && (
-                  <a href={whatsappSenia} target="_blank" rel="noreferrer" className="block text-center bg-[#25D366] hover:bg-[#1DA851] text-white rounded-xl px-3 py-2 text-[12px] font-medium transition-colors">
+                  <a href={whatsappSenia} target="_blank" rel="noreferrer" className="block text-center bg-[#25D366] hover:bg-[#1DA851] text-white btn-solid-text rounded-xl px-3 py-2 text-[12px] font-medium transition-colors">
                     Enviar solicitud por WhatsApp
                   </a>
                 )}

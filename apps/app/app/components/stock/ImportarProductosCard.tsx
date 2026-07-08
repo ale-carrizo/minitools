@@ -45,12 +45,12 @@ function normalizeKey(key: string) {
 export default function ImportarProductosCard() {
   const [rows, setRows] = useState<ImportRow[]>([])
   const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
+  const [importResult, setImportResult] = useState<{ creados: number; saltadas: number; errores: string[] } | null>(null)
   const [isPending, startTransition] = useTransition()
 
   async function handleFile(file: File) {
     setError(null)
-    setSuccess(null)
+    setImportResult(null)
 
     const buffer = await file.arrayBuffer()
     const workbook = XLSX.read(buffer, { type: 'array' })
@@ -78,13 +78,13 @@ export default function ImportarProductosCard() {
 
   function handleImport() {
     setError(null)
-    setSuccess(null)
+    setImportResult(null)
 
     startTransition(async () => {
       try {
         const result = await importarProductos(rows)
-        setSuccess(`Se importaron ${result.creados} producto(s) correctamente.`)
-        setRows([])
+        setImportResult(result)
+        if (result.creados > 0) setRows([])
       } catch (err) {
         setError(err instanceof Error ? err.message : 'No se pudo importar el archivo')
       }
@@ -138,7 +138,26 @@ export default function ImportarProductosCard() {
       ) : null}
 
       {error ? <p className="text-[12px] text-red-300">{error}</p> : null}
-      {success ? <p className="text-[12px] text-emerald-300">{success}</p> : null}
+
+      {importResult ? (
+        <div className="rounded-xl border border-white/[0.06] bg-white/[0.03] p-4 space-y-2">
+          <p className="text-[13px] text-white/80">
+            Se importaron <span className="font-semibold text-emerald-400">{importResult.creados}</span> producto(s).
+            {importResult.saltadas > 0 ? (
+              <>{' '}<span className="font-semibold text-yellow-400">{importResult.saltadas}</span> fila(s) se saltearon.</>
+            ) : null}
+          </p>
+          {importResult.errores.length > 0 ? (
+            <div className="max-h-40 overflow-auto rounded-lg border border-white/[0.06] bg-black/20 p-3">
+              <ul className="space-y-1">
+                {importResult.errores.map((err, i) => (
+                  <li key={i} className="text-[11px] text-red-300 font-mono">{err}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   )
 }

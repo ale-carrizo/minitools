@@ -7,6 +7,7 @@ import { prisma } from '@/lib/prisma'
 import {
   calcularHoras,
   detectarEstado,
+  PALETA_EMPLEADO,
   type AsistenciaEstado,
   type Empleado,
   type RegistroAsistencia,
@@ -31,7 +32,6 @@ function maybeNull(value?: string) {
 }
 
 // Paleta rotativa para diferenciar empleados por color en la agenda de turnos.
-const PALETA_EMPLEADO = ['#5448EE', '#06B6D4', '#059669', '#D97706', '#DC2626', '#7C3AED', '#DB2777', '#0EA5E9']
 
 async function siguienteColor(userId: string): Promise<string> {
   const total = await db.empleado.count({ where: { userId } })
@@ -117,10 +117,13 @@ export async function editarEmpleado(id: string, data: Partial<{
   turnoInicio?: string
   turnoFin?: string
   tolerancia?: number
+  color?: string
 }>): Promise<Empleado> {
   const userId = await getUserId()
   const existente = await db.empleado.findFirst({ where: { id, userId } })
   if (!existente) throw new Error('Empleado no encontrado')
+
+  const color = data.color && PALETA_EMPLEADO.includes(data.color) ? data.color : undefined
 
   const empleado = await db.empleado.update({
     where: { id },
@@ -130,6 +133,7 @@ export async function editarEmpleado(id: string, data: Partial<{
       turnoInicio: data.turnoInicio === undefined ? undefined : maybeNull(data.turnoInicio),
       turnoFin: data.turnoFin === undefined ? undefined : maybeNull(data.turnoFin),
       tolerancia: data.tolerancia,
+      color,
     },
   })
   revalidatePath('/dashboard/asistencia')

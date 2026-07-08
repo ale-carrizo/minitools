@@ -44,7 +44,7 @@ export default function GarantiasShell({
               {label}
               {tab.href === '/dashboard/garantias/alertas' && alertas > 0 ? (
                 <span className={`ml-2 rounded-full px-1.5 py-0.5 text-[10px] ${
-                  isActive ? 'bg-red-500/30 text-white' : 'bg-red-500/15 text-red-300'
+                  isActive ? 'bg-red-500/30 text-white btn-solid-text' : 'bg-red-500/15 text-red-300'
                 }`}>
                   {alertas}
                 </span>

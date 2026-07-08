@@ -121,7 +121,7 @@ export default function CierreClient({ resumen }: { resumen: CajaDiaResumen }) {
             <button
               onClick={handleCierre}
               disabled={loading}
-              className="flex-[2] py-2.5 rounded-xl bg-red-600 text-white text-[12px] font-medium hover:bg-red-500 transition-colors disabled:opacity-50"
+              className="flex-[2] py-2.5 rounded-xl bg-red-600 text-white btn-solid-text text-[12px] font-medium hover:bg-red-500 transition-colors disabled:opacity-50"
             >
               {loading ? 'Cerrando…' : 'Sí, cerrar caja'}
             </button>

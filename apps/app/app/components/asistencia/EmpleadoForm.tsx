@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { crearEmpleado, editarEmpleado } from '@/lib/actions/asistencia'
+import { PALETA_EMPLEADO } from '@/types/asistencia'
 import type { Empleado } from '@/types/asistencia'
 
 export default function EmpleadoForm({
@@ -21,6 +22,7 @@ export default function EmpleadoForm({
     turnoInicio: empleado?.turnoInicio ?? '',
     turnoFin: empleado?.turnoFin ?? '',
     tolerancia: empleado?.tolerancia ?? 15,
+    color: empleado?.color ?? PALETA_EMPLEADO[0],
   })
 
   function submit() {
@@ -33,6 +35,7 @@ export default function EmpleadoForm({
           turnoInicio: form.turnoInicio || undefined,
           turnoFin: form.turnoFin || undefined,
           tolerancia: Number(form.tolerancia),
+          color: form.color,
         }
 
         if (empleado) await editarEmpleado(empleado.id, payload)
@@ -98,6 +101,24 @@ export default function EmpleadoForm({
             <span className="text-[12px] text-white/40">minutos</span>
           </div>
           <p className="text-[10px] text-white/25 mt-1">Opcional — se usa para detectar tardanzas automáticamente</p>
+        </div>
+        <div className="md:col-span-2">
+          <label className="block text-[11px] font-medium text-white/40 mb-1.5 uppercase tracking-wider">Color</label>
+          <div className="flex flex-wrap gap-2">
+            {PALETA_EMPLEADO.map((color) => (
+              <button
+                key={color}
+                type="button"
+                onClick={() => setForm((prev) => ({ ...prev, color }))}
+                className={`w-8 h-8 rounded-full border-2 transition-all ${
+                  form.color === color ? 'border-white scale-110' : 'border-transparent hover:scale-105'
+                }`}
+                style={{ backgroundColor: color }}
+                aria-label={`Color ${color}`}
+              />
+            ))}
+          </div>
+          <p className="text-[10px] text-white/25 mt-1">Se usa para distinguir turnos en el calendario</p>
         </div>
       </div>
 

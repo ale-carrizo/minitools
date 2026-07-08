@@ -53,9 +53,16 @@ export default function EmpleadosList({ empleados }: { empleados: Empleado[] }) 
               <EmpleadoForm empleado={empleado} onDone={() => setEditingId(null)} />
             ) : (
               <>
-                <div className="mb-4">
-                  <h3 className="text-[18px] font-semibold text-white">{empleado.nombre}</h3>
-                  <p className="text-[13px] text-white/40 mt-1">{empleado.cargo ?? 'Sin cargo'}</p>
+                <div className="mb-4 flex items-start justify-between gap-3">
+                  <div>
+                    <h3 className="text-[18px] font-semibold text-white">{empleado.nombre}</h3>
+                    <p className="text-[13px] text-white/40 mt-1">{empleado.cargo ?? 'Sin cargo'}</p>
+                  </div>
+                  <span
+                    className="inline-block w-4 h-4 rounded-full flex-shrink-0 border border-white/10"
+                    style={{ backgroundColor: empleado.color ?? '#5448EE' }}
+                    title="Color en agenda"
+                  />
                 </div>
                 <div className="space-y-2 text-[12px] text-white/45">
                   <p>Turno: {empleado.turnoInicio && empleado.turnoFin ? `${empleado.turnoInicio} → ${empleado.turnoFin}` : 'Sin turno configurado'}</p>
