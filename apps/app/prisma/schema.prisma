@@ -643,6 +643,7 @@ model Tarea {
   prioridad   String   @default("media")   // baja | media | alta | urgente
   etiquetas   String   @default("[]")      // JSON [{texto, color}]
   checklist   String   @default("[]")      // JSON [{texto, hecho}]
+  adjuntos    String   @default("[]")      // JSON [{nombre, url (base64), tipo, tamano}]
   fechaVenc   String?
   portada     String?
   orden       Int      @default(0)

@@ -12,18 +12,31 @@ export function estimateFileBytes(dataUrl: string | null | undefined): number {
   return Math.ceil((base64.length * 3) / 4) - padding
 }
 
+/** Suma los bytes de todos los adjuntos (JSON [{url,...}]) de una tarea. */
+function estimateAdjuntosBytes(adjuntosJson: string | null | undefined): number {
+  if (!adjuntosJson) return 0
+  try {
+    const adjuntos = JSON.parse(adjuntosJson) as Array<{ url?: string }>
+    return adjuntos.reduce((sum, a) => sum + estimateFileBytes(a.url), 0)
+  } catch {
+    return 0
+  }
+}
+
 /** Recalcula el storage usado por un usuario a partir de todos los campos "archivo" conocidos. */
 export async function recalcUserStorage(userId: string) {
-  const [reciboConfig, template, presupuestos] = await Promise.all([
+  const [reciboConfig, template, presupuestos, tareas] = await Promise.all([
     prisma.reciboConfig.findUnique({ where: { userId }, select: { logoUrl: true } }),
     prisma.presupuestoTemplate.findUnique({ where: { userId }, select: { logoUrl: true } }),
     prisma.presupuesto.findMany({ where: { userId }, select: { logoUrl: true } }),
+    prisma.tarea.findMany({ where: { userId }, select: { adjuntos: true } }),
   ])
 
   const total =
     estimateFileBytes(reciboConfig?.logoUrl) +
     estimateFileBytes(template?.logoUrl) +
-    presupuestos.reduce((sum, p) => sum + estimateFileBytes(p.logoUrl), 0)
+    presupuestos.reduce((sum, p) => sum + estimateFileBytes(p.logoUrl), 0) +
+    tareas.reduce((sum, t) => sum + estimateAdjuntosBytes(t.adjuntos), 0)
 
   const user = await prisma.user.findUniqueOrThrow({
     where: { id: userId },

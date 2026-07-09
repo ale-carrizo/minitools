@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import type { Tablero, Columna, Tarea, Prioridad } from '@/types/tareas'
+import { MAX_ADJUNTO_BYTES, TIPOS_ADJUNTO_PERMITIDOS } from '@/types/tareas'
 
 async function uid() {
   const s = await auth()
@@ -18,6 +19,7 @@ function mapTarea(r: any): Tarea {
     prioridad: r.prioridad as Prioridad,
     etiquetas: JSON.parse(r.etiquetas ?? '[]'),
     checklist: JSON.parse(r.checklist ?? '[]'),
+    adjuntos: JSON.parse(r.adjuntos ?? '[]'),
     fechaVenc: r.fechaVenc, portada: r.portada,
     orden: r.orden, archivada: r.archivada,
     createdAt: r.createdAt?.toISOString?.() ?? r.createdAt,
@@ -175,12 +177,34 @@ export async function createTarea(data: {
   return mapTarea(r)
 }
 
+function verificarFirmaBase64(dataUrl: string, mime: string): boolean {
+  const match = dataUrl.match(/^data:([^;]+);base64,(.+)$/)
+  if (!match) return false
+  const buffer = Buffer.from(match[2].slice(0, 24), 'base64')
+  const head = buffer.subarray(0, 12)
+  switch (mime) {
+    case 'image/jpeg':
+      return head[0] === 0xFF && head[1] === 0xD8 && head[2] === 0xFF
+    case 'image/png':
+      return head[0] === 0x89 && head[1] === 0x50 && head[2] === 0x4E && head[3] === 0x47 &&
+             head[4] === 0x0D && head[5] === 0x0A && head[6] === 0x1A && head[7] === 0x0A
+    case 'image/webp':
+      return head[0] === 0x52 && head[1] === 0x49 && head[2] === 0x46 && head[3] === 0x46 &&
+             head[8] === 0x57 && head[9] === 0x45 && head[10] === 0x42 && head[11] === 0x50
+    case 'application/pdf':
+      return head[0] === 0x25 && head[1] === 0x50 && head[2] === 0x44 && head[3] === 0x46
+    default:
+      return false
+  }
+}
+
 export async function updateTarea(id: string, data: Partial<{
   titulo:      string
   descripcion: string | null
   prioridad:   Prioridad
   etiquetas:   string      // JSON
   checklist:   string      // JSON
+  adjuntos:    string      // JSON
   fechaVenc:   string | null
   portada:     string | null
   columnaId:   string
@@ -190,6 +214,16 @@ export async function updateTarea(id: string, data: Partial<{
   const userId = await uid()
   const t = await prisma.tarea.findFirst({ where: { id, columna: { tablero: { userId } } } })
   if (!t) throw new Error('No autorizado')
+
+  if (data.adjuntos !== undefined) {
+    const parsed = JSON.parse(data.adjuntos) as Array<{ nombre: string; url: string; tipo: string; tamano: number }>
+    for (const a of parsed) {
+      if (!TIPOS_ADJUNTO_PERMITIDOS.includes(a.tipo)) throw new Error(`Tipo de archivo no permitido: ${a.tipo}`)
+      if (a.tamano > MAX_ADJUNTO_BYTES) throw new Error(`"${a.nombre}" supera el límite de 3MB`)
+      if (!verificarFirmaBase64(a.url, a.tipo)) throw new Error(`"${a.nombre}" no coincide con su tipo declarado`)
+    }
+  }
+
   const r = await prisma.tarea.update({ where: { id }, data: { ...data, updatedAt: new Date() } })
   revalidatePath('/dashboard/tareas')
   return mapTarea(r)

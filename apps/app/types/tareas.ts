@@ -12,6 +12,16 @@ export interface CheckItem {
   hecho: boolean
 }
 
+export interface Adjunto {
+  nombre: string
+  url:    string // data-URL base64
+  tipo:   string // MIME type
+  tamano: number // bytes
+}
+
+export const MAX_ADJUNTO_BYTES = 3 * 1024 * 1024 // 3MB, igual que comprobantes de socios
+export const TIPOS_ADJUNTO_PERMITIDOS = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf']
+
 export interface Tarea {
   id:          string
   columnaId:   string
@@ -21,6 +31,7 @@ export interface Tarea {
   prioridad:   Prioridad
   etiquetas:   Etiqueta[]
   checklist:   CheckItem[]
+  adjuntos:    Adjunto[]
   fechaVenc:   string | null
   portada:     string | null
   orden:       number
