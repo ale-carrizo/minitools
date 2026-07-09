@@ -68,7 +68,7 @@ export default function UpgradePage() {
           className={`relative p-5 rounded-2xl border-2 text-left transition-all ${
             selected === "MONTHLY"
               ? "border-[#5448EE] bg-[#EEF0FF]"
-              : "border-[#e5e7eb] bg-white hover:border-[#c7c5f8]"
+              : "border-[#e5e7eb] bg-[#ffffff] hover:border-[#c7c5f8]"
           }`}
         >
           <p className="text-xs font-semibold text-[#9ca3af] uppercase tracking-wide mb-2">
@@ -85,7 +85,7 @@ export default function UpgradePage() {
           className={`relative p-5 rounded-2xl border-2 text-left transition-all ${
             selected === "ANNUAL"
               ? "border-[#5448EE] bg-[#EEF0FF]"
-              : "border-[#e5e7eb] bg-white hover:border-[#c7c5f8]"
+              : "border-[#e5e7eb] bg-[#ffffff] hover:border-[#c7c5f8]"
           }`}
         >
           <div className="absolute -top-3 left-4">
@@ -106,7 +106,7 @@ export default function UpgradePage() {
       </div>
 
       {/* Features */}
-      <div className="bg-white rounded-2xl border border-[#e5e7eb] p-6 mb-6">
+      <div className="bg-[#ffffff] rounded-2xl border border-[#e5e7eb] p-6 mb-6">
         <p className="text-sm font-medium text-[#1a1a2e] mb-4">Todo incluido:</p>
         <ul className="space-y-2.5">
           {features.map((f) => (

@@ -212,7 +212,7 @@ export default function TemplateForm({ template }: Props) {
       {/* Vista rapida */}
       <div className="h-fit rounded-2xl border border-white/[0.08] bg-white/[0.04] p-5">
         <p className="mb-4 text-[11px] font-semibold uppercase tracking-wider text-white/30">Vista rapida del PDF</p>
-        <div className="rounded-2xl border border-black/10 bg-white p-5 shadow-sm">
+        <div className="rounded-2xl border border-black/10 bg-[#ffffff] p-5 shadow-sm">
           <div className="mb-4 flex items-center gap-3">
             {logoIsData ? (
               <div className="h-10 w-10 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">

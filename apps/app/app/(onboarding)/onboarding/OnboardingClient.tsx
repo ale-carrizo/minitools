@@ -221,7 +221,7 @@ export default function OnboardingClient({ userName, initialState }: Props) {
               <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
                 payMethod === 'mercadopago' ? 'border-[#5448EE] bg-[#5448EE]' : 'border-white/20'
               }`}>
-                {payMethod === 'mercadopago' && <div className="w-2 h-2 rounded-full bg-white" />}
+                {payMethod === 'mercadopago' && <div className="w-2 h-2 rounded-full bg-[#ffffff]" />}
               </div>
             </button>
 
@@ -245,7 +245,7 @@ export default function OnboardingClient({ userName, initialState }: Props) {
               <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
                 payMethod === 'tarjeta' ? 'border-[#5448EE] bg-[#5448EE]' : 'border-white/20'
               }`}>
-                {payMethod === 'tarjeta' && <div className="w-2 h-2 rounded-full bg-white" />}
+                {payMethod === 'tarjeta' && <div className="w-2 h-2 rounded-full bg-[#ffffff]" />}
               </div>
             </button>
           </div>
