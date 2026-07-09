@@ -89,7 +89,7 @@ export default function UpgradePage() {
           }`}
         >
           <div className="absolute -top-3 left-4">
-            <span className="bg-[#5448EE] text-white text-[10px] font-bold px-2.5 py-1 rounded-full">
+            <span className="bg-[#5448EE] text-white btn-solid-text text-[10px] font-bold px-2.5 py-1 rounded-full">
               AHORRÁS 33%
             </span>
           </div>
@@ -133,7 +133,7 @@ export default function UpgradePage() {
       <button
         onClick={handleSubscribe}
         disabled={loading}
-        className="w-full py-4 rounded-2xl bg-[#5448EE] hover:bg-[#4338ca] text-white font-semibold text-[15px] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+        className="w-full py-4 rounded-2xl bg-[#5448EE] hover:bg-[#4338ca] text-white btn-solid-text font-semibold text-[15px] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
       >
         {loading ? (
           <span className="flex items-center justify-center gap-2">

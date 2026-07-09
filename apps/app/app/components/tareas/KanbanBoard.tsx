@@ -207,7 +207,7 @@ function KanbanColumn({
           />
           <div className="flex gap-2">
             <button onClick={handleAddCard} disabled={!newTitle.trim()}
-              className="px-3 py-1.5 bg-[#5448EE] text-white text-[11px] font-medium rounded-lg hover:bg-[#4438DE] disabled:opacity-40">
+              className="px-3 py-1.5 bg-[#5448EE] text-white btn-solid-text text-[11px] font-medium rounded-lg hover:bg-[#4438DE] disabled:opacity-40">
               Agregar
             </button>
             <button onClick={() => { setAddingCard(false); setNewTitle('') }}
@@ -391,7 +391,7 @@ export default function KanbanBoard({ tablero: initial }: { tablero: Tablero }) 
                   </div>
                   <div className="flex gap-2">
                     <button onClick={handleAddCol} disabled={!newColName.trim()}
-                      className="px-3 py-1.5 bg-[#5448EE] text-white text-[11px] font-medium rounded-lg hover:bg-[#4438DE] disabled:opacity-40">
+                      className="px-3 py-1.5 bg-[#5448EE] text-white btn-solid-text text-[11px] font-medium rounded-lg hover:bg-[#4438DE] disabled:opacity-40">
                       Agregar
                     </button>
                     <button onClick={() => { setAddingCol(false); setNewColName('') }}

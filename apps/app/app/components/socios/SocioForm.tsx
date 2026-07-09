@@ -182,7 +182,7 @@ export default function SocioForm({ socio }: Props) {
           Cancelar
         </button>
         <button type="submit" disabled={loading}
-          className="flex-[2] py-3 bg-[#5448EE] text-white rounded-xl text-[12px] font-medium hover:bg-[#4438DE] disabled:opacity-50">
+          className="flex-[2] py-3 bg-[#5448EE] text-white btn-solid-text rounded-xl text-[12px] font-medium hover:bg-[#4438DE] disabled:opacity-50">
           {loading ? 'Guardando…' : isEdit ? 'Guardar cambios' : 'Crear cliente'}
         </button>
       </div>

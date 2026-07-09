@@ -239,7 +239,7 @@ export default function PresupuestoForm({ clientes, presupuesto, template }: Pro
       {/* Items */}
       <div className="rounded-2xl border border-white/[0.08] bg-white/[0.04] p-5">
         <div className="mb-4 flex items-center justify-end">
-          <button type="button" onClick={addItem} className="rounded-xl bg-[#5448EE] px-3 py-2 text-[12px] font-medium text-white hover:bg-[#4438DE]">
+          <button type="button" onClick={addItem} className="rounded-xl bg-[#5448EE] px-3 py-2 text-[12px] font-medium text-white btn-solid-text hover:bg-[#4438DE]">
             + Agregar item
           </button>
         </div>
@@ -399,7 +399,7 @@ export default function PresupuestoForm({ clientes, presupuesto, template }: Pro
               type="button"
               onClick={handleSubmit}
               disabled={isPending || !form.titulo.trim()}
-              className="rounded-xl bg-[#5448EE] px-4 py-2.5 text-[13px] font-medium text-white hover:bg-[#4438DE] disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-xl bg-[#5448EE] px-4 py-2.5 text-[13px] font-medium text-white btn-solid-text hover:bg-[#4438DE] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isPending ? 'Guardando...' : isEdit ? 'Guardar cambios' : 'Guardar y generar PDF'}
             </button>

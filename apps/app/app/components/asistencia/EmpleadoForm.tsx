@@ -136,7 +136,7 @@ export default function EmpleadoForm({
           type="button"
           onClick={submit}
           disabled={isPending || !form.nombre.trim()}
-          className="bg-[#5448EE] hover:bg-[#4438DE] text-white rounded-xl px-4 py-2.5 text-[13px] font-medium disabled:opacity-50"
+          className="bg-[#5448EE] hover:bg-[#4438DE] text-white btn-solid-text rounded-xl px-4 py-2.5 text-[13px] font-medium disabled:opacity-50"
         >
           {isPending ? 'Guardando...' : 'Guardar'}
         </button>

@@ -129,7 +129,7 @@ function ComprobanteIA({ onSuccess }: { onSuccess: () => void }) {
               <button onClick={reset} className="flex-1 py-2.5 text-[12px] text-white/50 border border-white/[0.08] rounded-xl hover:text-white transition-colors">
                 Subir otro
               </button>
-              <button onClick={handleConfirmIA} disabled={confirming} className="flex-[2] py-2.5 text-[12px] font-semibold text-white bg-[#5448EE] rounded-xl hover:bg-[#4438DE] disabled:opacity-50 transition-colors">
+              <button onClick={handleConfirmIA} disabled={confirming} className="flex-[2] py-2.5 text-[12px] font-semibold text-white btn-solid-text bg-[#5448EE] rounded-xl hover:bg-[#4438DE] disabled:opacity-50 transition-colors">
                 {confirming ? 'Guardando…' : 'Confirmar y registrar'}
               </button>
             </div>
@@ -312,7 +312,7 @@ function RegistrarDesdeArchivo({ onSuccess }: { onSuccess: () => void }) {
                   <div className={`w-4 h-4 rounded flex items-center justify-center flex-shrink-0 border ${
                     selected.has(i) ? 'bg-[#5448EE] border-[#5448EE]' : 'border-white/20'
                   }`}>
-                    {selected.has(i) && <span className="text-white text-[9px] font-bold">✓</span>}
+                    {selected.has(i) && <span className="text-[#ffffff] text-[9px] font-bold">✓</span>}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-[12px] text-white truncate">{row.descripcion}</p>
@@ -329,7 +329,7 @@ function RegistrarDesdeArchivo({ onSuccess }: { onSuccess: () => void }) {
               <button onClick={reset} className="flex-1 py-2.5 text-[12px] text-white/50 border border-white/[0.08] rounded-xl hover:text-white transition-colors">
                 Subir otro
               </button>
-              <button onClick={handleImportExtracto} disabled={importing || selected.size === 0} className="flex-[2] py-2.5 text-[13px] font-semibold text-white bg-[#5448EE] rounded-xl hover:bg-[#4438DE] disabled:opacity-40 transition-colors">
+              <button onClick={handleImportExtracto} disabled={importing || selected.size === 0} className="flex-[2] py-2.5 text-[13px] font-semibold text-white btn-solid-text bg-[#5448EE] rounded-xl hover:bg-[#4438DE] disabled:opacity-40 transition-colors">
                 {importing ? 'Importando…' : `Importar ${selected.size} cobro${selected.size !== 1 ? 's' : ''}`}
               </button>
             </div>
@@ -477,7 +477,7 @@ function EfectivoManual({ productos, onSuccess }: { productos: Producto[]; onSuc
         <div className="mb-3 rounded-2xl border border-white/[0.08] bg-white/[0.03] p-3">
           <div className="mb-3 flex items-center justify-between">
             <p className="text-[11px] font-semibold uppercase tracking-wider text-white/30">Productos vendidos</p>
-            <button type="button" onClick={addItem} className="rounded-xl bg-[#5448EE] px-3 py-1.5 text-[11px] font-medium text-white hover:bg-[#4438DE]">
+            <button type="button" onClick={addItem} className="rounded-xl bg-[#5448EE] px-3 py-1.5 text-[11px] font-medium text-white btn-solid-text hover:bg-[#4438DE]">
               + Agregar
             </button>
           </div>

@@ -94,7 +94,7 @@ export default function Comparador() {
             ])
           }}
           disabled={escenarios.length >= 4}
-          className="bg-[#5448EE] hover:bg-[#4438DE] disabled:opacity-50 text-white rounded-xl px-4 py-2.5 text-[13px] font-medium"
+          className="bg-[#5448EE] hover:bg-[#4438DE] disabled:opacity-50 text-white btn-solid-text rounded-xl px-4 py-2.5 text-[13px] font-medium"
         >
           + Agregar escenario
         </button>

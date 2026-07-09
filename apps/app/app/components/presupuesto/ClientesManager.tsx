@@ -93,7 +93,7 @@ export default function ClientesManager({ initialClientes }: { initialClientes: 
             type="button"
             onClick={saveCliente}
             disabled={isPending || !draft.nombre.trim()}
-            className="flex-1 rounded-xl bg-[#5448EE] px-3 py-2 text-[12px] font-medium text-white hover:bg-[#4438DE] disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex-1 rounded-xl bg-[#5448EE] px-3 py-2 text-[12px] font-medium text-white btn-solid-text hover:bg-[#4438DE] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isPending ? 'Guardando...' : editingId ? 'Guardar cambios' : 'Crear cliente'}
           </button>

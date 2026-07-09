@@ -57,7 +57,7 @@ export default function EmpleadoRapidoModal({ open, onClose, onCreated, empleado
         if (e.target === overlayRef.current) onClose()
       }}
     >
-      <div className="w-full max-w-sm rounded-2xl border border-white/[0.10] bg-[#13122A] shadow-2xl shadow-black/50 overflow-hidden animate-[fade-up_0.2s_cubic-bezier(0.16,1,0.3,1)_both]">
+      <div className="w-full max-w-sm rounded-2xl border border-white/[0.10] light:border-black/[0.10] bg-[#13122A] light:bg-[#ffffff] shadow-2xl shadow-black/50 overflow-hidden animate-[fade-up_0.2s_cubic-bezier(0.16,1,0.3,1)_both]">
         <div className="px-5 py-4 border-b border-white/[0.07]">
           <p className="text-[14px] font-semibold text-white">Nuevo empleado</p>
           <p className="text-[10px] text-white/30 mt-0.5">Agregalo rápido sin salir del turno</p>

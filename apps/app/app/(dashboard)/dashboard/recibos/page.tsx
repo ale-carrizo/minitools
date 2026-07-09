@@ -12,7 +12,7 @@ export default async function RecibosPage() {
         <p className="text-[13px] text-white/40">{recibos.length} recibo{recibos.length !== 1 ? 's' : ''}</p>
         <Link
           href="/dashboard/recibos/nuevo"
-          className="px-4 py-2 text-[12px] font-medium bg-[#5448EE] hover:bg-[#4438DE] text-white rounded-xl transition-colors"
+          className="px-4 py-2 text-[12px] font-medium bg-[#5448EE] hover:bg-[#4438DE] text-white btn-solid-text rounded-xl transition-colors"
         >
           + Nuevo recibo
         </Link>

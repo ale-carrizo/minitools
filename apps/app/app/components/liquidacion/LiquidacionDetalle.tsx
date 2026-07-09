@@ -44,7 +44,7 @@ export default function LiquidacionDetalle({
             <div className="flex flex-wrap gap-2">
               {liquidacion.estado === 'borrador' ? (
                 <>
-                  <button onClick={() => { setEditingItem(undefined); setShowForm((prev) => !prev) }} className="bg-[#5448EE] hover:bg-[#4438DE] text-white rounded-xl px-3 py-2 text-[12px] font-medium transition-colors">
+                  <button onClick={() => { setEditingItem(undefined); setShowForm((prev) => !prev) }} className="bg-[#5448EE] hover:bg-[#4438DE] text-white btn-solid-text rounded-xl px-3 py-2 text-[12px] font-medium transition-colors">
                     + Agregar empleado
                   </button>
                   {liquidacion.items.length > 0 ? (

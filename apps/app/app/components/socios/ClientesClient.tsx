@@ -268,7 +268,7 @@ function CobroPuntualModal({ socio, onClose, onConfirm }: {
   const [error,    setError]    = useState('')
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-      <div className="rounded-2xl border border-white/[0.10] bg-[#1A1830] p-5 w-full max-w-xs shadow-xl">
+      <div className="rounded-2xl border border-white/[0.10] light:border-black/[0.10] bg-[#1A1830] light:bg-[#ffffff] p-5 w-full max-w-xs shadow-xl">
         <h3 className="text-[14px] font-semibold text-white mb-1">Cobro puntual</h3>
         <p className="text-[11px] text-white/40 mb-4">{socio.nombre}</p>
         <label className="block text-[11px] text-white/40 mb-1.5">Monto *</label>
@@ -290,7 +290,7 @@ function CobroPuntualModal({ socio, onClose, onConfirm }: {
               setLoading(true)
               await onConfirm(parseFloat(monto), fecha, concepto || undefined)
             }}
-            className="flex-[2] py-2.5 text-[12px] font-medium text-white bg-[#5448EE] rounded-xl hover:bg-[#4438DE] disabled:opacity-50"
+            className="flex-[2] py-2.5 text-[12px] font-medium text-white btn-solid-text bg-[#5448EE] rounded-xl hover:bg-[#4438DE] disabled:opacity-50"
           >
             {loading ? 'Guardando…' : 'Agregar cobro'}
           </button>

@@ -18,7 +18,7 @@ export default function PromoteForm() {
         />
         <button
           type="submit" disabled={pending}
-          className="px-5 py-2.5 rounded-xl bg-[#5448EE] hover:bg-[#4035d4] text-white text-sm font-medium transition disabled:opacity-60 whitespace-nowrap"
+          className="px-5 py-2.5 rounded-xl bg-[#5448EE] hover:bg-[#4035d4] text-white btn-solid-text text-sm font-medium transition disabled:opacity-60 whitespace-nowrap"
         >
           {pending ? "Guardando..." : "Hacer admin"}
         </button>

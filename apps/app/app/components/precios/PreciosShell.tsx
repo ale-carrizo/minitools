@@ -35,7 +35,7 @@ export default function PreciosShell({ children }: { children: React.ReactNode }
               href={t.href}
               className={`px-4 py-1.5 text-[12px] font-medium rounded-lg transition-all whitespace-nowrap ${
                 isActive
-                  ? 'bg-[#5448EE] text-white shadow-sm'
+                  ? 'bg-[#5448EE] text-white btn-solid-text shadow-sm'
                   : 'text-white/40 hover:text-white/70'
               }`}
             >

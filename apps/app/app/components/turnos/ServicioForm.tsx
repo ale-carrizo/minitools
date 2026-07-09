@@ -119,7 +119,7 @@ export default function ServicioForm({
 
       <div className="flex justify-end gap-2">
         {onDone ? <button type="button" onClick={onDone} className="border border-white/10 hover:border-white/20 text-white/50 hover:text-white rounded-xl px-3 py-2 text-[12px] font-medium transition-colors">Cancelar</button> : null}
-        <button type="submit" disabled={isPending} className="bg-[#5448EE] hover:bg-[#4438DE] disabled:opacity-70 text-white rounded-xl px-3 py-2 text-[12px] font-medium transition-colors">
+        <button type="submit" disabled={isPending} className="bg-[#5448EE] hover:bg-[#4438DE] disabled:opacity-70 text-white btn-solid-text rounded-xl px-3 py-2 text-[12px] font-medium transition-colors">
           {isPending ? 'Guardando...' : servicio ? 'Guardar cambios' : 'Guardar servicio'}
         </button>
       </div>

@@ -89,7 +89,7 @@ export default function OnboardingClient({ userName, initialState }: Props) {
           <div key={n} className="flex items-center flex-1 last:flex-none">
             <div className="flex flex-col items-center gap-1">
               <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold transition-all ${
-                done   ? 'bg-[#5448EE] text-white' :
+                done   ? 'bg-[#5448EE] text-white btn-solid-text' :
                 active ? 'bg-[#5448EE]/20 border-2 border-[#5448EE] text-[#8880F5]' :
                          'bg-white/[0.05] border border-white/[0.12] text-white/25'
               }`}>
@@ -183,7 +183,7 @@ export default function OnboardingClient({ userName, initialState }: Props) {
           {error && <p className="text-red-400 text-[11px] mb-3">{error}</p>}
 
           <button onClick={handleStep2} disabled={loading || selectedApps.length === 0}
-            className="w-full py-3 rounded-xl bg-[#5448EE] text-white text-[13px] font-semibold hover:bg-[#4438DE] disabled:opacity-40 transition-colors">
+            className="w-full py-3 rounded-xl bg-[#5448EE] text-white btn-solid-text text-[13px] font-semibold hover:bg-[#4438DE] disabled:opacity-40 transition-colors">
             {loading ? 'Guardando…' : 'Continuar →'}
           </button>
         </div>
@@ -212,7 +212,7 @@ export default function OnboardingClient({ userName, initialState }: Props) {
                   : 'border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.05]'
               }`}>
               <div className="w-10 h-10 rounded-xl bg-[#009EE3] flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-black text-[11px]">MP</span>
+                <span className="text-[#ffffff] font-black text-[11px]">MP</span>
               </div>
               <div className="flex-1 text-left">
                 <p className="text-[13px] font-semibold text-white">Mercado Pago</p>
@@ -272,7 +272,7 @@ export default function OnboardingClient({ userName, initialState }: Props) {
               ← Volver
             </button>
             <button onClick={handleStep3} disabled={loading || (payMethod === 'mercadopago' && !mpEmail.trim())}
-              className="flex-[2] py-3 rounded-xl bg-[#5448EE] text-white text-[13px] font-semibold hover:bg-[#4438DE] disabled:opacity-40 transition-colors">
+              className="flex-[2] py-3 rounded-xl bg-[#5448EE] text-white btn-solid-text text-[13px] font-semibold hover:bg-[#4438DE] disabled:opacity-40 transition-colors">
               {loading ? 'Guardando…' : 'Continuar →'}
             </button>
           </div>
@@ -323,7 +323,7 @@ export default function OnboardingClient({ userName, initialState }: Props) {
           </div>
 
           <button onClick={handleComplete} disabled={loading}
-            className="w-full py-3.5 rounded-xl bg-[#5448EE] text-white text-[13px] font-semibold hover:bg-[#4438DE] disabled:opacity-40 transition-colors">
+            className="w-full py-3.5 rounded-xl bg-[#5448EE] text-white btn-solid-text text-[13px] font-semibold hover:bg-[#4438DE] disabled:opacity-40 transition-colors">
             {loading ? 'Cargando…' : 'Empezar a usar Zimple →'}
           </button>
         </div>

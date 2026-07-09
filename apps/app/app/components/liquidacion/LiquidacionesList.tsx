@@ -48,7 +48,7 @@ export default function LiquidacionesList({
           <h2 className="text-white font-semibold text-[16px]">Períodos</h2>
           <p className="text-white/35 text-[13px] mt-1">Armá una liquidación por cada mes trabajado.</p>
         </div>
-        <button onClick={() => setShowNew((prev) => !prev)} className="bg-[#5448EE] hover:bg-[#4438DE] text-white rounded-xl px-4 py-2.5 text-[13px] font-medium transition-colors">
+        <button onClick={() => setShowNew((prev) => !prev)} className="bg-[#5448EE] hover:bg-[#4438DE] text-white btn-solid-text rounded-xl px-4 py-2.5 text-[13px] font-medium transition-colors">
           + Nueva liquidación
         </button>
       </div>
@@ -62,7 +62,7 @@ export default function LiquidacionesList({
           {error ? <p className="text-[12px] text-red-300">{error}</p> : null}
           <div className="flex justify-end gap-2">
             <button onClick={() => setShowNew(false)} className="border border-white/10 hover:border-white/20 text-white/50 hover:text-white rounded-xl px-3 py-2 text-[12px] font-medium transition-colors">Cancelar</button>
-            <button onClick={handleCreate} disabled={isPending} className="bg-[#5448EE] hover:bg-[#4438DE] disabled:opacity-70 text-white rounded-xl px-3 py-2 text-[12px] font-medium transition-colors">Crear</button>
+            <button onClick={handleCreate} disabled={isPending} className="bg-[#5448EE] hover:bg-[#4438DE] disabled:opacity-70 text-white btn-solid-text rounded-xl px-3 py-2 text-[12px] font-medium transition-colors">Crear</button>
           </div>
         </div>
       ) : null}

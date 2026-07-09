@@ -117,7 +117,7 @@ export default function ClienteSelect({ clientes, value, onChange, onCreated }: 
               type="button"
               onClick={handleCreate}
               disabled={isPending || !nuevo.nombre.trim()}
-              className="rounded-xl bg-[#5448EE] px-3 py-2 text-[12px] font-medium text-white hover:bg-[#4438DE] disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-xl bg-[#5448EE] px-3 py-2 text-[12px] font-medium text-white btn-solid-text hover:bg-[#4438DE] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isPending ? 'Creando...' : 'Guardar cliente'}
             </button>

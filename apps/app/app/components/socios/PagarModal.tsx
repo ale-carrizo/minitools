@@ -111,7 +111,7 @@ export default function PagarModal({ cobro, nombre, onClose, onDone }: Props) {
 
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-      <div className="rounded-2xl border border-white/[0.10] bg-[#1A1830] p-5 w-full max-w-xs shadow-xl">
+      <div className="rounded-2xl border border-white/[0.10] light:border-black/[0.10] bg-[#1A1830] light:bg-[#ffffff] p-5 w-full max-w-xs shadow-xl">
         <h3 className="text-[14px] font-semibold text-white mb-1">Registrar pago</h3>
         <p className="text-[11px] text-white/40 mb-4">
           {nombre} · {fmtN(cobro.monto)} · {new Date(cobro.fechaVencimiento + 'T12:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'long' })}
@@ -169,7 +169,7 @@ export default function PagarModal({ cobro, nombre, onClose, onDone }: Props) {
           <button
             disabled={loading || uploading}
             onClick={handleConfirm}
-            className="flex-[2] py-2.5 text-[12px] font-medium text-white bg-emerald-600 rounded-xl hover:bg-emerald-500 disabled:opacity-50"
+            className="flex-[2] py-2.5 text-[12px] font-medium text-white btn-solid-text bg-emerald-600 rounded-xl hover:bg-emerald-500 disabled:opacity-50"
           >
             {loading ? 'Guardando…' : '✓ Confirmar pago'}
           </button>

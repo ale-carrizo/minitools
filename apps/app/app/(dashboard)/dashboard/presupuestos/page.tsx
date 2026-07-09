@@ -11,7 +11,7 @@ export default async function PresupuestosPage() {
         <p className="text-[13px] text-white/40">
           {presupuestos.length} presupuesto{presupuestos.length !== 1 ? 's' : ''} cargado{presupuestos.length !== 1 ? 's' : ''}
         </p>
-        <Link href="/dashboard/presupuestos/nuevo" className="rounded-xl bg-[#5448EE] px-4 py-2 text-[12px] font-medium text-white hover:bg-[#4438DE]">
+        <Link href="/dashboard/presupuestos/nuevo" className="rounded-xl bg-[#5448EE] px-4 py-2 text-[12px] font-medium text-white btn-solid-text hover:bg-[#4438DE]">
           + Nuevo presupuesto
         </Link>
       </div>

@@ -272,7 +272,7 @@ export default function TurnoForm({
         <button type="button" onClick={() => router.back()} className="border border-white/10 hover:border-white/20 text-white/50 hover:text-white rounded-xl px-4 py-2.5 text-[13px] font-medium transition-colors">
           Cancelar
         </button>
-        <button type="submit" disabled={isPending} className="bg-[#5448EE] hover:bg-[#4438DE] disabled:opacity-70 text-white rounded-xl px-4 py-2.5 text-[13px] font-medium transition-colors">
+        <button type="submit" disabled={isPending} className="bg-[#5448EE] hover:bg-[#4438DE] disabled:opacity-70 text-white btn-solid-text rounded-xl px-4 py-2.5 text-[13px] font-medium transition-colors">
           {isPending ? 'Guardando...' : turno ? 'Guardar cambios' : 'Guardar turno'}
         </button>
       </div>

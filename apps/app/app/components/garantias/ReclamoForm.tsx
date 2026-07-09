@@ -59,7 +59,7 @@ export default function ReclamoForm({
             Cancelar
           </button>
         ) : null}
-        <button type="submit" disabled={isPending} className="bg-[#5448EE] hover:bg-[#4438DE] disabled:opacity-70 text-white rounded-xl px-3 py-2 text-[12px] font-medium transition-colors">
+        <button type="submit" disabled={isPending} className="bg-[#5448EE] hover:bg-[#4438DE] disabled:opacity-70 text-white btn-solid-text rounded-xl px-3 py-2 text-[12px] font-medium transition-colors">
           {isPending ? 'Registrando...' : 'Registrar reclamo'}
         </button>
       </div>

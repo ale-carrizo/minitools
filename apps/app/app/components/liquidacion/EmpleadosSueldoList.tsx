@@ -64,7 +64,7 @@ export default function EmpleadosSueldoList({ empleados }: { empleados: Empleado
               <td className="px-4 py-3">
                 {editingId === empleado.id ? (
                   <div className="flex gap-2">
-                    <button onClick={() => save(empleado.id)} disabled={isPending} className="bg-[#5448EE] hover:bg-[#4438DE] text-white rounded-xl px-3 py-2 text-[12px] font-medium transition-colors">Guardar</button>
+                    <button onClick={() => save(empleado.id)} disabled={isPending} className="bg-[#5448EE] hover:bg-[#4438DE] text-white btn-solid-text rounded-xl px-3 py-2 text-[12px] font-medium transition-colors">Guardar</button>
                     <button onClick={() => setEditingId(null)} className="border border-white/10 hover:border-white/20 text-white/50 hover:text-white rounded-xl px-3 py-2 text-[12px] font-medium transition-colors">Cancelar</button>
                   </div>
                 ) : (

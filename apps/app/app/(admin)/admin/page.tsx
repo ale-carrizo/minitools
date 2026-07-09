@@ -57,7 +57,7 @@ export default async function AdminPage() {
           ) : (
             recentUsers.map((user) => (
               <div key={user.id} className="flex items-center gap-4 px-6 py-3.5">
-                <div className="w-7 h-7 rounded-full bg-[#5448EE] flex items-center justify-center text-white text-[10px] font-semibold flex-shrink-0">
+                <div className="w-7 h-7 rounded-full bg-[#5448EE] flex items-center justify-center text-white btn-solid-text text-[10px] font-semibold flex-shrink-0">
                   {user.name?.charAt(0)?.toUpperCase() ?? user.email.charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">

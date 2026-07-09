@@ -130,7 +130,7 @@ export default function NuevoReciboPage() {
         <button type="button" onClick={() => router.back()} className="flex-1 rounded-xl border border-white/10 px-4 py-2.5 text-[13px] font-medium text-white/50 hover:text-white transition-colors">
           Cancelar
         </button>
-        <button type="button" onClick={handleSubmit} disabled={isPending} className="flex-[2] rounded-xl bg-[#5448EE] px-4 py-2.5 text-[13px] font-medium text-white hover:bg-[#4438DE] disabled:opacity-50 transition-colors">
+        <button type="button" onClick={handleSubmit} disabled={isPending} className="flex-[2] rounded-xl bg-[#5448EE] px-4 py-2.5 text-[13px] font-medium text-white btn-solid-text hover:bg-[#4438DE] disabled:opacity-50 transition-colors">
           {isPending ? 'Guardando...' : 'Guardar y generar PDF'}
         </button>
       </div>

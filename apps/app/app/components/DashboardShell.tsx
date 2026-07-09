@@ -105,7 +105,7 @@ export default function DashboardShell({
       {/* Hamburger button */}
       <button
         onClick={() => setSidebarOpen(true)}
-        className="md:hidden fixed top-3 left-3 z-30 w-9 h-9 rounded-lg bg-[#0C0B1A]/80 backdrop-blur-sm border border-white/[0.10] flex items-center justify-center text-white/70 hover:text-white transition-colors"
+        className="md:hidden fixed top-3 left-3 z-30 w-9 h-9 rounded-lg bg-[#0C0B1A]/80 backdrop-blur-sm border border-white/[0.10] flex items-center justify-center text-[#ffffff]/70 hover:text-[#ffffff] transition-colors"
       >
         <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
           <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd"/>

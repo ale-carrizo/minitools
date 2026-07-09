@@ -36,7 +36,7 @@ export default function PresupuestoShell({
               key={tab.href}
               href={tab.href}
               className={`flex items-center gap-2 rounded-lg px-4 py-1.5 text-[12px] font-medium transition-all ${
-                isActive ? 'bg-[#5448EE] text-white shadow-sm' : 'text-white/40 hover:text-white/70'
+                isActive ? 'bg-[#5448EE] text-white btn-solid-text shadow-sm' : 'text-white/40 hover:text-white/70'
               }`}
             >
               <span>{tab.label}</span>

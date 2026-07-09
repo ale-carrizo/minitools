@@ -11,7 +11,7 @@ function ReclamoButton({ id }: { id: string }) {
   return (
     <Link
       href={`/dashboard/garantias/${id}`}
-      className="inline-flex bg-[#5448EE] hover:bg-[#4438DE] text-white rounded-xl px-3 py-2 text-[12px] font-medium transition-colors"
+      className="inline-flex bg-[#5448EE] hover:bg-[#4438DE] text-white btn-solid-text rounded-xl px-3 py-2 text-[12px] font-medium transition-colors"
     >
       Registrar reclamo
     </Link>

@@ -24,7 +24,7 @@ export default function ServiciosList({ servicios }: { servicios: TurnoServicio[
           <h2 className="text-white font-semibold text-[16px]">Servicios</h2>
           <p className="text-white/35 text-[13px] mt-1">Definí los servicios que ofrecés para cargar turnos más rápido.</p>
         </div>
-        <button onClick={() => setShowNew((prev) => !prev)} className="bg-[#5448EE] hover:bg-[#4438DE] text-white rounded-xl px-4 py-2.5 text-[13px] font-medium transition-colors">
+        <button onClick={() => setShowNew((prev) => !prev)} className="bg-[#5448EE] hover:bg-[#4438DE] text-white btn-solid-text rounded-xl px-4 py-2.5 text-[13px] font-medium transition-colors">
           {showNew ? 'Cerrar' : '+ Agregar servicio'}
         </button>
       </div>

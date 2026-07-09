@@ -24,7 +24,7 @@ export default async function AsistenciaPage() {
           <p className="text-4xl mb-3">👥</p>
           <p className="text-white/50 text-sm mb-1">No hay empleados todavía</p>
           <p className="text-white/30 text-xs mb-5">Cargá tu personal para empezar a registrar horarios, ausencias y horas trabajadas.</p>
-          <Link href="/dashboard/asistencia/empleados" className="inline-flex px-4 py-2 bg-[#5448EE] text-white text-[13px] rounded-xl">
+          <Link href="/dashboard/asistencia/empleados" className="inline-flex px-4 py-2 bg-[#5448EE] text-white btn-solid-text text-[13px] rounded-xl">
             + Agregar empleados
           </Link>
         </div>

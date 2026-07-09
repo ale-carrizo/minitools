@@ -387,7 +387,7 @@ export default function TareaModal({ tarea, columnas, onClose, onUpdate, onDelet
               Cancelar
             </button>
             <button onClick={save}
-              className="px-4 py-2 text-[12px] font-medium text-white bg-[#5448EE] rounded-xl hover:bg-[#4438DE] transition-colors">
+              className="px-4 py-2 text-[12px] font-medium text-white btn-solid-text bg-[#5448EE] rounded-xl hover:bg-[#4438DE] transition-colors">
               Guardar
             </button>
           </div>

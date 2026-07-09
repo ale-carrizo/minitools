@@ -122,7 +122,7 @@ export default function CalculadoraPrecio({
                 onClick={() => setModo(option.value as typeof modo)}
                 className={`rounded-xl px-3 py-2 text-[12px] font-medium transition-colors ${
                   modo === option.value
-                    ? 'bg-[#5448EE] text-white'
+                    ? 'bg-[#5448EE] text-white btn-solid-text'
                     : 'bg-white/[0.06] text-white/40 hover:text-white/70'
                 }`}
               >
@@ -221,7 +221,7 @@ export default function CalculadoraPrecio({
                 })
                 setGuardado(true)
               }}
-              className="bg-[#5448EE] hover:bg-[#4438DE] text-white rounded-xl px-4 py-2.5 text-[13px] font-medium"
+              className="bg-[#5448EE] hover:bg-[#4438DE] text-white btn-solid-text rounded-xl px-4 py-2.5 text-[13px] font-medium"
             >
               Guardar en historial
             </button>

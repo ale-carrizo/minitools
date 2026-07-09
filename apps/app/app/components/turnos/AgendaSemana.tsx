@@ -96,7 +96,7 @@ export default function AgendaSemana({
           <a href={`/dashboard/turnos?fecha=${semana[0]}&vista=dia`} className="px-3 py-1.5 text-[12px] font-medium rounded-lg text-white/40 hover:text-white/70 transition-colors">
             Día
           </a>
-          <span className="px-3 py-1.5 text-[12px] font-medium rounded-lg bg-[#5448EE] text-white">
+          <span className="px-3 py-1.5 text-[12px] font-medium rounded-lg bg-[#5448EE] text-white btn-solid-text">
             Semana
           </span>
         </div>

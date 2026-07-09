@@ -201,7 +201,7 @@ export default function SueldosClient({ config: initialConfig }: { config: Recib
 
             <div className="flex items-center gap-3 pt-1">
               <button onClick={handleSaveConfig}
-                className="px-4 py-2.5 bg-[#5448EE] text-white text-[12px] font-medium rounded-xl hover:bg-[#4438DE] transition-colors">
+                className="px-4 py-2.5 bg-[#5448EE] text-white btn-solid-text text-[12px] font-medium rounded-xl hover:bg-[#4438DE] transition-colors">
                 Guardar configuración
               </button>
               {saveMsg && <span className="text-[11px] text-emerald-400">{saveMsg}</span>}

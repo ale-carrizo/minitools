@@ -77,7 +77,7 @@ export default function RegistroDiaRow({
       <div className="flex flex-wrap gap-2 justify-start md:justify-end">
         {!registro ? (
           <>
-            <button type="button" onClick={() => entrada && onEntrada(empleado.id, entrada)} className="bg-[#5448EE] hover:bg-[#4438DE] text-white rounded-xl px-3 py-2 text-[12px] font-medium">
+            <button type="button" onClick={() => entrada && onEntrada(empleado.id, entrada)} className="bg-[#5448EE] hover:bg-[#4438DE] text-white btn-solid-text rounded-xl px-3 py-2 text-[12px] font-medium">
               ▶ Entrada
             </button>
             <button type="button" onClick={() => onAusencia(empleado.id, 'ausente')} className="border border-red-500/20 text-red-400 rounded-xl px-3 py-2 text-[12px] font-medium">✕ Ausente</button>
@@ -85,7 +85,7 @@ export default function RegistroDiaRow({
           </>
         ) : registro.horaEntrada && !registro.horaSalida ? (
           <>
-            <button type="button" onClick={() => salida && onSalida(registro.id, salida)} className="bg-[#5448EE] hover:bg-[#4438DE] text-white rounded-xl px-3 py-2 text-[12px] font-medium">
+            <button type="button" onClick={() => salida && onSalida(registro.id, salida)} className="bg-[#5448EE] hover:bg-[#4438DE] text-white btn-solid-text rounded-xl px-3 py-2 text-[12px] font-medium">
               ⏹ Salida
             </button>
             <button type="button" onClick={() => setEditing((prev) => !prev)} className="border border-white/10 text-white/50 rounded-xl px-3 py-2 text-[12px] font-medium">

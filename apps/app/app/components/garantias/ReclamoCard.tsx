@@ -93,7 +93,7 @@ export default function ReclamoCard({
             className="w-full resize-none bg-white/[0.05] border border-white/[0.09] rounded-xl text-white px-3 py-2.5 text-sm placeholder:text-white/20 focus:outline-none focus:border-[#5448EE]/60"
           />
           <div className="flex justify-end">
-            <button type="button" disabled={isPending} onClick={handleSave} className="bg-[#5448EE] hover:bg-[#4438DE] disabled:opacity-70 text-white rounded-xl px-3 py-2 text-[12px] font-medium transition-colors">
+            <button type="button" disabled={isPending} onClick={handleSave} className="bg-[#5448EE] hover:bg-[#4438DE] disabled:opacity-70 text-white btn-solid-text rounded-xl px-3 py-2 text-[12px] font-medium transition-colors">
               {isPending ? 'Guardando...' : 'Guardar'}
             </button>
           </div>

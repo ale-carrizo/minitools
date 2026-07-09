@@ -13,7 +13,7 @@ export default function SociosLayout({ children }: { children: React.ReactNode }
         </div>
         <Link
           href="/dashboard/socios/nuevo"
-          className="rounded-xl bg-[#5448EE] px-4 py-2 text-[12px] font-medium text-white hover:bg-[#4438DE] transition-colors"
+          className="rounded-xl bg-[#5448EE] px-4 py-2 text-[12px] font-medium text-white btn-solid-text hover:bg-[#4438DE] transition-colors"
         >
           + Nuevo cliente
         </Link>

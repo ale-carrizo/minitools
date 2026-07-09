@@ -200,7 +200,7 @@ export default function TablerosClient({ tableros: initial }: { tableros: Tabler
             Cancelar
           </button>
           <button onClick={handleCreate} disabled={!boardName.trim() || columnas.filter(c => c.nombre.trim()).length === 0}
-            className="flex-[2] py-3 bg-[#5448EE] text-white rounded-xl text-[12px] font-medium hover:bg-[#4438DE] disabled:opacity-40 transition-colors">
+            className="flex-[2] py-3 bg-[#5448EE] text-white btn-solid-text rounded-xl text-[12px] font-medium hover:bg-[#4438DE] disabled:opacity-40 transition-colors">
             Crear tablero
           </button>
         </div>
@@ -217,7 +217,7 @@ export default function TablerosClient({ tableros: initial }: { tableros: Tabler
           <p className="text-sm font-medium text-white/70 mb-1">No tenés tableros todavía</p>
           <p className="text-xs text-white/30 mb-6">Creá tu primer tablero kanban para organizar tus tareas</p>
           <button onClick={() => setCreating(true)}
-            className="inline-block rounded-xl bg-[#5448EE] px-5 py-2.5 text-[12px] font-medium text-white hover:bg-[#4438DE]">
+            className="inline-block rounded-xl bg-[#5448EE] px-5 py-2.5 text-[12px] font-medium text-white btn-solid-text hover:bg-[#4438DE]">
             + Crear tablero
           </button>
         </div>
@@ -226,7 +226,7 @@ export default function TablerosClient({ tableros: initial }: { tableros: Tabler
           <div className="flex items-center justify-between mb-5">
             <p className="text-[13px] text-white/40">{tableros.length} tablero{tableros.length !== 1 ? 's' : ''}</p>
             <button onClick={() => setCreating(true)}
-              className="px-4 py-2 rounded-xl bg-[#5448EE] text-white text-[12px] font-medium hover:bg-[#4438DE] transition-colors">
+              className="px-4 py-2 rounded-xl bg-[#5448EE] text-white btn-solid-text text-[12px] font-medium hover:bg-[#4438DE] transition-colors">
               + Nuevo tablero
             </button>
           </div>

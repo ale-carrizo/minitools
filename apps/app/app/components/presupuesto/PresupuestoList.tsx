@@ -68,7 +68,7 @@ export default function PresupuestoList({ presupuestos }: { presupuestos: Presup
       <div className="rounded-2xl border border-white/[0.08] bg-white/[0.04] py-20 text-center">
         <p className="mb-2 text-lg text-white/60">Todavia no hay presupuestos</p>
         <p className="mb-5 text-sm text-white/30">Crea el primero para empezar a cotizar y descargar PDFs.</p>
-        <Link href="/dashboard/presupuestos/nuevo" className="rounded-xl bg-[#5448EE] px-4 py-2 text-[13px] font-medium text-white hover:bg-[#4438DE]">
+        <Link href="/dashboard/presupuestos/nuevo" className="rounded-xl bg-[#5448EE] px-4 py-2 text-[13px] font-medium text-white btn-solid-text hover:bg-[#4438DE]">
           + Crear presupuesto
         </Link>
       </div>
@@ -101,7 +101,7 @@ export default function PresupuestoList({ presupuestos }: { presupuestos: Presup
             type="button"
             onClick={() => setFiltro(item.value)}
             className={`rounded-full px-3 py-1.5 text-[12px] font-medium transition-colors ${
-              filtro === item.value ? 'bg-[#5448EE] text-white' : 'bg-white/[0.04] text-white/40 hover:text-white/70'
+              filtro === item.value ? 'bg-[#5448EE] text-white btn-solid-text' : 'bg-white/[0.04] text-white/40 hover:text-white/70'
             }`}
           >
             {item.label}

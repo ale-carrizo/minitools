@@ -136,7 +136,7 @@ export default function TurnoDetalle({ turno }: { turno: Turno }) {
                 />
                 <div className="flex gap-2">
                   <button onClick={() => setModoCompletar(false)} className="flex-1 border border-white/10 hover:border-white/20 text-white/50 hover:text-white rounded-xl px-3 py-2 text-[12px] font-medium transition-colors">Cancelar</button>
-                  <button onClick={confirmarCompletado} disabled={isPending} className="flex-1 bg-[#5448EE] hover:bg-[#4438DE] text-white rounded-xl px-3 py-2 text-[12px] font-medium transition-colors">Guardar</button>
+                  <button onClick={confirmarCompletado} disabled={isPending} className="flex-1 bg-[#5448EE] hover:bg-[#4438DE] text-white btn-solid-text rounded-xl px-3 py-2 text-[12px] font-medium transition-colors">Guardar</button>
                 </div>
               </div>
             )}
@@ -155,7 +155,7 @@ export default function TurnoDetalle({ turno }: { turno: Turno }) {
                   href={whatsapp}
                   target="_blank"
                   rel="noreferrer"
-                  className="block text-center bg-[#5448EE] hover:bg-[#4438DE] text-white rounded-xl px-4 py-2.5 text-[13px] font-medium transition-colors"
+                  className="block text-center bg-[#5448EE] hover:bg-[#4438DE] text-white btn-solid-text rounded-xl px-4 py-2.5 text-[13px] font-medium transition-colors"
                 >
                   💬 Recordatorio WhatsApp
                 </a>

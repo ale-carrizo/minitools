@@ -140,7 +140,7 @@ export default function SugerenciasBubble() {
       {open && (
         <div
           ref={panelRef}
-          className="w-80 rounded-2xl border border-white/[0.10] bg-[#13122A] shadow-2xl shadow-black/50 overflow-hidden"
+          className="w-80 rounded-2xl border border-white/[0.10] light:border-black/[0.10] bg-[#13122A] light:bg-[#ffffff] shadow-2xl shadow-black/50 overflow-hidden"
           style={{
             boxShadow: '0 8px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06)',
             ...(pos ? { position: 'absolute', bottom: BUBBLE_SIZE + 12, right: 0 } : {}),

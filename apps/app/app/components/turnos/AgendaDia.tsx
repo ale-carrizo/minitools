@@ -101,13 +101,13 @@ export default function AgendaDia({
         <div className="flex gap-1">
           <Link
             href={`/dashboard/turnos?fecha=${fecha}&vista=dia`}
-            className={`px-3 py-1.5 text-[12px] font-medium rounded-lg transition-colors ${vista === 'dia' ? 'bg-[#5448EE] text-white' : 'text-white/40 hover:text-white/70'}`}
+            className={`px-3 py-1.5 text-[12px] font-medium rounded-lg transition-colors ${vista === 'dia' ? 'bg-[#5448EE] text-white btn-solid-text' : 'text-white/40 hover:text-white/70'}`}
           >
             Día
           </Link>
           <Link
             href={`/dashboard/turnos?fecha=${fecha}&vista=semana`}
-            className={`px-3 py-1.5 text-[12px] font-medium rounded-lg transition-colors ${vista === 'semana' ? 'bg-[#5448EE] text-white' : 'text-white/40 hover:text-white/70'}`}
+            className={`px-3 py-1.5 text-[12px] font-medium rounded-lg transition-colors ${vista === 'semana' ? 'bg-[#5448EE] text-white btn-solid-text' : 'text-white/40 hover:text-white/70'}`}
           >
             Semana
           </Link>

@@ -11,7 +11,7 @@ export default function ReclamoFormWrapper({ productoId }: { productoId: string 
       <button
         type="button"
         onClick={() => setShow(true)}
-        className="w-full bg-[#5448EE] hover:bg-[#4438DE] text-white rounded-xl px-4 py-2.5 text-[13px] font-medium transition-colors"
+        className="w-full bg-[#5448EE] hover:bg-[#4438DE] text-white btn-solid-text rounded-xl px-4 py-2.5 text-[13px] font-medium transition-colors"
       >
         + Registrar reclamo
       </button>

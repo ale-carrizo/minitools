@@ -115,7 +115,7 @@ export default async function ReciboDetallePage({ params }: { params: Promise<{ 
             href={whatsappLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-emerald-500/90 hover:bg-emerald-500 px-4 py-2.5 text-[13px] font-medium text-white transition-colors"
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-emerald-500/90 hover:bg-emerald-500 px-4 py-2.5 text-[13px] font-medium text-white btn-solid-text transition-colors"
           >
             Enviar por WhatsApp
           </a>

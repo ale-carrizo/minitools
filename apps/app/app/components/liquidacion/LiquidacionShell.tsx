@@ -28,7 +28,7 @@ export default function LiquidacionShell({ children }: { children: React.ReactNo
               key={tab.href}
               href={tab.href}
               className={`px-4 py-1.5 text-[12px] font-medium rounded-lg transition-all ${
-                isActive ? 'bg-[#5448EE] text-white shadow-sm' : 'text-white/40 hover:text-white/70'
+                isActive ? 'bg-[#5448EE] text-white btn-solid-text shadow-sm' : 'text-white/40 hover:text-white/70'
               }`}
             >
               {tab.label}

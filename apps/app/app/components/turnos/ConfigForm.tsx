@@ -70,7 +70,7 @@ export default function ConfigForm({ config }: { config: TurnoConfig }) {
                 type="button"
                 onClick={() => toggleDia(index)}
                 className={`px-3 py-2 rounded-xl text-[12px] font-medium transition-colors ${
-                  active ? 'bg-[#5448EE] text-white' : 'bg-white/[0.06] text-white/45 hover:text-white/75'
+                  active ? 'bg-[#5448EE] text-white btn-solid-text' : 'bg-white/[0.06] text-white/45 hover:text-white/75'
                 }`}
               >
                 {dia}
@@ -83,7 +83,7 @@ export default function ConfigForm({ config }: { config: TurnoConfig }) {
       {error ? <p className="text-[12px] text-red-300">{error}</p> : null}
       {ok ? <p className="text-[12px] text-emerald-300">Configuración guardada.</p> : null}
 
-      <button type="submit" disabled={isPending} className="bg-[#5448EE] hover:bg-[#4438DE] disabled:opacity-70 text-white rounded-xl px-4 py-2.5 text-[13px] font-medium transition-colors">
+      <button type="submit" disabled={isPending} className="bg-[#5448EE] hover:bg-[#4438DE] disabled:opacity-70 text-white btn-solid-text rounded-xl px-4 py-2.5 text-[13px] font-medium transition-colors">
         {isPending ? 'Guardando...' : 'Guardar configuración'}
       </button>
     </form>

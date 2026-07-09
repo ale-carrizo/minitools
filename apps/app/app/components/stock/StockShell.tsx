@@ -42,7 +42,7 @@ export default function StockShell({ children, alertas = 0 }: Props) {
               }`}
             >
               {t.href.includes('alertas') && alertas > 0
-                ? <>Alertas <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${isActive ? 'bg-white/20 text-white' : 'bg-red-500/80 text-white'}`}>{alertas}</span></>
+                ? <>Alertas <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${isActive ? 'bg-white/20 text-white' : 'bg-red-500/80 text-white btn-solid-text'}`}>{alertas}</span></>
                 : t.label
               }
             </Link>

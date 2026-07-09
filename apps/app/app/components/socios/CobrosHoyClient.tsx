@@ -38,7 +38,7 @@ export default function CobrosHoyClient({ vencidos, estaSemana, totalVencido, to
         <div className="text-4xl mb-3">🎉</div>
         <p className="text-sm font-medium text-white/70">Todo al día</p>
         <p className="text-xs text-white/30 mt-1">No hay cobros pendientes ni vencidos</p>
-        <Link href="/dashboard/socios/nuevo" className="inline-block mt-6 rounded-xl bg-[#5448EE] px-4 py-2 text-[12px] font-medium text-white hover:bg-[#4438DE]">
+        <Link href="/dashboard/socios/nuevo" className="inline-block mt-6 rounded-xl bg-[#5448EE] px-4 py-2 text-[12px] font-medium text-white btn-solid-text hover:bg-[#4438DE]">
           + Agregar cliente
         </Link>
       </div>
@@ -176,7 +176,7 @@ function PosponerModal({ cobro, onClose, onConfirm }: {
 
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-      <div className="rounded-2xl border border-white/[0.10] bg-[#1A1830] p-5 w-full max-w-xs shadow-xl">
+      <div className="rounded-2xl border border-white/[0.10] light:border-black/[0.10] bg-[#1A1830] light:bg-[#ffffff] p-5 w-full max-w-xs shadow-xl">
         <h3 className="text-[14px] font-semibold text-white mb-1">Posponer cobro</h3>
         <p className="text-[11px] text-white/40 mb-4">
           {(cobro.socio as any)?.nombre} · {new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(cobro.monto)}
@@ -196,7 +196,7 @@ function PosponerModal({ cobro, onClose, onConfirm }: {
           <button
             onClick={async () => { setLoading(true); await onConfirm(fecha); setLoading(false) }}
             disabled={loading}
-            className="flex-[2] py-2.5 text-[12px] font-medium text-white bg-[#5448EE] rounded-xl hover:bg-[#4438DE] disabled:opacity-50"
+            className="flex-[2] py-2.5 text-[12px] font-medium text-white btn-solid-text bg-[#5448EE] rounded-xl hover:bg-[#4438DE] disabled:opacity-50"
           >
             {loading ? 'Guardando…' : 'Posponer'}
           </button>

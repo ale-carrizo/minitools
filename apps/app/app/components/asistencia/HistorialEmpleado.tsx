@@ -74,7 +74,7 @@ export default function HistorialEmpleado({ empleados }: { empleados: Empleado[]
             <button
               type="button"
               onClick={load}
-              className="bg-[#5448EE] hover:bg-[#4438DE] text-white rounded-xl px-4 py-2.5 text-[13px] font-medium"
+              className="bg-[#5448EE] hover:bg-[#4438DE] text-white btn-solid-text rounded-xl px-4 py-2.5 text-[13px] font-medium"
             >
               {isPending ? 'Cargando...' : 'Ver historial'}
             </button>
