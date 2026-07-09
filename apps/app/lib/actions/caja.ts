@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
+import { todayAR } from '@/lib/date'
 import type {
   CajaDia, CajaCobro, CajaCobroItem, CajaDiaResumen,
   CajaCobroMedio, CajaCobroSource,
@@ -76,7 +77,7 @@ function toCajaCobroItem(item: any): CajaCobroItem {
 // ── Día ───────────────────────────────────────────────────────────────────────
 export async function getCajaHoy(): Promise<CajaDia> {
   const userId = await getUserId()
-  const fecha  = new Date().toISOString().split('T')[0]
+  const fecha  = todayAR()
   const dia    = await prisma.cajaDia.upsert({
     where:  { userId_fecha: { userId, fecha } },
     create: { userId, fecha },
@@ -95,7 +96,7 @@ export async function getCajaDia(fecha: string): Promise<CajaDia | null> {
 
 export async function getResumenHoy(): Promise<CajaDiaResumen> {
   const userId = await getUserId()
-  const fecha  = new Date().toISOString().split('T')[0]
+  const fecha  = todayAR()
 
   const dia = await prisma.cajaDia.upsert({
     where:  { userId_fecha: { userId, fecha } },

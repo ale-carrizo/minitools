@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { registrarCobro, registrarCobrosLote } from '@/lib/actions/caja'
+import { todayAR } from '@/lib/date'
 import type { BancoExtracto, ExtractoRow } from '@/types/caja'
 import { BANCOS_EXTRACTO } from '@/types/caja'
 import type { Producto } from '@/types/stock'
@@ -89,7 +90,7 @@ function ComprobanteUnificado({ onSuccess }: { onSuccess: () => void }) {
     try {
       await registrarCobro({
         monto:         parseFloat(String(preview.monto).replace(/[^\d.]/g, '')),
-        fecha_cobro:   preview.fecha ?? new Date().toISOString().split('T')[0],
+        fecha_cobro:   preview.fecha ?? todayAR(),
         hora_cobro:    preview.hora  ?? undefined,
         medio:         'transferencia',
         source:        'comprobante_ia',
@@ -351,7 +352,7 @@ function EfectivoManual({ productos, onSuccess }: { productos: Producto[]; onSuc
     try {
       await registrarCobro({
         monto:       parseFloat(monto),
-        fecha_cobro: new Date().toISOString().split('T')[0],
+        fecha_cobro: todayAR(),
         hora_cobro:  hora,
         medio:       'efectivo',
         source:      'manual',

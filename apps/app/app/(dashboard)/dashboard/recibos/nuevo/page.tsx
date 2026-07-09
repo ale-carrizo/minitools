@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { crearRecibo } from '@/lib/actions/recibos'
+import { todayAR } from '@/lib/date'
 import { MEDIOS_PAGO } from '@/types/recibos'
 
 const INPUT_CLS = 'w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white placeholder:text-white/20 focus:border-[#5448EE]/60 focus:outline-none'
@@ -12,7 +13,7 @@ export default function NuevoReciboPage() {
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState('')
   const [form, setForm] = useState({
-    fecha: new Date().toISOString().split('T')[0],
+    fecha: todayAR(),
     emisorNombre: '',
     emisorDoc: '',
     emisorDireccion: '',

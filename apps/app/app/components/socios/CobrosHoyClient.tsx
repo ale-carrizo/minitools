@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { posponerCobro } from '@/lib/actions/socios'
+import { todayAR } from '@/lib/date'
 import { WAButton } from './WAButton'
 import PagarModal from './PagarModal'
 import type { CobroProgramado, Socio } from '@/types/socios'
@@ -169,7 +170,7 @@ function PosponerModal({ cobro, onClose, onConfirm }: {
   onClose:   () => void
   onConfirm: (fecha: string) => Promise<void>
 }) {
-  const def = new Date(); def.setDate(def.getDate() + 7)
+  const def = new Date(`${todayAR()}T00:00:00`); def.setDate(def.getDate() + 7)
   const [fecha, setFecha]   = useState(def.toISOString().split('T')[0])
   const [loading, setLoading] = useState(false)
 
@@ -184,7 +185,7 @@ function PosponerModal({ cobro, onClose, onConfirm }: {
         <input
           type="date"
           value={fecha}
-          min={new Date().toISOString().split('T')[0]}
+          min={todayAR()}
           onChange={e => setFecha(e.target.value)}
           className="w-full px-3 py-2.5 rounded-xl border border-white/[0.09] bg-white/[0.05] text-[12px] text-white mb-4 focus:outline-none focus:border-[#5448EE]/60"
         />

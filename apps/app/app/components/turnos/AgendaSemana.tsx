@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useMemo } from 'react'
+import { todayAR } from '@/lib/date'
 import {
   asignarCarriles,
   DIAS_SEMANA,
@@ -28,7 +29,7 @@ export default function AgendaSemana({
 }) {
   const router = useRouter()
   const dias = semana.filter((fecha) => config.diasHabiles.includes(parseLocalDate(fecha).getDay()))
-  const hoy = new Date().toISOString().slice(0, 10)
+  const hoy = todayAR()
 
   const horaInicio = hhmm2min(config.horaInicio)
   const horaFin = hhmm2min(config.horaFin)

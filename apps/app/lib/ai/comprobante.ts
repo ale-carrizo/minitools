@@ -13,6 +13,7 @@
  */
 
 import type { ComprobanteIAResult } from '@/types/caja'
+import { todayAR } from '@/lib/date'
 
 const DEFAULT_PROVIDER = process.env.AI_PROVIDER ?? 'stub'
 
@@ -50,7 +51,7 @@ const stubProvider: IAProvider = {
     await new Promise(r => setTimeout(r, 800))
     const raw = {
       monto:         142000,
-      fecha:         new Date().toISOString().split('T')[0],
+      fecha:         todayAR(),
       hora:          new Date().toTimeString().slice(0, 5),
       emisor_nombre: 'Ana Martínez',
       emisor_banco:  'Banco Nación',

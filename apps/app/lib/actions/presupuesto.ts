@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { recalcUserStorage } from '@/lib/storage'
+import { todayAR } from '@/lib/date'
 import {
   calcularTotales,
   type Cliente,
@@ -23,7 +24,7 @@ async function getUserId(): Promise<string> {
 }
 
 function todayDate() {
-  return new Date().toISOString().slice(0, 10)
+  return todayAR()
 }
 
 function maybeTrim(value?: string) {

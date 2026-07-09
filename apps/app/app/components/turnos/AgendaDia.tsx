@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useMemo, useTransition } from 'react'
 import { cambiarEstado, marcarRecordatorioEnviado } from '@/lib/actions/turno'
+import { todayAR } from '@/lib/date'
 import {
   asignarCarriles,
   DIAS_SEMANA,
@@ -70,7 +71,7 @@ export default function AgendaDia({
           <button onClick={() => goTo(offsetFecha(fecha, -1))} className="border border-white/10 hover:border-white/20 text-white/60 hover:text-white rounded-xl px-3 py-2 text-[12px] font-medium transition-colors">
             ←
           </button>
-          <button onClick={() => goTo(new Date().toISOString().slice(0, 10))} className="border border-white/10 hover:border-white/20 text-white/60 hover:text-white rounded-xl px-3 py-2 text-[12px] font-medium transition-colors">
+          <button onClick={() => goTo(todayAR())} className="border border-white/10 hover:border-white/20 text-white/60 hover:text-white rounded-xl px-3 py-2 text-[12px] font-medium transition-colors">
             Hoy
           </button>
           <button onClick={() => goTo(offsetFecha(fecha, 1))} className="border border-white/10 hover:border-white/20 text-white/60 hover:text-white rounded-xl px-3 py-2 text-[12px] font-medium transition-colors">

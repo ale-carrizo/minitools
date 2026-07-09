@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useMemo, useState, useTransition } from 'react'
 import { crearPresupuesto, editarPresupuesto } from '@/lib/actions/presupuesto'
+import { todayAR } from '@/lib/date'
 import {
   calcularTotales,
   formatCurrency,
@@ -28,7 +29,7 @@ type FormItem = {
 }
 
 function todayDate() {
-  return new Date().toISOString().slice(0, 10)
+  return todayAR()
 }
 
 function addDays(date: string, days: number) {

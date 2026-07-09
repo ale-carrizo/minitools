@@ -1,3 +1,5 @@
+import { todayAR } from '@/lib/date'
+
 export type GarantiaEstado = 'vigente' | 'por_vencer' | 'vencida' | 'sin_fecha'
 export type ReclamoEstado = 'abierto' | 'en_proceso' | 'resuelto' | 'rechazado'
 
@@ -78,8 +80,7 @@ export function calcularEstadoGarantia(
 ): GarantiaEstado {
   if (!fechaVencimiento) return 'sin_fecha'
 
-  const hoy = new Date()
-  hoy.setHours(0, 0, 0, 0)
+  const hoy = new Date(`${todayAR()}T00:00:00`)
   const vence = new Date(`${fechaVencimiento}T00:00:00`)
   const diffMs = vence.getTime() - hoy.getTime()
   const diffDias = Math.ceil(diffMs / (1000 * 60 * 60 * 24))
@@ -91,8 +92,7 @@ export function calcularEstadoGarantia(
 
 export function diasHastaVencimiento(fechaVencimiento: string | null): number | null {
   if (!fechaVencimiento) return null
-  const hoy = new Date()
-  hoy.setHours(0, 0, 0, 0)
+  const hoy = new Date(`${todayAR()}T00:00:00`)
   const vence = new Date(`${fechaVencimiento}T00:00:00`)
   return Math.ceil((vence.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24))
 }
@@ -116,8 +116,7 @@ export function calcularFechaVencimiento(fechaCompra: string, meses: number): st
 }
 
 export function todayString(): string {
-  const d = new Date()
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+  return todayAR()
 }
 
 export function formatFecha(fecha: string | null): string {

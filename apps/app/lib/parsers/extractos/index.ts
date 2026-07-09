@@ -4,6 +4,7 @@
  */
 
 import type { ExtractoRow, BancoExtracto } from '@/types/caja'
+import { todayAR } from '@/lib/date'
 
 type Parser = (rows: any[][]) => ExtractoRow[]
 
@@ -14,7 +15,7 @@ function parseMonto(val: any): number {
 }
 
 function parseFecha(val: any): string {
-  if (!val) return new Date().toISOString().split('T')[0]
+  if (!val) return todayAR()
   if (typeof val === 'number') {
     const d = new Date((val - 25569) * 86400 * 1000)
     return d.toISOString().split('T')[0]
@@ -164,7 +165,7 @@ const parseGenerico: Parser = (rows) => {
   return rows.slice(1)
     .filter(r => r[montoCol] && parseMonto(r[montoCol]) > 0 && parseFloat(String(r[montoCol])) > 0)
     .map(r => ({
-      fecha:       fechaCol >= 0 ? parseFecha(r[fechaCol]) : new Date().toISOString().split('T')[0],
+      fecha:       fechaCol >= 0 ? parseFecha(r[fechaCol]) : todayAR(),
       hora:        null,
       descripcion: descCol >= 0 ? sanitizeCsvCell(String(r[descCol] ?? '').trim()) : '',
       monto:       parseMonto(r[montoCol]),
