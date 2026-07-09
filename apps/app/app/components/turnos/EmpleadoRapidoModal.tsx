@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { crearEmpleado } from '@/lib/actions/asistencia'
 import { type EmpleadoTurno } from '@/types/turno'
+import { PALETA_EMPLEADO } from '@/types/asistencia'
 
 interface Props {
   open: boolean
@@ -13,6 +14,7 @@ interface Props {
 
 export default function EmpleadoRapidoModal({ open, onClose, onCreated, empleadosActuales }: Props) {
   const [nombre, setNombre] = useState('')
+  const [color, setColor] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const overlayRef = useRef<HTMLDivElement>(null)
@@ -38,9 +40,10 @@ export default function EmpleadoRapidoModal({ open, onClose, onCreated, empleado
     setLoading(true)
     setError(null)
     try {
-      const created = await crearEmpleado({ nombre: trimmed })
+      const created = await crearEmpleado({ nombre: trimmed, color: color ?? undefined })
       onCreated({ id: created.id, userId: created.userId, nombre: created.nombre, apellido: created.apellido, color: created.color })
       setNombre('')
+      setColor(null)
       onClose()
     } catch (err: any) {
       setError(err.message ?? 'No se pudo crear el empleado')
@@ -73,6 +76,24 @@ export default function EmpleadoRapidoModal({ open, onClose, onCreated, empleado
               placeholder="Nombre del empleado"
               className="w-full mt-1 bg-white/[0.05] border border-white/[0.09] rounded-xl text-white px-3 py-2.5 text-sm placeholder:text-white/20 focus:outline-none focus:border-[#5448EE]/60"
             />
+          </div>
+
+          <div>
+            <label className="text-[12px] text-white/50">Color</label>
+            <div className="flex flex-wrap gap-2 mt-1.5">
+              {PALETA_EMPLEADO.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setColor(c)}
+                  className={`w-7 h-7 rounded-full border-2 transition-all ${
+                    color === c ? 'border-white scale-110' : 'border-transparent hover:scale-105'
+                  }`}
+                  style={{ backgroundColor: c }}
+                  aria-label={`Color ${c}`}
+                />
+              ))}
+            </div>
           </div>
 
           {error ? (

@@ -93,8 +93,10 @@ export async function crearEmpleado(data: {
   turnoInicio?: string
   turnoFin?: string
   tolerancia?: number
+  color?: string
 }): Promise<Empleado> {
   const userId = await getUserId()
+  const color = data.color && PALETA_EMPLEADO.includes(data.color) ? data.color : await siguienteColor(userId)
   const empleado = await db.empleado.create({
     data: {
       userId,
@@ -103,7 +105,7 @@ export async function crearEmpleado(data: {
       turnoInicio: maybeTrim(data.turnoInicio),
       turnoFin: maybeTrim(data.turnoFin),
       tolerancia: data.tolerancia ?? 15,
-      color: await siguienteColor(userId),
+      color,
     },
   })
   revalidatePath('/dashboard/asistencia')
