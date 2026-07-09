@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useMemo, useTransition } from 'react'
+import { useEffect, useMemo, useRef, useTransition } from 'react'
 import { cambiarEstado, marcarRecordatorioEnviado } from '@/lib/actions/turno'
 import { todayAR } from '@/lib/date'
 import {
@@ -19,7 +19,7 @@ import {
   type TurnoConfig,
 } from '@/types/turno'
 
-const PX_POR_HORA = 80
+const PX_POR_HORA = 56
 const MIN_POR_HORA = 60
 
 export default function AgendaDia({
@@ -58,6 +58,25 @@ export default function AgendaDia({
   }
 
   const carriles = useMemo(() => asignarCarriles(turnos), [turnos])
+
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!scrollRef.current) return
+    // Al abrir el día, scrollear directo al primer turno (o a la hora actual si es
+    // hoy y no hay turnos antes) en vez de arrancar siempre desde el principio del
+    // horario comercial — evita que un turno a las 11 quede fuera de vista si el
+    // día empieza a las 8.
+    const primerTurnoMin = turnos.length > 0
+      ? Math.min(...turnos.map((t) => hhmm2min(t.horaInicio)))
+      : null
+    const esHoy = fecha === todayAR()
+    const ahoraMin = esHoy ? new Date().getHours() * 60 + new Date().getMinutes() : null
+    const objetivoMin = primerTurnoMin ?? ahoraMin
+    if (objetivoMin === null) return
+    const top = Math.max(minToPx(objetivoMin) - PX_POR_HORA, 0)
+    scrollRef.current.scrollTop = top
+  }, [fecha, turnos])
 
   function goTo(nextFecha: string) {
     router.push(`/dashboard/turnos?fecha=${nextFecha}&vista=${vista}`)
@@ -102,7 +121,7 @@ export default function AgendaDia({
       ) : null}
 
       {/* Timeline */}
-      <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl overflow-hidden flex flex-col" style={{ maxHeight: 'calc(100vh - 260px)' }}>
+      <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl overflow-hidden flex flex-col" style={{ maxHeight: 'calc(100vh - 200px)' }}>
         {/* Header */}
         <div className="flex-shrink-0 grid grid-cols-[56px,1fr] border-b border-white/[0.06]">
           <div className="border-r border-white/[0.06] bg-white/[0.02]" />
@@ -113,7 +132,7 @@ export default function AgendaDia({
         </div>
 
         {/* Scrollable body */}
-        <div className="flex-1 overflow-y-auto">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto">
           <div className="grid grid-cols-[56px,1fr]" style={{ minHeight: `${timelineHeight}px` }}>
             {/* Time column */}
             <div className="border-r border-white/[0.06] bg-white/[0.02]">
@@ -176,13 +195,14 @@ export default function AgendaDia({
                   <Link
                     key={turno.id}
                     href={`/dashboard/turnos/${turno.id}`}
-                    className={`absolute rounded-lg overflow-hidden px-2 py-1 hover:brightness-110 hover:z-20 transition-all z-10 ${estaCompletado ? 'opacity-60' : ''}`}
+                    className={`absolute rounded-lg overflow-hidden px-2 py-1 shadow-md hover:brightness-110 hover:z-20 transition-all z-10 ${estaCompletado ? 'opacity-60' : ''}`}
                     style={{
                       top: `${topPx}px`,
                       minHeight: `${heightPx}px`,
                       left: `calc(${lane * widthPct}% + 4px)`,
                       width: `calc(${widthPct}% - 8px)`,
-                      backgroundColor: `${color}30`,
+                      backgroundColor: `${color}4D`,
+                      border: `1px solid ${color}80`,
                       borderLeft: `3px solid ${color}`,
                     }}
                   >

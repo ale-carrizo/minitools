@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition, useRef, useEffect } from 'react'
+import { useState, useTransition, useRef, useEffect, useCallback } from 'react'
 import { usePathname } from 'next/navigation'
 import { enviarSugerencia } from '@/lib/actions/sugerencias'
 import { getToolPathLabel } from '@/lib/apps-config'
@@ -13,6 +13,12 @@ const CATEGORIAS = [
   { value: 'otro',           label: '💬 Otro',            color: '#9CA3AF' },
 ]
 
+const POSITION_KEY = 'zimple-sugerencias-bubble-pos'
+const BUBBLE_SIZE = 48
+const DRAG_THRESHOLD = 6 // px de movimiento antes de considerarlo drag y no click
+
+type Pos = { x: number; y: number }
+
 export default function SugerenciasBubble() {
   const [open, setOpen]         = useState(false)
   const [texto, setTexto]       = useState('')
@@ -20,15 +26,80 @@ export default function SugerenciasBubble() {
   const [sent, setSent]         = useState(false)
   const [, startTrans]          = useTransition()
   const panelRef                = useRef<HTMLDivElement>(null)
+  const btnRef                  = useRef<HTMLButtonElement>(null)
   const pathname                = usePathname()
   const { names }               = useAppNames()
   const tool                    = getToolPathLabel(pathname, names)
+
+  const [pos, setPos] = useState<Pos | null>(null)
+  const [dragging, setDragging] = useState(false)
+  const dragState = useRef<{ startX: number; startY: number; origX: number; origY: number; moved: boolean } | null>(null)
+
+  // Cargar posición guardada al montar
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(POSITION_KEY)
+      if (raw) setPos(JSON.parse(raw))
+    } catch {}
+  }, [])
+
+  function clampPos(x: number, y: number): Pos {
+    const maxX = window.innerWidth - BUBBLE_SIZE - 8
+    const maxY = window.innerHeight - BUBBLE_SIZE - 8
+    return { x: Math.min(Math.max(x, 8), maxX), y: Math.min(Math.max(y, 8), maxY) }
+  }
+
+  const onPointerMove = useCallback((e: PointerEvent) => {
+    if (!dragState.current) return
+    const dx = e.clientX - dragState.current.startX
+    const dy = e.clientY - dragState.current.startY
+    if (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD) {
+      dragState.current.moved = true
+      setDragging(true)
+    }
+    if (dragState.current.moved) {
+      setPos(clampPos(dragState.current.origX + dx, dragState.current.origY + dy))
+    }
+  }, [])
+
+  const onPointerUp = useCallback(() => {
+    if (dragState.current?.moved) {
+      setPos((current) => {
+        if (current) {
+          try { localStorage.setItem(POSITION_KEY, JSON.stringify(current)) } catch {}
+        }
+        return current
+      })
+    }
+    const wasMoved = dragState.current?.moved
+    dragState.current = null
+    setDragging(false)
+    window.removeEventListener('pointermove', onPointerMove)
+    window.removeEventListener('pointerup', onPointerUp)
+    return wasMoved
+  }, [onPointerMove])
+
+  function handlePointerDown(e: React.PointerEvent) {
+    if (open) return // no arrastrar con el panel abierto
+    const rect = btnRef.current?.getBoundingClientRect()
+    const current = pos ?? (rect ? { x: rect.left, y: rect.top } : clampPos(window.innerWidth - BUBBLE_SIZE - 24, window.innerHeight - BUBBLE_SIZE - 24))
+    dragState.current = { startX: e.clientX, startY: e.clientY, origX: current.x, origY: current.y, moved: false }
+    setPos(current)
+    window.addEventListener('pointermove', onPointerMove)
+    window.addEventListener('pointerup', onPointerUp)
+  }
+
+  function handleClick() {
+    if (dragState.current?.moved) return // fue un drag, no abrir el panel
+    if (open) setOpen(false)
+    else handleOpen()
+  }
 
   // Cerrar al hacer clic fuera
   useEffect(() => {
     if (!open) return
     function handler(e: MouseEvent) {
-      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
+      if (panelRef.current && !panelRef.current.contains(e.target as Node) && !btnRef.current?.contains(e.target as Node)) {
         setOpen(false)
       }
     }
@@ -54,14 +125,26 @@ export default function SugerenciasBubble() {
 
   const catConfig = CATEGORIAS.find(c => c.value === categoria)!
 
+  // Si hay posición custom, la usamos con top/left fijo; el panel se abre hacia
+  // arriba-izquierda del botón para no salirse de la pantalla.
+  const containerStyle: React.CSSProperties = pos
+    ? { position: 'fixed', left: pos.x, top: pos.y, zIndex: 50 }
+    : {}
+
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+    <div
+      className={pos ? 'flex flex-col items-end gap-3' : 'fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3'}
+      style={containerStyle}
+    >
       {/* Panel */}
       {open && (
         <div
           ref={panelRef}
           className="w-80 rounded-2xl border border-white/[0.10] bg-[#13122A] shadow-2xl shadow-black/50 overflow-hidden"
-          style={{ boxShadow: '0 8px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06)' }}
+          style={{
+            boxShadow: '0 8px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06)',
+            ...(pos ? { position: 'absolute', bottom: BUBBLE_SIZE + 12, right: 0 } : {}),
+          }}
         >
           {/* Header */}
           <div className="px-4 py-3.5 border-b border-white/[0.07] flex items-center justify-between">
@@ -141,17 +224,19 @@ export default function SugerenciasBubble() {
         </div>
       )}
 
-      {/* Botón flotante */}
+      {/* Botón flotante — arrastrable */}
       <button
-        onClick={open ? () => setOpen(false) : handleOpen}
-        className={`group relative w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg transition-all duration-200 ${
-          open ? 'scale-95' : 'hover:scale-105'
+        ref={btnRef}
+        onPointerDown={handlePointerDown}
+        onClick={handleClick}
+        className={`group relative w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg transition-transform duration-200 touch-none ${
+          dragging ? 'cursor-grabbing scale-105' : open ? 'scale-95 cursor-pointer' : 'hover:scale-105 cursor-grab'
         }`}
         style={{
           background: 'linear-gradient(135deg, #6E63FF, #5448EE 55%, #4035d4)',
           boxShadow: '0 4px 20px rgba(84,72,238,0.5)',
         }}
-        title="Sugerencias y mejoras"
+        title="Sugerencias y mejoras — mantené presionado y arrastrá para mover"
       >
         {open ? (
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={2.5} strokeLinecap="round">
@@ -165,7 +250,7 @@ export default function SugerenciasBubble() {
         )}
 
         {/* Pulse ring */}
-        {!open && (
+        {!open && !dragging && (
           <span className="absolute inset-0 rounded-2xl animate-ping opacity-20"
             style={{ background: '#5448EE' }} />
         )}

@@ -39,6 +39,7 @@ export default function TurnoForm({
   const [horaInicio, setHoraInicio] = useState(turno?.horaInicio ?? horaDefault ?? '')
   const [duracion, setDuracion] = useState(turno?.duracion ?? 30)
   const [precio, setPrecio] = useState(turno?.precio ?? 0)
+  const [pedirSenia, setPedirSenia] = useState((turno?.senia ?? 0) > 0)
   const [senia, setSenia] = useState(turno?.senia ?? 0)
   const [seniaPagada, setSeniaPagada] = useState(turno?.seniaPagada ?? false)
   const [notas, setNotas] = useState(turno?.notas ?? '')
@@ -98,7 +99,7 @@ export default function TurnoForm({
           horaInicio,
           duracion,
           precio,
-          senia,
+          senia: pedirSenia ? senia : 0,
           seniaPagada,
           notas,
         }
@@ -171,17 +172,49 @@ export default function TurnoForm({
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <label className="text-[12px] text-white/50">Duración (min)</label>
-            <input type="number" min="15" step="15" value={duracion} onChange={(e) => setDuracion(Number(e.target.value))} className="w-full bg-white/[0.05] border border-white/[0.09] rounded-xl text-white px-3 py-2.5 text-sm focus:outline-none focus:border-[#5448EE]/60" />
+            <input
+              type="number" min="15" step="15"
+              value={duracion === 0 ? '' : duracion}
+              onChange={(e) => setDuracion(e.target.value === '' ? 0 : Number(e.target.value))}
+              onFocus={(e) => e.target.select()}
+              className="w-full bg-white/[0.05] border border-white/[0.09] rounded-xl text-white px-3 py-2.5 text-sm focus:outline-none focus:border-[#5448EE]/60"
+            />
           </div>
           <div className="space-y-2">
             <label className="text-[12px] text-white/50">Precio</label>
-            <input type="number" min="0" step="1" value={precio} onChange={(e) => setPrecio(Number(e.target.value))} className="w-full bg-white/[0.05] border border-white/[0.09] rounded-xl text-white px-3 py-2.5 text-sm focus:outline-none focus:border-[#5448EE]/60" />
+            <input
+              type="number" min="0" step="1"
+              value={precio === 0 ? '' : precio}
+              onChange={(e) => setPrecio(e.target.value === '' ? 0 : Number(e.target.value))}
+              onFocus={(e) => e.target.select()}
+              placeholder="0"
+              className="w-full bg-white/[0.05] border border-white/[0.09] rounded-xl text-white px-3 py-2.5 text-sm placeholder:text-white/20 focus:outline-none focus:border-[#5448EE]/60"
+            />
           </div>
         </div>
+        <div className="space-y-2">
+          <label className="flex items-center gap-2 text-[12px] text-white/50">
+            <input
+              type="checkbox"
+              checked={pedirSenia}
+              onChange={(e) => { setPedirSenia(e.target.checked); if (!e.target.checked) setSenia(0) }}
+              className="h-4 w-4 rounded border-white/20 bg-white/[0.05] accent-[#5448EE]"
+            />
+            ¿Pedir seña?
+          </label>
+        </div>
+        {pedirSenia && (
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <label className="text-[12px] text-white/50">Seña solicitada</label>
-            <input type="number" min="0" step="1" value={senia} onChange={(e) => setSenia(Number(e.target.value))} className="w-full bg-white/[0.05] border border-white/[0.09] rounded-xl text-white px-3 py-2.5 text-sm focus:outline-none focus:border-[#5448EE]/60" />
+            <input
+              type="number" min="0" step="1"
+              value={senia === 0 ? '' : senia}
+              onChange={(e) => setSenia(e.target.value === '' ? 0 : Number(e.target.value))}
+              onFocus={(e) => e.target.select()}
+              placeholder="0"
+              className="w-full bg-white/[0.05] border border-white/[0.09] rounded-xl text-white px-3 py-2.5 text-sm placeholder:text-white/20 focus:outline-none focus:border-[#5448EE]/60"
+            />
           </div>
           {turno ? (
             <div className="space-y-2">
@@ -193,6 +226,7 @@ export default function TurnoForm({
             </div>
           ) : null}
         </div>
+        )}
         {horaInicio ? <p className="text-[12px] text-[#8880F5]">Turno de {horaInicio} a {horaFin} ({duracion} min)</p> : null}
       </div>
 
