@@ -33,7 +33,7 @@ export default function LiquidacionDetalle({
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr,320px]">
+    <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
       <div className="space-y-5">
         <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-5">
           <div className="flex flex-wrap items-start justify-between gap-4">

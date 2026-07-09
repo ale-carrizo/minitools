@@ -38,7 +38,7 @@ export default function HistorialEmpleado({ empleados }: { empleados: Empleado[]
   return (
     <div className="space-y-5">
       <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-5">
-        <div className="grid gap-4 lg:grid-cols-[1.2fr,1fr,1fr,auto]">
+        <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr_1fr_auto]">
           <div>
             <label className="block text-[11px] font-medium text-white/40 mb-1.5 uppercase tracking-wider">Empleado</label>
             <select

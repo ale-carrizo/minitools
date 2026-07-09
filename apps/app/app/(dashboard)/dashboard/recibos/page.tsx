@@ -27,7 +27,7 @@ export default async function RecibosPage() {
       ) : (
         <div className="overflow-x-auto rounded-2xl border border-white/[0.08] bg-white/[0.04]">
           <div className="min-w-[500px]">
-          <div className="grid grid-cols-[auto,1fr,1fr,auto,auto] items-center gap-4 px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-white/25 border-b border-white/[0.06]">
+          <div className="grid grid-cols-[auto_1fr_1fr_auto_auto] items-center gap-4 px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-white/25 border-b border-white/[0.06]">
             <span>N°</span>
             <span>Recibido de</span>
             <span>Concepto</span>
@@ -36,7 +36,7 @@ export default async function RecibosPage() {
           </div>
           <div className="divide-y divide-white/[0.04]">
             {recibos.map((r: ReciboCobro) => (
-              <div key={r.id} className="grid grid-cols-[auto,1fr,1fr,auto,auto] items-center gap-4 px-5 py-4 text-[13px] hover:bg-white/[0.02]">
+              <div key={r.id} className="grid grid-cols-[auto_1fr_1fr_auto_auto] items-center gap-4 px-5 py-4 text-[13px] hover:bg-white/[0.02]">
                 <span className="text-white/50 font-mono text-[12px]">#{String(r.numero).padStart(4, '0')}</span>
                 <div>
                   <p className="font-medium text-white">{r.receptorNombre || '—'}</p>

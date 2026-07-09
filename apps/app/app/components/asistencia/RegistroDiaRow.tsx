@@ -26,7 +26,7 @@ export default function RegistroDiaRow({
   const cfg = registro ? ESTADO_CONFIG[registro.estado] : ESTADO_CONFIG.libre
 
   return (
-    <div className={`grid gap-3 rounded-2xl border bg-white/[0.04] p-4 md:grid-cols-[1.4fr,0.8fr,0.8fr,0.7fr,0.8fr,auto] ${
+    <div className={`grid gap-3 rounded-2xl border bg-white/[0.04] p-4 md:grid-cols-[1.4fr_0.8fr_0.8fr_0.7fr_0.8fr_auto] ${
       registro?.horaEntrada && !registro?.horaSalida ? 'border-emerald-500/30' : 'border-white/[0.08]'
     }`}>
       <div className="min-w-0">

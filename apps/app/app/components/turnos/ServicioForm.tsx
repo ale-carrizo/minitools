@@ -79,7 +79,7 @@ export default function ServicioForm({
 
       <div className="space-y-2">
         <label className="text-[12px] text-white/50">Duración *</label>
-        <div className="grid grid-cols-[1fr,120px] gap-3">
+        <div className="grid grid-cols-[1fr_120px] gap-3">
           <input type="number" min="1" value={duracionValor} onChange={(e) => setDuracionValor(e.target.value)} className="w-full bg-white/[0.05] border border-white/[0.09] rounded-xl text-white px-3 py-2.5 text-sm focus:outline-none focus:border-[#5448EE]/60" />
           <select value={unidad} onChange={(e) => setUnidad(e.target.value as 'minutos' | 'horas')} className="w-full bg-white/[0.05] border border-white/[0.09] rounded-xl text-white px-3 py-2.5 text-sm focus:outline-none focus:border-[#5448EE]/60">
             <option value="minutos">Minutos</option>

@@ -266,7 +266,7 @@ export default function PresupuestoForm({ clientes, presupuesto, template }: Pro
           {items.map((item, index) => {
             const subtotal = item.cantidad * item.precioUnitario
             return (
-              <div key={`${item.orden}-${index}`} className="grid grid-cols-2 gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.03] p-4 sm:grid-cols-[1.8fr,0.6fr,0.8fr,0.8fr,auto]">
+              <div key={`${item.orden}-${index}`} className="grid grid-cols-2 gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.03] p-4 sm:grid-cols-[1.8fr_0.6fr_0.8fr_0.8fr_auto]">
                 <div className="col-span-2 sm:col-span-1">
                   <label className="mb-1 block text-[11px] font-medium uppercase tracking-wider text-white/40 sm:hidden">
                     Descripción
@@ -326,7 +326,7 @@ export default function PresupuestoForm({ clientes, presupuesto, template }: Pro
       </div>
 
       {/* Totales + ajustes */}
-      <div className="grid gap-5 lg:grid-cols-[1fr,360px]">
+      <div className="grid gap-5 lg:grid-cols-[1fr_360px]">
         {/* Notas para el cliente + descuento/IVA */}
         <div className="rounded-2xl border border-white/[0.08] bg-white/[0.04] p-5">
           <p className="mb-4 text-[11px] font-semibold uppercase tracking-wider text-white/30">Ajustes y notas</p>

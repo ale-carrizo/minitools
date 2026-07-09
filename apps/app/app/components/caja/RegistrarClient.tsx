@@ -485,7 +485,7 @@ function EfectivoManual({ productos, onSuccess }: { productos: Producto[]; onSuc
             {items.map((item, index) => {
               const producto = productos.find((p) => p.id === item.productoId)
               return (
-                <div key={index} className="grid gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] p-3 md:grid-cols-[1.5fr,0.65fr,0.8fr,auto]">
+                <div key={index} className="grid gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] p-3 md:grid-cols-[1.5fr_0.65fr_0.8fr_auto]">
                   <div>
                     <label className="mb-1 block text-[10px] text-white/35">Producto</label>
                     <select

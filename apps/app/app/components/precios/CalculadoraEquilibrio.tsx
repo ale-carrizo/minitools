@@ -62,7 +62,7 @@ export default function CalculadoraEquilibrio({
   const invalid = precioVenta <= 0 || precioVenta <= costoVariable
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[420px,1fr]">
+    <div className="grid gap-6 xl:grid-cols-[420px_1fr]">
       <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-5 space-y-5">
         <p className="text-[11px] font-semibold uppercase tracking-wider text-white/30">Parámetros</p>
 

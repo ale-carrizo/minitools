@@ -80,7 +80,7 @@ export default function GarantiasList({ garantias }: { garantias: GarantiaProduc
       </div>
 
       <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-4 space-y-4">
-        <div className="grid gap-3 lg:grid-cols-[1fr,220px]">
+        <div className="grid gap-3 lg:grid-cols-[1fr_220px]">
           <input
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}

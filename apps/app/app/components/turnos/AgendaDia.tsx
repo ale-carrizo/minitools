@@ -123,7 +123,7 @@ export default function AgendaDia({
       {/* Timeline */}
       <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl overflow-hidden flex flex-col" style={{ maxHeight: 'calc(100vh - 200px)' }}>
         {/* Header */}
-        <div className="flex-shrink-0 grid grid-cols-[56px,1fr] border-b border-white/[0.06]">
+        <div className="flex-shrink-0 grid grid-cols-[56px_1fr] border-b border-white/[0.06]">
           <div className="border-r border-white/[0.06] bg-white/[0.02]" />
           <div className="px-3 py-2 text-[11px] text-white/30 font-medium">
             {DIAS_SEMANA[dayOfWeek]}, {fecha.split('-').reverse().join('/')}
@@ -133,7 +133,7 @@ export default function AgendaDia({
 
         {/* Scrollable body */}
         <div ref={scrollRef} className="flex-1 overflow-y-auto">
-          <div className="grid grid-cols-[56px,1fr]" style={{ minHeight: `${timelineHeight}px` }}>
+          <div className="grid grid-cols-[56px_1fr]" style={{ minHeight: `${timelineHeight}px` }}>
             {/* Time column */}
             <div className="border-r border-white/[0.06] bg-white/[0.02]">
               {horas.map((hora) => (

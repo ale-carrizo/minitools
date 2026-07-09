@@ -59,7 +59,7 @@ export default function ClientesManager({ initialClientes }: { initialClientes: 
   }
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[360px,1fr]">
+    <div className="grid gap-5 lg:grid-cols-[360px_1fr]">
       <div className="rounded-2xl border border-white/[0.08] bg-white/[0.04] p-5">
         <p className="mb-4 text-[11px] font-semibold uppercase tracking-wider text-white/30">
           {editingId ? 'Editar cliente' : 'Nuevo cliente'}
@@ -101,7 +101,7 @@ export default function ClientesManager({ initialClientes }: { initialClientes: 
       </div>
 
       <div className="rounded-2xl border border-white/[0.08] bg-white/[0.04] overflow-hidden">
-        <div className="grid grid-cols-[1.2fr,1fr,1fr,auto] border-b border-white/[0.06] px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-white/25">
+        <div className="grid grid-cols-[1.2fr_1fr_1fr_auto] border-b border-white/[0.06] px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-white/25">
           <span>Nombre</span>
           <span>Empresa</span>
           <span>Email</span>
@@ -111,7 +111,7 @@ export default function ClientesManager({ initialClientes }: { initialClientes: 
           <div className="px-5 py-10 text-center text-[13px] text-white/30">No hay clientes cargados.</div>
         ) : (
           clientes.map((cliente) => (
-            <div key={cliente.id} className="grid grid-cols-[1.2fr,1fr,1fr,auto] items-center border-b border-white/[0.04] px-5 py-4 text-[13px]">
+            <div key={cliente.id} className="grid grid-cols-[1.2fr_1fr_1fr_auto] items-center border-b border-white/[0.04] px-5 py-4 text-[13px]">
               <div>
                 <p className="font-medium text-white">{cliente.nombre}</p>
                 {cliente.telefono ? <p className="text-[11px] text-white/30">{cliente.telefono}</p> : null}

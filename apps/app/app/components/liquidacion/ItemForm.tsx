@@ -89,7 +89,7 @@ export default function ItemForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="grid gap-6 lg:grid-cols-[1fr,320px]">
+    <form onSubmit={handleSubmit} className="grid gap-6 lg:grid-cols-[1fr_320px]">
       <div className="space-y-5">
         <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-5 space-y-4">
           <h3 className="text-white font-semibold">Empleado</h3>
