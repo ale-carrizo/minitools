@@ -20,10 +20,13 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${inter.variable} h-full`}>
       <head>
-        {/* Aplica el tema guardado antes del primer paint, para evitar flash */}
+        {/* Aplica el tema guardado antes del primer paint, para evitar flash.
+            Login/registro son siempre oscuros (fondo hardcodeado), así que se
+            excluyen: si no, el toggle de tema claro invierte --color-white y
+            el texto queda invisible sobre el fondo oscuro fijo. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{if(localStorage.getItem('zimple-theme')==='light'){document.documentElement.setAttribute('data-theme','light')}}catch(e){}`,
+            __html: `try{var p=location.pathname;if(!p.startsWith('/login')&&!p.startsWith('/register')&&localStorage.getItem('zimple-theme')==='light'){document.documentElement.setAttribute('data-theme','light')}}catch(e){}`,
           }}
         />
       </head>

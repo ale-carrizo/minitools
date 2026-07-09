@@ -2,7 +2,7 @@
 
 import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ParticleField from "../../components/ParticleField";
 import { ZimpleIcon } from "../../components/ZimpleLogo";
@@ -11,6 +11,13 @@ export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Esta página es siempre oscura (fondo hardcodeado); si se llega acá por
+  // navegación client-side desde una página en tema claro, --color-white
+  // seguiría invertido y el texto quedaría invisible.
+  useEffect(() => {
+    document.documentElement.removeAttribute('data-theme');
+  }, []);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

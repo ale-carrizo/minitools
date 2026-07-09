@@ -14,6 +14,13 @@ export default function RegisterPage() {
   const passwordRef = useRef<HTMLInputElement>(null);
   const [state, formAction, pending] = useActionState(registerUser, {});
 
+  // Esta página es siempre oscura (fondo hardcodeado); si se llega acá por
+  // navegación client-side desde una página en tema claro, --color-white
+  // seguiría invertido y el texto quedaría invisible.
+  useEffect(() => {
+    document.documentElement.removeAttribute('data-theme');
+  }, []);
+
   useEffect(() => {
     if (state.success) {
       signIn("credentials", {
