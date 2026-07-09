@@ -194,7 +194,7 @@ export default function TemplateForm({ template }: Props) {
           </div>
           <div className="space-y-3">
             {servicios.map((servicio, index) => (
-              <div key={servicio.id} className="grid gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.03] p-4 md:grid-cols-[1.2fr,1.3fr,0.8fr,auto]">
+              <div key={servicio.id} className="grid gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.03] p-4 sm:grid-cols-[1.2fr,1.3fr,0.8fr,auto]">
                 <input value={servicio.nombre} onChange={(e) => setServicio(index, { nombre: e.target.value })} placeholder="Nombre del servicio" className="rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white placeholder:text-white/20 focus:border-[#5448EE]/60 focus:outline-none" />
                 <input value={servicio.descripcion ?? ''} onChange={(e) => setServicio(index, { descripcion: e.target.value })} placeholder="Descripcion breve" className="rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white placeholder:text-white/20 focus:border-[#5448EE]/60 focus:outline-none" />
                 <input type="number" step="any" value={servicio.precioSugerido || ''} onChange={(e) => setServicio(index, { precioSugerido: Number(e.target.value || 0) })} placeholder="Precio" className="rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white placeholder:text-white/20 focus:border-[#5448EE]/60 focus:outline-none" />
