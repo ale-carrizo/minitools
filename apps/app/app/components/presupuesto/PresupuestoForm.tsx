@@ -264,9 +264,9 @@ export default function PresupuestoForm({ clientes, presupuesto, template }: Pro
           {items.map((item, index) => {
             const subtotal = item.cantidad * item.precioUnitario
             return (
-              <div key={`${item.orden}-${index}`} className="grid grid-cols-2 gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.03] p-4 md:grid-cols-[1.8fr,0.6fr,0.8fr,0.8fr,auto]">
-                <div className="col-span-2 md:col-span-1">
-                  <label className="mb-1 block text-[11px] font-medium uppercase tracking-wider text-white/40 md:hidden">
+              <div key={`${item.orden}-${index}`} className="grid grid-cols-2 gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.03] p-4 sm:grid-cols-[1.8fr,0.6fr,0.8fr,0.8fr,auto]">
+                <div className="col-span-2 sm:col-span-1">
+                  <label className="mb-1 block text-[11px] font-medium uppercase tracking-wider text-white/40 sm:hidden">
                     Descripción
                   </label>
                   <input
@@ -276,8 +276,8 @@ export default function PresupuestoForm({ clientes, presupuesto, template }: Pro
                     className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white placeholder:text-white/20 focus:border-[#5448EE]/60 focus:outline-none"
                   />
                 </div>
-                <div className="md:col-span-1">
-                  <label className="mb-1 block text-[11px] font-medium uppercase tracking-wider text-white/40 md:hidden">
+                <div className="sm:col-span-1">
+                  <label className="mb-1 block text-[11px] font-medium uppercase tracking-wider text-white/40 sm:hidden">
                     Cantidad
                   </label>
                   <input
@@ -288,8 +288,8 @@ export default function PresupuestoForm({ clientes, presupuesto, template }: Pro
                     className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white focus:border-[#5448EE]/60 focus:outline-none"
                   />
                 </div>
-                <div className="md:col-span-1">
-                  <label className="mb-1 block text-[11px] font-medium uppercase tracking-wider text-white/40 md:hidden">
+                <div className="sm:col-span-1">
+                  <label className="mb-1 block text-[11px] font-medium uppercase tracking-wider text-white/40 sm:hidden">
                     Precio unitario
                   </label>
                   <div className="relative">
@@ -304,15 +304,15 @@ export default function PresupuestoForm({ clientes, presupuesto, template }: Pro
                     />
                   </div>
                 </div>
-                <div className="col-span-2 md:col-span-1">
-                  <label className="mb-1 block text-[11px] font-medium uppercase tracking-wider text-white/40 md:hidden">
+                <div className="col-span-2 sm:col-span-1">
+                  <label className="mb-1 block text-[11px] font-medium uppercase tracking-wider text-white/40 sm:hidden">
                     Subtotal
                   </label>
                   <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2.5 text-[13px] font-medium text-white/70">
                     {formatCurrency(subtotal, form.moneda)}
                   </div>
                 </div>
-                <div className="col-span-2 flex justify-end gap-2 md:col-span-1">
+                <div className="col-span-2 flex justify-end gap-2 sm:col-span-1">
                   <button type="button" onClick={() => moveItem(index, -1)} className="rounded-xl border border-white/10 px-2.5 py-2 text-white/50 hover:text-white">↑</button>
                   <button type="button" onClick={() => moveItem(index, 1)} className="rounded-xl border border-white/10 px-2.5 py-2 text-white/50 hover:text-white">↓</button>
                   <button type="button" onClick={() => removeItem(index)} disabled={items.length === 1} className="rounded-xl border border-red-500/20 px-2.5 py-2 text-red-400 disabled:opacity-40">×</button>

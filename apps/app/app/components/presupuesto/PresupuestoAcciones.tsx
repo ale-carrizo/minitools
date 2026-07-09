@@ -56,42 +56,44 @@ export default function PresupuestoAcciones({ presupuesto }: { presupuesto: Pres
   }
 
   return (
-    <div className="space-y-3">
-      {actions.map((action) => {
-        const className = action.kind === 'primary'
-          ? 'bg-blue-500/90 hover:bg-blue-500 text-white btn-solid-text'
-          : action.kind === 'success'
-            ? 'bg-emerald-500/90 hover:bg-emerald-500 text-white btn-solid-text'
-            : action.kind === 'danger'
-              ? 'bg-red-500/90 hover:bg-red-500 text-white btn-solid-text'
-              : action.kind === 'ghost'
-                ? 'border border-white/10 text-white/70 hover:border-white/20 hover:text-white'
-                : 'border border-white/10 text-white/70 hover:border-white/20 hover:text-white'
+    <div className="space-y-2">
+      <div className="flex flex-wrap gap-2">
+        {actions.map((action) => {
+          const className = action.kind === 'primary'
+            ? 'bg-blue-500/90 hover:bg-blue-500 text-white btn-solid-text'
+            : action.kind === 'success'
+              ? 'bg-emerald-500/90 hover:bg-emerald-500 text-white btn-solid-text'
+              : action.kind === 'danger'
+                ? 'bg-red-500/90 hover:bg-red-500 text-white btn-solid-text'
+                : action.kind === 'ghost'
+                  ? 'border border-white/10 text-white/70 hover:border-white/20 hover:text-white'
+                  : 'border border-white/10 text-white/70 hover:border-white/20 hover:text-white'
 
-        if ('href' in action) {
+          if ('href' in action) {
+            return (
+              <Link
+                key={action.label}
+                href={action.href}
+                className={`rounded-xl px-3.5 py-2 text-center text-[12px] font-medium transition-colors ${className}`}
+              >
+                {action.label}
+              </Link>
+            )
+          }
+
           return (
-            <Link
+            <button
               key={action.label}
-              href={action.href}
-              className={`block rounded-xl px-4 py-2.5 text-center text-[13px] font-medium transition-colors ${className}`}
+              type="button"
+              onClick={() => run(action.onClick)}
+              disabled={isPending}
+              className={`rounded-xl px-3.5 py-2 text-[12px] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
             >
               {action.label}
-            </Link>
+            </button>
           )
-        }
-
-        return (
-          <button
-            key={action.label}
-            type="button"
-            onClick={() => run(action.onClick)}
-            disabled={isPending}
-            className={`w-full rounded-xl px-4 py-2.5 text-[13px] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
-          >
-            {action.label}
-          </button>
-        )
-      })}
+        })}
+      </div>
 
       {error ? <p className="text-[12px] text-red-400">{error}</p> : null}
     </div>

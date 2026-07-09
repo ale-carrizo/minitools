@@ -119,7 +119,7 @@ export default async function PresupuestoDetailPage({ params }: { params: { id: 
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="order-first space-y-4 lg:order-none">
           <div className="rounded-2xl border border-white/[0.08] bg-white/[0.04] p-5">
             <p className="mb-4 text-[11px] font-semibold uppercase tracking-wider text-white/30">Acciones</p>
             <PresupuestoAcciones presupuesto={presupuesto} />
