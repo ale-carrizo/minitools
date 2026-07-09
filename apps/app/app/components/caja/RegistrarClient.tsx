@@ -13,7 +13,11 @@ export default function RegistrarClient({ productos }: { productos: Producto[] }
 
   return (
     <div className="max-w-lg">
-      <ComprobanteUnificado onSuccess={() => router.push('/dashboard/caja')} />
+      <ComprobanteIA onSuccess={() => router.push('/dashboard/caja')} />
+
+      <div className="my-5">
+        <RegistrarDesdeArchivo onSuccess={() => router.push('/dashboard/caja')} />
+      </div>
 
       {/* Divider */}
       <div className="flex items-center gap-3 my-5">
@@ -29,54 +33,31 @@ export default function RegistrarClient({ productos }: { productos: Producto[] }
 }
 
 
-// ── Panel: Comprobante unificado ───────────────────────────────────────────────
-function ComprobanteUnificado({ onSuccess }: { onSuccess: () => void }) {
-  const [banco, setBanco] = useState<BancoExtracto>('Banco Nación')
+// ── Panel: Comprobante por IA (foto/PDF) ───────────────────────────────────────
+// No necesita saber el banco de antemano — la IA lo detecta del comprobante.
+function ComprobanteIA({ onSuccess }: { onSuccess: () => void }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-
-  // IA preview state
   const [preview, setPreview] = useState<any>(null)
   const [confirming, setConfirming] = useState(false)
-
-  // Extracto state
-  const [rows, setRows] = useState<ExtractoRow[]>([])
-  const [selected, setSelected] = useState<Set<number>>(new Set())
-  const [importing, setImporting] = useState(false)
 
   const fileRef = useRef<HTMLInputElement>(null)
 
   function reset() {
     setPreview(null)
-    setRows([])
-    setSelected(new Set())
     setError('')
   }
 
   async function handleFile(file: File) {
     reset()
     setLoading(true)
-
-    const ext = file.name.split('.').pop()?.toLowerCase()
-    const isExcel = ext === 'xlsx' || ext === 'xls' || ext === 'csv'
-
     try {
       const fd = new FormData()
       fd.append('file', file)
-
-      if (isExcel) {
-        fd.append('banco', banco)
-        const res = await fetch('/api/import-extracto', { method: 'POST', body: fd })
-        const data = await res.json()
-        if (!res.ok) { setError(data.error); return }
-        setRows(data.movimientos)
-        setSelected(new Set(data.movimientos.map((_: any, i: number) => i)))
-      } else {
-        const res = await fetch('/api/scan-comprobante', { method: 'POST', body: fd })
-        const data = await res.json()
-        if (!res.ok) { setError(data.error ?? 'Error al procesar'); return }
-        setPreview(data)
-      }
+      const res = await fetch('/api/scan-comprobante', { method: 'POST', body: fd })
+      const data = await res.json()
+      if (!res.ok) { setError(data.error ?? 'Error al procesar'); return }
+      setPreview(data)
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -110,83 +91,15 @@ function ComprobanteUnificado({ onSuccess }: { onSuccess: () => void }) {
     }
   }
 
-  async function handleImportExtracto() {
-    const toImport = rows.filter((_, i) => selected.has(i))
-    setImporting(true)
-    try {
-      await registrarCobrosLote(toImport.map(r => ({
-        monto:        r.monto,
-        fecha_cobro:  r.fecha,
-        hora_cobro:   r.hora ?? undefined,
-        medio:        'transferencia' as const,
-        source:       'extracto' as const,
-        concepto:     r.descripcion,
-        referencia:   r.referencia ?? undefined,
-        emisor_banco: banco,
-        extracto_row: r.raw,
-      })))
-      onSuccess()
-    } catch (err: any) {
-      setError(err.message)
-    } finally {
-      setImporting(false)
-    }
-  }
-
-  function toggleAll() {
-    if (selected.size === rows.length) setSelected(new Set())
-    else setSelected(new Set(rows.map((_, i) => i)))
-  }
-
   return (
     <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl overflow-hidden">
-      <div className="px-4 py-3 border-b border-white/[0.06] flex items-center justify-between">
+      <div className="px-4 py-3 border-b border-white/[0.06]">
         <p className="text-[11px] font-semibold uppercase tracking-wider text-white/30">
           Comprobante de transferencia
         </p>
-        <button
-          type="button"
-          onClick={async () => {
-            const XLSX = await import('xlsx')
-            const template = [
-              { Fecha: '2026-07-01', Hora: '14:30', Descripción: 'Juan Perez — Cuota julio', Monto: 35000, Referencia: '00012345' },
-              { Fecha: '2026-07-02', Hora: '10:15', Descripción: 'María Gomez — Servicio técnico', Monto: 18200, Referencia: '' },
-            ]
-            const ws = XLSX.utils.json_to_sheet(template)
-            const wb = XLSX.utils.book_new()
-            XLSX.utils.book_append_sheet(wb, ws, 'Movimientos')
-            XLSX.writeFile(wb, 'plantilla_movimientos_caja.xlsx')
-          }}
-          className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#5448EE]/10 border border-[#5448EE]/20 text-[#8880F5] text-[10px] font-semibold hover:bg-[#5448EE]/20 transition-colors"
-        >
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-            <polyline points="7 10 12 15 17 10"/>
-            <line x1="12" y1="15" x2="12" y2="3"/>
-          </svg>
-          Descargar plantilla
-        </button>
       </div>
 
       <div className="p-4 space-y-4">
-        {/* Banco selector */}
-        <div className="flex flex-wrap gap-1.5">
-          {BANCOS_EXTRACTO.map(b => (
-            <button
-              key={b}
-              onClick={() => setBanco(b)}
-              className={`px-2.5 py-1 text-[10px] font-medium rounded-lg border transition-all ${
-                banco === b
-                  ? 'border-[#5448EE]/50 bg-[#5448EE]/10 text-[#8880F5]'
-                  : 'border-white/[0.08] text-white/40 hover:bg-white/[0.06]'
-              }`}
-            >
-              {b}
-            </button>
-          ))}
-        </div>
-
-        {/* IA Preview */}
         {preview ? (
           <div className="bg-emerald-500/10 border border-emerald-500/25 rounded-2xl overflow-hidden">
             <div className="px-4 py-3 flex items-center gap-2 border-b border-emerald-500/20">
@@ -221,8 +134,161 @@ function ComprobanteUnificado({ onSuccess }: { onSuccess: () => void }) {
               </button>
             </div>
           </div>
-        ) : rows.length > 0 ? (
-          /* Extracto rows */
+        ) : (
+          <>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*,.pdf"
+              className="hidden"
+              onChange={e => {
+                const file = e.target.files?.[0]
+                if (file) handleFile(file)
+                if (fileRef.current) fileRef.current.value = ''
+              }}
+            />
+            <div
+              onClick={() => fileRef.current?.click()}
+              className="border border-dashed border-white/[0.12] rounded-2xl p-8 text-center cursor-pointer hover:bg-white/[0.03] hover:border-white/20 transition-all"
+            >
+              {loading ? (
+                <div>
+                  <div className="w-6 h-6 border-2 border-[#5448EE]/30 border-t-[#5448EE] rounded-full animate-spin mx-auto mb-2" />
+                  <p className="text-[12px] text-white/40">Procesando archivo…</p>
+                </div>
+              ) : (
+                <>
+                  <div className="text-3xl mb-2">📎</div>
+                  <p className="text-[13px] font-medium text-white/70 mb-1">Arrastrá o elegí un comprobante</p>
+                  <p className="text-[11px] text-white/35">JPG, PNG o PDF · máx 10MB</p>
+                </>
+              )}
+            </div>
+            {error && <p className="text-[11px] text-red-400">{error}</p>}
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ── Panel: Registrar pagos desde archivo (extracto bancario Excel/CSV) ─────────
+function RegistrarDesdeArchivo({ onSuccess }: { onSuccess: () => void }) {
+  const [banco, setBanco] = useState<BancoExtracto>('Banco Nación')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const [rows, setRows] = useState<ExtractoRow[]>([])
+  const [selected, setSelected] = useState<Set<number>>(new Set())
+  const [importing, setImporting] = useState(false)
+
+  const fileRef = useRef<HTMLInputElement>(null)
+
+  function reset() {
+    setRows([])
+    setSelected(new Set())
+    setError('')
+  }
+
+  async function handleFile(file: File) {
+    reset()
+    setLoading(true)
+    try {
+      const fd = new FormData()
+      fd.append('file', file)
+      fd.append('banco', banco)
+      const res = await fetch('/api/import-extracto', { method: 'POST', body: fd })
+      const data = await res.json()
+      if (!res.ok) { setError(data.error); return }
+      setRows(data.movimientos)
+      setSelected(new Set(data.movimientos.map((_: any, i: number) => i)))
+    } catch (err: any) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function handleImportExtracto() {
+    const toImport = rows.filter((_, i) => selected.has(i))
+    setImporting(true)
+    try {
+      await registrarCobrosLote(toImport.map(r => ({
+        monto:        r.monto,
+        fecha_cobro:  r.fecha,
+        hora_cobro:   r.hora ?? undefined,
+        medio:        'transferencia' as const,
+        source:       'extracto' as const,
+        concepto:     r.descripcion,
+        referencia:   r.referencia ?? undefined,
+        emisor_banco: banco,
+        extracto_row: r.raw,
+      })))
+      onSuccess()
+    } catch (err: any) {
+      setError(err.message)
+    } finally {
+      setImporting(false)
+    }
+  }
+
+  function toggleAll() {
+    if (selected.size === rows.length) setSelected(new Set())
+    else setSelected(new Set(rows.map((_, i) => i)))
+  }
+
+  return (
+    <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl overflow-hidden">
+      <div className="px-4 py-3 border-b border-white/[0.06] flex items-center justify-between">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-white/30">
+            Registrar pagos desde archivo
+          </p>
+          <p className="text-[10px] text-white/25 mt-0.5">Subí un extracto bancario (Excel/CSV) y elegí qué movimientos registrar</p>
+        </div>
+        <button
+          type="button"
+          onClick={async () => {
+            const XLSX = await import('xlsx')
+            const template = [
+              { Fecha: '2026-07-01', Hora: '14:30', Descripción: 'Juan Perez — Cuota julio', Monto: 35000, Referencia: '00012345' },
+              { Fecha: '2026-07-02', Hora: '10:15', Descripción: 'María Gomez — Servicio técnico', Monto: 18200, Referencia: '' },
+            ]
+            const ws = XLSX.utils.json_to_sheet(template)
+            const wb = XLSX.utils.book_new()
+            XLSX.utils.book_append_sheet(wb, ws, 'Movimientos')
+            XLSX.writeFile(wb, 'plantilla_movimientos_caja.xlsx')
+          }}
+          className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#5448EE]/10 border border-[#5448EE]/20 text-[#8880F5] text-[10px] font-semibold hover:bg-[#5448EE]/20 transition-colors"
+        >
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Descargar plantilla
+        </button>
+      </div>
+
+      <div className="p-4 space-y-4">
+        {/* Banco selector */}
+        <div className="flex flex-wrap gap-1.5">
+          {BANCOS_EXTRACTO.map(b => (
+            <button
+              key={b}
+              onClick={() => setBanco(b)}
+              className={`px-2.5 py-1 text-[10px] font-medium rounded-lg border transition-all ${
+                banco === b
+                  ? 'border-[#5448EE]/50 bg-[#5448EE]/10 text-[#8880F5]'
+                  : 'border-white/[0.08] text-white/40 hover:bg-white/[0.06]'
+              }`}
+            >
+              {b}
+            </button>
+          ))}
+        </div>
+
+        {rows.length > 0 ? (
           <div>
             <div className="flex items-center justify-between mb-2">
               <span className="text-[12px] text-white/50">{rows.length} movimientos detectados</span>
@@ -269,12 +335,11 @@ function ComprobanteUnificado({ onSuccess }: { onSuccess: () => void }) {
             </div>
           </div>
         ) : (
-          /* Upload dropzone */
           <>
             <input
               ref={fileRef}
               type="file"
-              accept="image/*,.pdf,.xls,.xlsx,.csv"
+              accept=".xls,.xlsx,.csv"
               className="hidden"
               onChange={e => {
                 const file = e.target.files?.[0]
@@ -284,7 +349,7 @@ function ComprobanteUnificado({ onSuccess }: { onSuccess: () => void }) {
             />
             <div
               onClick={() => fileRef.current?.click()}
-              className="border border-dashed border-white/[0.12] rounded-2xl p-8 text-center cursor-pointer hover:bg-white/[0.03] hover:border-white/20 transition-all"
+              className="border border-dashed border-white/[0.12] rounded-2xl p-6 text-center cursor-pointer hover:bg-white/[0.03] hover:border-white/20 transition-all"
             >
               {loading ? (
                 <div>
@@ -293,9 +358,9 @@ function ComprobanteUnificado({ onSuccess }: { onSuccess: () => void }) {
                 </div>
               ) : (
                 <>
-                  <div className="text-3xl mb-2">📎</div>
-                  <p className="text-[13px] font-medium text-white/70 mb-1">Arrastrá o elegí un comprobante</p>
-                  <p className="text-[11px] text-white/35">JPG, PNG, PDF, XLS o CSV · máx 10MB</p>
+                  <div className="text-2xl mb-2">📊</div>
+                  <p className="text-[13px] font-medium text-white/70 mb-1">Arrastrá o elegí un extracto</p>
+                  <p className="text-[11px] text-white/35">XLS o CSV · máx 10MB</p>
                 </>
               )}
             </div>
