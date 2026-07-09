@@ -8,6 +8,7 @@ export interface ReciboCobro {
   emisorDireccion?: string | null
   receptorNombre?: string | null
   receptorDoc?: string | null
+  receptorTelefono?: string | null
   monto: number
   concepto: string
   medioPago?: string | null
@@ -40,4 +41,17 @@ export function numeroALetras(n: number): string {
   const entero = Math.floor(Math.abs(n))
   const decimales = Math.round((Math.abs(n) - entero) * 100)
   return `Son pesos ${entero.toLocaleString('es-AR')}${decimales > 0 ? ` con ${decimales}/100` : ''}`
+}
+
+export function generarLinkWhatsAppRecibo(recibo: ReciboCobro) {
+  const telefono = recibo.receptorTelefono?.replace(/\D/g, '')
+  if (!telefono) return ''
+
+  const mensaje = [
+    `Hola ${recibo.receptorNombre ?? ''}!`,
+    `Te compartimos el recibo N° ${String(recibo.numero).padStart(4, '0')} por ${formatCurrency(recibo.monto)}.`,
+    `Concepto: ${recibo.concepto}.`,
+  ].filter(Boolean).join('\n')
+
+  return `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`
 }

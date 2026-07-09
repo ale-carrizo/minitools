@@ -19,6 +19,7 @@ export default function NuevoReciboPage() {
     emisorDireccion: '',
     receptorNombre: '',
     receptorDoc: '',
+    receptorTelefono: '',
     monto: '',
     concepto: '',
     medioPago: '',
@@ -37,17 +38,19 @@ export default function NuevoReciboPage() {
 
     startTransition(async () => {
       try {
-        await crearRecibo({
+        const creado = await crearRecibo({
           ...form,
           monto,
           emisorDoc: form.emisorDoc || undefined,
           emisorDireccion: form.emisorDireccion || undefined,
           receptorNombre: form.receptorNombre || undefined,
           receptorDoc: form.receptorDoc || undefined,
+          receptorTelefono: form.receptorTelefono || undefined,
           medioPago: form.medioPago || undefined,
           notas: form.notas || undefined,
         })
-        router.push('/dashboard/recibos')
+        window.open(`/api/recibos/${creado.id}/pdf`, '_blank')
+        router.push(`/dashboard/recibos/${creado.id}`)
       } catch (err: any) {
         setError(err.message)
       }
@@ -98,6 +101,10 @@ export default function NuevoReciboPage() {
             <input value={form.receptorDoc} onChange={e => set('receptorDoc', e.target.value)} placeholder="Opcional" className={INPUT_CLS} />
           </div>
           <div>
+            <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-white/40">WhatsApp de quien pagó</label>
+            <input value={form.receptorTelefono} onChange={e => set('receptorTelefono', e.target.value)} placeholder="Ej: 11 2345 6789 (para enviarlo)" className={INPUT_CLS} />
+          </div>
+          <div>
             <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-white/40">Monto ($)</label>
             <input type="number" min="0" step="any" value={form.monto} onChange={e => set('monto', e.target.value)} placeholder="0" className={INPUT_CLS} />
           </div>
@@ -124,7 +131,7 @@ export default function NuevoReciboPage() {
           Cancelar
         </button>
         <button type="button" onClick={handleSubmit} disabled={isPending} className="flex-[2] rounded-xl bg-[#5448EE] px-4 py-2.5 text-[13px] font-medium text-white hover:bg-[#4438DE] disabled:opacity-50 transition-colors">
-          {isPending ? 'Guardando...' : 'Crear recibo'}
+          {isPending ? 'Guardando...' : 'Guardar y generar PDF'}
         </button>
       </div>
     </div>

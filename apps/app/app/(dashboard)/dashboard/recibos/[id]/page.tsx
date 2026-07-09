@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getRecibo, eliminarRecibo } from '@/lib/actions/recibos'
-import { formatCurrency, numeroALetras } from '@/types/recibos'
+import { formatCurrency, numeroALetras, generarLinkWhatsAppRecibo } from '@/types/recibos'
 import { EliminarBtn } from './EliminarBtn'
 
 function formatearFecha(fechaStr: string) {
@@ -14,6 +14,7 @@ export default async function ReciboDetallePage({ params }: { params: Promise<{ 
   const { id } = await params
   const recibo = await getRecibo(id)
   if (!recibo) notFound()
+  const whatsappLink = generarLinkWhatsAppRecibo(recibo)
 
   return (
     <div className="max-w-2xl space-y-5">
@@ -109,6 +110,16 @@ export default async function ReciboDetallePage({ params }: { params: Promise<{ 
           </svg>
           Descargar PDF
         </a>
+        {whatsappLink && (
+          <a
+            href={whatsappLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-emerald-500/90 hover:bg-emerald-500 px-4 py-2.5 text-[13px] font-medium text-white transition-colors"
+          >
+            Enviar por WhatsApp
+          </a>
+        )}
       </div>
     </div>
   )

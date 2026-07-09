@@ -144,7 +144,9 @@ export default function PresupuestoForm({ clientes, presupuesto, template }: Pro
           router.push(`/dashboard/presupuestos/${presupuesto!.id}`)
           router.refresh()
         } else {
-          await crearPresupuesto(payload)
+          const created = await crearPresupuesto(payload)
+          window.open(`/api/presupuestos/${created.id}/pdf`, '_blank')
+          router.push(`/dashboard/presupuestos/${created.id}`)
         }
       } catch (err: any) {
         setError(err.message ?? 'No se pudo guardar el presupuesto')
@@ -399,7 +401,7 @@ export default function PresupuestoForm({ clientes, presupuesto, template }: Pro
               disabled={isPending || !form.titulo.trim()}
               className="rounded-xl bg-[#5448EE] px-4 py-2.5 text-[13px] font-medium text-white hover:bg-[#4438DE] disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {isPending ? 'Guardando...' : isEdit ? 'Guardar cambios' : 'Guardar borrador'}
+              {isPending ? 'Guardando...' : isEdit ? 'Guardar cambios' : 'Guardar y generar PDF'}
             </button>
           </div>
         </div>

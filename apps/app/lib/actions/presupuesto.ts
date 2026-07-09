@@ -523,7 +523,7 @@ export async function crearPresupuesto(data: PresupuestoInput): Promise<Presupue
   }
 
   revalidatePath('/dashboard/presupuestos')
-  redirect(`/dashboard/presupuestos/${created.id}`)
+  return created
 }
 
 export async function editarPresupuesto(id: string, data: PresupuestoInput): Promise<Presupuesto> {

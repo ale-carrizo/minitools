@@ -37,6 +37,7 @@ export async function crearRecibo(data: {
   emisorDireccion?: string
   receptorNombre?: string
   receptorDoc?: string
+  receptorTelefono?: string
   monto: number
   concepto: string
   medioPago?: string
@@ -67,6 +68,7 @@ export async function editarRecibo(id: string, data: {
   emisorDireccion?: string
   receptorNombre?: string
   receptorDoc?: string
+  receptorTelefono?: string
   monto: number
   concepto: string
   medioPago?: string
@@ -110,6 +112,7 @@ function toRecibo(row: any): ReciboCobro {
     emisorDireccion: row.emisorDireccion ?? null,
     receptorNombre: row.receptorNombre ?? null,
     receptorDoc: row.receptorDoc ?? null,
+    receptorTelefono: row.receptorTelefono ?? null,
     monto: row.monto,
     concepto: row.concepto,
     medioPago: row.medioPago ?? null,

@@ -681,6 +681,7 @@ model ReciboCobro {
   emisorDireccion String?
   receptorNombre String? // quien paga (cliente)
   receptorDoc   String?
+  receptorTelefono String? // para enviar por WhatsApp
   monto         Float
   concepto      String
   medioPago     String?  // efectivo, transferencia, etc
