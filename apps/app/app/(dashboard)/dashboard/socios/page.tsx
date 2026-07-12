@@ -1,7 +1,7 @@
-import { getCobrosHoy } from '@/lib/actions/socios'
-import CobrosHoyClient from '@/app/components/socios/CobrosHoyClient'
+import { getSocios } from '@/lib/actions/socios'
+import ClientesClient from '@/app/components/socios/ClientesClient'
 
-export default async function CobrosPage() {
-  const data = await getCobrosHoy()
-  return <CobrosHoyClient {...data} />
+export default async function SociosPage() {
+  const socios = await getSocios()
+  return <ClientesClient socios={socios} />
 }

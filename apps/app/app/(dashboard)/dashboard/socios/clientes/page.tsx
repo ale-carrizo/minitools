@@ -1,7 +1,5 @@
-import { getSocios } from '@/lib/actions/socios'
-import ClientesClient from '@/app/components/socios/ClientesClient'
+import { redirect } from 'next/navigation'
 
-export default async function ClientesPage() {
-  const socios = await getSocios()
-  return <ClientesClient socios={socios} />
+export default function ClientesRedirectPage() {
+  redirect('/dashboard/socios')
 }

@@ -10,7 +10,7 @@ export default function SociosLayout({ children }: { children: React.ReactNode }
           <h1 className="font-display text-[28px] font-semibold tracking-[-0.035em] text-white">
             <AppTitle slug="socios" fallback="Clientes y Pagos" />
           </h1>
-          <p className="text-white/40 text-sm mt-1">Cobranza recurrente con recordatorios por WhatsApp</p>
+          <p className="text-white/40 text-sm mt-1">Tu base de clientes, con cobranza recurrente y recordatorios por WhatsApp</p>
         </div>
         <Link
           href="/dashboard/socios/nuevo"

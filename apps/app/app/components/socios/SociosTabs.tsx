@@ -4,8 +4,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const TABS = [
-  { label: 'Cobros pendientes', href: '/dashboard/socios',          exact: true },
-  { label: 'Clientes',          href: '/dashboard/socios/clientes', exact: false },
+  { label: 'Clientes',          href: '/dashboard/socios',        exact: true },
+  { label: 'Cobros pendientes', href: '/dashboard/socios/cobros', exact: true },
 ]
 
 export default function SociosTabs() {

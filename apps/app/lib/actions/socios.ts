@@ -335,6 +335,7 @@ export async function pagarCobro(
   })
 
   revalidatePath('/dashboard/socios')
+  revalidatePath('/dashboard/socios/cobros')
   return result
 }
 
@@ -355,6 +356,7 @@ export async function posponerCobro(cobroId: string, nuevaFecha: string): Promis
   })
 
   revalidatePath('/dashboard/socios')
+  revalidatePath('/dashboard/socios/cobros')
   return mapCobro(updated)
 }
 
@@ -380,6 +382,7 @@ export async function agregarCobroPuntual(opts: {
   })
 
   revalidatePath('/dashboard/socios')
+  revalidatePath('/dashboard/socios/cobros')
   return mapCobro(cobro)
 }
 

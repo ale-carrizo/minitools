@@ -61,7 +61,7 @@ export default function SocioForm({ socio }: Props) {
       } else {
         await createSocio(payload)
       }
-      router.push('/dashboard/socios/clientes')
+      router.push('/dashboard/socios')
       router.refresh()
     } catch (err: any) {
       setError(err.message ?? 'Error al guardar')
