@@ -415,6 +415,7 @@ export default function KanbanBoard({ tablero: initial }: { tablero: Tablero }) 
       {/* Modal */}
       {modal && (
         <TareaModal
+          key={modal.id}
           tarea={modal}
           columnas={tablero.columnas}
           onClose={() => setModal(null)}

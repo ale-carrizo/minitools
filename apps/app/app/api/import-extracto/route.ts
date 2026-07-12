@@ -8,6 +8,8 @@ import { auth } from '@/auth'
 import { parsearExtracto } from '@/lib/parsers/extractos'
 import type { BancoExtracto } from '@/types/caja'
 
+const MAX_FILE_SIZE = 10 * 1024 * 1024
+
 export async function POST(req: NextRequest) {
   try {
     const session = await auth()
@@ -21,6 +23,9 @@ export async function POST(req: NextRequest) {
 
     if (!file)  return NextResponse.json({ error: 'No se recibió archivo' }, { status: 400 })
     if (!banco) return NextResponse.json({ error: 'Banco no especificado' }, { status: 400 })
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json({ error: 'El archivo supera los 10MB' }, { status: 400 })
+    }
 
     const buffer = Buffer.from(await file.arrayBuffer())
     let rows: any[][] = []

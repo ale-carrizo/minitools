@@ -3,6 +3,9 @@ import { marcarVencidosYGenerarCuotas } from '@/lib/actions/socios'
 import { prisma } from '@/lib/prisma'
 
 export async function GET(req: NextRequest) {
+  if (!process.env.CRON_SECRET) {
+    return NextResponse.json({ error: 'Cron no configurado' }, { status: 500 })
+  }
   const secret = req.nextUrl.searchParams.get('secret')
   if (secret !== process.env.CRON_SECRET) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

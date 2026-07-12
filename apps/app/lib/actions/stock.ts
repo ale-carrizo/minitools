@@ -259,19 +259,19 @@ export async function importarProductos(rows: Array<{
     const stock = Number(row.stock ?? 0)
     const stockMinimo = Number(row.stockMinimo ?? 0)
 
-    if (Number.isNaN(precioCosto) || precioCosto < 0) {
+    if (!Number.isFinite(precioCosto) || precioCosto < 0) {
       errores.push(`Fila ${fila}: precioCosto inválido (${row.precioCosto})`)
       return
     }
-    if (Number.isNaN(precioVenta) || precioVenta < 0) {
+    if (!Number.isFinite(precioVenta) || precioVenta < 0) {
       errores.push(`Fila ${fila}: precioVenta inválido (${row.precioVenta})`)
       return
     }
-    if (Number.isNaN(stock) || stock < 0) {
+    if (!Number.isFinite(stock) || stock < 0) {
       errores.push(`Fila ${fila}: stock inválido (${row.stock})`)
       return
     }
-    if (Number.isNaN(stockMinimo) || stockMinimo < 0) {
+    if (!Number.isFinite(stockMinimo) || stockMinimo < 0) {
       errores.push(`Fila ${fila}: stockMinimo inválido (${row.stockMinimo})`)
       return
     }
