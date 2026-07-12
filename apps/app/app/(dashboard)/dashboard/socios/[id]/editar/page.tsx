@@ -9,7 +9,7 @@ export default async function EditarSocioPage({ params }: Props) {
   return (
     <div className="max-w-2xl">
       <p className="text-[13px] text-white/40 mb-5">Editá los datos del cliente.</p>
-      <SocioForm socio={socio} />
+      <SocioForm key={id} socio={socio} />
     </div>
   )
 }

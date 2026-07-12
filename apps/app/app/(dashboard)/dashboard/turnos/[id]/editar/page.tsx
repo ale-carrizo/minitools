@@ -22,6 +22,7 @@ export default async function EditarTurnoPage({ params }: { params: Promise<{ id
         <span className="text-white/60">Editar</span>
       </div>
       <TurnoForm
+        key={turno.id}
         turno={turno}
         servicios={servicios}
         empleados={empleados}

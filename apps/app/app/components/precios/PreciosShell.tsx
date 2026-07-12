@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import AppTitle from '@/app/components/AppTitle'
 
 const tabs = [
   { label: '💰 Precio de venta', href: '/dashboard/precios' },
@@ -16,7 +17,7 @@ export default function PreciosShell({ children }: { children: React.ReactNode }
     <div className="px-4 py-6 md:p-8">
       <div className="mb-6">
         <h1 className="text-[24px] font-semibold text-white tracking-[-0.03em]">
-          Calculadora de Precios
+          <AppTitle slug="precios" fallback="Calculadora de Precios" />
         </h1>
         <p className="text-white/40 text-sm mt-0.5">
           Calculá precios de venta, margen, IVA y punto de equilibrio

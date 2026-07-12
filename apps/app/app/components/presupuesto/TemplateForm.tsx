@@ -8,6 +8,9 @@ interface Props {
   template: PresupuestoTemplate | null
 }
 
+const MAX_LOGO_BYTES = 3 * 1024 * 1024 // 3MB
+const TIPOS_LOGO_PERMITIDOS = ['image/png', 'image/jpeg', 'image/webp']
+
 function defaultServicio(): PresupuestoServicioFrecuente {
   return {
     id: crypto.randomUUID(),
@@ -48,6 +51,17 @@ export default function TemplateForm({ template }: Props) {
   function handleLogoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
+    setError(null)
+    if (!TIPOS_LOGO_PERMITIDOS.includes(file.type)) {
+      setError('El logo debe ser PNG, JPG o WebP')
+      if (fileRef.current) fileRef.current.value = ''
+      return
+    }
+    if (file.size > MAX_LOGO_BYTES) {
+      setError('El logo no puede superar los 3MB')
+      if (fileRef.current) fileRef.current.value = ''
+      return
+    }
     const reader = new FileReader()
     reader.onload = () => setField('logoUrl', reader.result as string)
     reader.readAsDataURL(file)

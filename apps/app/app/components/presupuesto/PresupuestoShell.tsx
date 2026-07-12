@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import AppTitle from '@/app/components/AppTitle'
 
 export default function PresupuestoShell({
   children,
@@ -21,7 +22,7 @@ export default function PresupuestoShell({
   return (
     <div className="px-4 py-6 md:p-8">
       <div className="mb-6">
-        <h1 className="text-[24px] font-semibold tracking-[-0.03em] text-white">Generador de Presupuestos</h1>
+        <h1 className="text-[24px] font-semibold tracking-[-0.03em] text-white"><AppTitle slug="presupuestos" fallback="Generador de Presupuestos" /></h1>
         <p className="mt-0.5 text-sm text-white/40">Cotizaciones con estado, clientes y PDF descargable</p>
       </div>
 

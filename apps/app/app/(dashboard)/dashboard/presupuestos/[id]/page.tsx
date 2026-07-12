@@ -15,8 +15,9 @@ function fmtDate(value: string | null) {
   })
 }
 
-export default async function PresupuestoDetailPage({ params }: { params: { id: string } }) {
-  const presupuesto = await getPresupuesto(params.id)
+export default async function PresupuestoDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const presupuesto = await getPresupuesto(id)
   if (!presupuesto) notFound()
 
   const totals = calcularTotales(presupuesto.items, presupuesto.descuento, presupuesto.iva)

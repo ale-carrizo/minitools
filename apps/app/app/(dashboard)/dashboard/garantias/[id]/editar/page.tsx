@@ -17,7 +17,7 @@ export default async function EditarPage({ params }: { params: Promise<{ id: str
         <span>/</span>
         <span className="text-white/60">Editar</span>
       </div>
-      <GarantiaForm garantia={garantia} />
+      <GarantiaForm key={garantia.id} garantia={garantia} />
     </div>
   )
 }

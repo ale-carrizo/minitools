@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import AppTitle from '@/app/components/AppTitle'
 
 const TABS = [
   { id: 'hoy',       label: 'Hoy',         href: '/dashboard/caja' },
@@ -17,7 +18,7 @@ export default function CajaShell({ children }: { children: React.ReactNode }) {
     <div className="px-4 py-6 md:p-8">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-[24px] font-semibold text-white tracking-[-0.03em]">Control de Caja</h1>
+        <h1 className="text-[24px] font-semibold text-white tracking-[-0.03em]"><AppTitle slug="caja" fallback="Registro de pagos" /></h1>
         <p className="text-white/40 text-sm mt-0.5 capitalize">
           {new Date().toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' })}
         </p>

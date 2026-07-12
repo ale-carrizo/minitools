@@ -3,8 +3,9 @@ import Link from 'next/link'
 import { getProducto } from '@/lib/actions/stock'
 import ProductoForm from '@/app/components/stock/ProductoForm'
 
-export default async function EditarProductoPage({ params }: { params: { id: string } }) {
-  const producto = await getProducto(params.id)
+export default async function EditarProductoPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const producto = await getProducto(id)
   if (!producto) notFound()
 
   return (
@@ -16,7 +17,7 @@ export default async function EditarProductoPage({ params }: { params: { id: str
         <span>/</span>
         <span className="text-white/60">Editar</span>
       </div>
-      <ProductoForm producto={producto} />
+      <ProductoForm key={producto.id} producto={producto} />
     </div>
   )
 }

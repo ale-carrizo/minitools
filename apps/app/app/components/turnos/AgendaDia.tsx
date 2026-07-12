@@ -190,12 +190,13 @@ export default function AgendaDia({
                 const estadoCfg = ESTADO_CONFIG[turno.estado]
                 const { lane, lanes } = carriles.get(turno.id) ?? { lane: 0, lanes: 1 }
                 const widthPct = 100 / lanes
+                const linkWhatsApp = generarLinkWhatsApp(turno)
+                const showActions = heightPx > 56 && (turno.estado === 'pendiente' || turno.estado === 'confirmado')
 
                 return (
-                  <Link
+                  <div
                     key={turno.id}
-                    href={`/dashboard/turnos/${turno.id}`}
-                    className={`absolute rounded-lg overflow-hidden px-2 py-1 shadow-md hover:brightness-110 hover:z-20 transition-all z-10 ${estaCompletado ? 'opacity-60' : ''}`}
+                    className={`absolute rounded-lg overflow-hidden shadow-md hover:brightness-110 hover:z-20 transition-all z-10 ${estaCompletado ? 'opacity-60' : ''}`}
                     style={{
                       top: `${topPx}px`,
                       minHeight: `${heightPx}px`,
@@ -206,22 +207,81 @@ export default function AgendaDia({
                       borderLeft: `3px solid ${color}`,
                     }}
                   >
-                    <p className="text-white text-[11px] font-medium truncate leading-tight flex items-center gap-1.5">
-                      <span className={`text-[10px] ${estadoCfg.color}`}>{estadoCfg.icon}</span>
-                      {turno.horaInicio} · {turno.clienteNombre}
-                    </p>
-                    {heightPx > 32 && (
-                      <p className="text-white/70 text-[10px] truncate leading-tight">
-                        {turno.servicio?.nombre ?? 'Turno'} · {nombreEmpleado(turno.empleado)}
+                    <Link href={`/dashboard/turnos/${turno.id}`} className="block px-2 py-1">
+                      <p className="text-white text-[11px] font-medium truncate leading-tight flex items-center gap-1.5">
+                        <span className={`text-[10px] ${estadoCfg.color}`}>{estadoCfg.icon}</span>
+                        {turno.horaInicio} · {turno.clienteNombre}
                       </p>
+                      {heightPx > 32 && (
+                        <p className="text-white/70 text-[10px] truncate leading-tight">
+                          {turno.servicio?.nombre ?? 'Turno'} · {nombreEmpleado(turno.empleado)}
+                        </p>
+                      )}
+                      {heightPx > 48 && turno.precio > 0 && (
+                        <p className="text-white/50 text-[10px] truncate leading-tight">
+                          {formatCurrency(turno.precio)}
+                          {turno.senia > 0 ? ` · seña ${turno.seniaPagada ? 'pagada' : 'pendiente'}` : ''}
+                        </p>
+                      )}
+                    </Link>
+                    {showActions && (
+                      <div className="flex flex-wrap items-center gap-1 px-1.5 pb-1">
+                        {linkWhatsApp && (
+                          <a
+                            href={linkWhatsApp}
+                            target="_blank"
+                            rel="noreferrer"
+                            title="Enviar por WhatsApp"
+                            className="flex-shrink-0 rounded bg-[#25D366]/20 hover:bg-[#25D366]/35 text-[#25D366] px-1.5 py-0.5 text-[9px] font-medium transition-colors"
+                          >
+                            WhatsApp
+                          </a>
+                        )}
+                        {linkWhatsApp && !turno.recordatorioEnviado && (
+                          <button
+                            type="button"
+                            disabled={isPending}
+                            title="Marcar recordatorio como enviado"
+                            onClick={() => startTransition(async () => { await marcarRecordatorioEnviado(turno.id) })}
+                            className="flex-shrink-0 rounded border border-white/15 hover:border-white/30 text-white/40 hover:text-white/70 px-1.5 py-0.5 text-[9px] font-medium transition-colors disabled:opacity-40"
+                          >
+                            ✓ enviado
+                          </button>
+                        )}
+                        {turno.estado === 'pendiente' && (
+                          <button
+                            type="button"
+                            disabled={isPending}
+                            title="Confirmar turno"
+                            onClick={() => startTransition(async () => { await cambiarEstado(turno.id, 'confirmado') })}
+                            className="flex-shrink-0 rounded border border-emerald-500/25 hover:border-emerald-500/45 text-emerald-300 px-1.5 py-0.5 text-[9px] font-medium transition-colors disabled:opacity-40"
+                          >
+                            ✓
+                          </button>
+                        )}
+                        {turno.estado === 'confirmado' && (
+                          <button
+                            type="button"
+                            disabled={isPending}
+                            title="Completar turno"
+                            onClick={() => startTransition(async () => { await cambiarEstado(turno.id, 'completado') })}
+                            className="flex-shrink-0 rounded border border-[#5448EE]/30 hover:border-[#5448EE]/50 text-[#8880F5] px-1.5 py-0.5 text-[9px] font-medium transition-colors disabled:opacity-40"
+                          >
+                            ✓
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          disabled={isPending}
+                          title="Cancelar turno"
+                          onClick={() => startTransition(async () => { await cambiarEstado(turno.id, 'cancelado') })}
+                          className="flex-shrink-0 rounded border border-red-500/20 hover:border-red-500/35 text-red-300 px-1.5 py-0.5 text-[9px] font-medium transition-colors disabled:opacity-40"
+                        >
+                          ✗
+                        </button>
+                      </div>
                     )}
-                    {heightPx > 48 && turno.precio > 0 && (
-                      <p className="text-white/50 text-[10px] truncate leading-tight">
-                        {formatCurrency(turno.precio)}
-                        {turno.senia > 0 ? ` · seña ${turno.seniaPagada ? 'pagada' : 'pendiente'}` : ''}
-                      </p>
-                    )}
-                  </Link>
+                  </div>
                 )
               })}
             </div>
@@ -229,91 +289,6 @@ export default function AgendaDia({
         </div>
       </div>
 
-      {/* Quick list */}
-      {turnos.length > 0 && (
-        <div className="space-y-1.5">
-          {turnos.map((turno) => {
-            const linkWhatsApp = generarLinkWhatsApp(turno)
-            const showActions = turno.estado === 'pendiente' || turno.estado === 'confirmado'
-            const colorEmpleado = turno.empleado?.color
-
-            return (
-              <div
-                key={turno.id}
-                className={`flex items-center gap-3 bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 hover:bg-white/[0.05] transition-colors ${turno.estado === 'completado' ? 'opacity-60' : ''}`}
-                style={colorEmpleado ? { borderLeftColor: colorEmpleado, borderLeftWidth: '3px' } : undefined}
-              >
-                <div
-                  className="w-2 h-2 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: colorEmpleado ?? turno.servicio?.color ?? '#5448EE' }}
-                  title={turno.empleado ? nombreEmpleado(turno.empleado) : undefined}
-                />
-                <span className="text-white/50 text-[11px] font-mono w-14">{turno.horaInicio}</span>
-                <Link href={`/dashboard/turnos/${turno.id}`} className="text-white text-[13px] font-medium hover:text-[#8880F5] transition-colors truncate">
-                  {turno.clienteNombre}
-                </Link>
-                <span className="text-white/30 text-[12px] truncate ml-auto hidden sm:block">{turno.servicio?.nombre ?? ''} · {nombreEmpleado(turno.empleado)}</span>
-                {linkWhatsApp && (
-                  <a
-                    href={linkWhatsApp}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex-shrink-0 rounded-lg bg-[#25D366]/15 hover:bg-[#25D366]/25 border border-[#25D366]/20 text-[#25D366] px-2.5 py-1.5 text-[11px] font-medium transition-colors"
-                  >
-                    WhatsApp
-                  </a>
-                )}
-                {linkWhatsApp && !turno.recordatorioEnviado && (
-                  <button
-                    type="button"
-                    disabled={isPending}
-                    title="Marcar recordatorio como enviado"
-                    onClick={() => startTransition(async () => { await marcarRecordatorioEnviado(turno.id) })}
-                    className="flex-shrink-0 rounded-lg border border-white/10 hover:border-white/20 text-white/30 hover:text-white/60 px-2 py-1.5 text-[11px] font-medium transition-colors disabled:opacity-40"
-                  >
-                    ✓
-                  </button>
-                )}
-                {showActions && (
-                  <div className="flex-shrink-0 flex items-center gap-1.5">
-                    {turno.estado === 'pendiente' && (
-                      <button
-                        type="button"
-                        disabled={isPending}
-                        onClick={() => startTransition(async () => { await cambiarEstado(turno.id, 'confirmado') })}
-                        className="rounded-lg border border-emerald-500/20 hover:border-emerald-500/40 text-emerald-300 px-2 py-1 text-[10px] font-medium transition-colors disabled:opacity-40"
-                        title="Confirmar turno"
-                      >
-                        ✓
-                      </button>
-                    )}
-                    {turno.estado === 'confirmado' && (
-                      <button
-                        type="button"
-                        disabled={isPending}
-                        onClick={() => startTransition(async () => { await cambiarEstado(turno.id, 'completado') })}
-                        className="rounded-lg border border-[#5448EE]/25 hover:border-[#5448EE]/45 text-[#8880F5] px-2 py-1 text-[10px] font-medium transition-colors disabled:opacity-40"
-                        title="Completar turno"
-                      >
-                        ✓
-                      </button>
-                    )}
-                    <button
-                      type="button"
-                      disabled={isPending}
-                      onClick={() => startTransition(async () => { await cambiarEstado(turno.id, 'cancelado') })}
-                      className="rounded-lg border border-red-500/15 hover:border-red-500/30 text-red-300 px-2 py-1 text-[10px] font-medium transition-colors disabled:opacity-40"
-                      title="Cancelar turno"
-                    >
-                      ✗
-                    </button>
-                  </div>
-                )}
-              </div>
-            )
-          })}
-        </div>
-      )}
     </div>
   )
 }

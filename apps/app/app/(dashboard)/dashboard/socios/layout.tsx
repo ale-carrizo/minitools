@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import SociosTabs from '@/app/components/socios/SociosTabs'
+import AppTitle from '@/app/components/AppTitle'
 
 export default function SociosLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -7,7 +8,7 @@ export default function SociosLayout({ children }: { children: React.ReactNode }
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="font-display text-[28px] font-semibold tracking-[-0.035em] text-white">
-            Clientes y Pagos
+            <AppTitle slug="socios" fallback="Clientes y Pagos" />
           </h1>
           <p className="text-white/40 text-sm mt-1">Cobranza recurrente con recordatorios por WhatsApp</p>
         </div>

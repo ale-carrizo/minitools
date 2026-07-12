@@ -57,7 +57,7 @@ export default function CobroList({ resumen }: { resumen: CajaDiaResumen }) {
           href="/dashboard/caja/registrar"
           className="text-[12px] text-[#8880F5] font-medium hover:text-white transition-colors"
         >
-          + agregar
+          + Registrar un pago
         </Link>
       </div>
 
