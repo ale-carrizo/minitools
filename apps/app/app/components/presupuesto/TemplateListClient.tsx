@@ -35,6 +35,10 @@ export default function TemplateListClient({ templates }: { templates: Presupues
         <div className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-[13px] text-red-400">{error}</div>
       ) : null}
 
+      <p className="text-[11px] font-semibold uppercase tracking-wider text-white/30">
+        {templates.length} de {MAX_PRESUPUESTO_TEMPLATES} templates
+      </p>
+
       <div className="grid gap-4 sm:grid-cols-2">
         {templates.map((t) => {
           const logoIsData = t.logoUrl && (t.logoUrl.startsWith('data:') || t.logoUrl.startsWith('http'))

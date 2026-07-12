@@ -10,7 +10,7 @@ export default async function PresupuestoTemplatePage() {
       <div>
         <h2 className="text-xl font-semibold text-white">Templates</h2>
         <p className="mt-1 text-sm text-white/45">
-          El template "En uso" es el que se aplica en nuevos presupuestos y en el PDF.
+          Podés crear hasta 4 templates. El que esté "En uso" es el que se aplica en nuevos presupuestos y en el PDF.
         </p>
       </div>
       {templates.length === 0 ? (
