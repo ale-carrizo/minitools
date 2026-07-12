@@ -1,5 +1,5 @@
 import { auth } from '@/auth'
-import { getRecibo } from '@/lib/actions/recibos'
+import { getRecibo, getReciboCobroConfig } from '@/lib/actions/recibos'
 import { ReciboCobroPDF } from '@/app/components/recibos/ReciboCobroPDF'
 import React from 'react'
 import { renderToBuffer } from '@react-pdf/renderer'
@@ -18,8 +18,10 @@ export async function GET(
     return new Response('Not found', { status: 404 })
   }
 
+  const config = await getReciboCobroConfig()
+
   const buffer = await renderToBuffer(
-    React.createElement(ReciboCobroPDF, { recibo }) as React.ReactElement<DocumentProps>,
+    React.createElement(ReciboCobroPDF, { recibo, config }) as React.ReactElement<DocumentProps>,
   )
 
   return new Response(new Uint8Array(buffer), {

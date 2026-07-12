@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { getRecibo, eliminarRecibo } from '@/lib/actions/recibos'
+import { getRecibo, getReciboCobroConfig, eliminarRecibo } from '@/lib/actions/recibos'
 import { formatCurrency, numeroALetras, generarLinkWhatsAppRecibo } from '@/types/recibos'
 import { EliminarBtn } from './EliminarBtn'
 
@@ -12,7 +12,7 @@ function formatearFecha(fechaStr: string) {
 
 export default async function ReciboDetallePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const recibo = await getRecibo(id)
+  const [recibo, config] = await Promise.all([getRecibo(id), getReciboCobroConfig()])
   if (!recibo) notFound()
   const whatsappLink = generarLinkWhatsAppRecibo(recibo)
 
@@ -31,10 +31,16 @@ export default async function ReciboDetallePage({ params }: { params: Promise<{ 
       <div className="rounded-2xl border border-white/[0.08] bg-white/[0.04] p-5">
         {/* Header */}
         <div className="flex items-start justify-between pb-4 mb-4 border-b border-[#5448EE]/30">
-          <div>
-            <p className="text-white font-semibold text-[18px]">{recibo.emisorNombre}</p>
-            {recibo.emisorDoc && <p className="text-white/35 text-[12px] mt-0.5">CUIT: {recibo.emisorDoc}</p>}
-            {recibo.emisorDireccion && <p className="text-white/35 text-[12px]">{recibo.emisorDireccion}</p>}
+          <div className="flex items-start gap-3">
+            {config?.logoUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={config.logoUrl} alt="Logo" className="h-10 w-10 rounded-lg object-contain bg-white/10 flex-shrink-0" />
+            )}
+            <div>
+              <p className="text-white font-semibold text-[18px]">{recibo.emisorNombre}</p>
+              {recibo.emisorDoc && <p className="text-white/35 text-[12px] mt-0.5">CUIT: {recibo.emisorDoc}</p>}
+              {recibo.emisorDireccion && <p className="text-white/35 text-[12px]">{recibo.emisorDireccion}</p>}
+            </div>
           </div>
           <div className="text-right">
             <p className="text-[#8880F5] text-[14px] font-semibold uppercase tracking-wider">Recibo de Cobro</p>

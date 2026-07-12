@@ -59,6 +59,7 @@ model User {
   empleados    Empleado[]
   asistencias  RegistroAsistencia[]
   reciboConfig ReciboConfig?
+  reciboCobroConfig ReciboCobroConfig?
   garantias    GarantiaProducto[]
   reclamos     ReclamoGarantia[]
   turnoConfig  TurnoConfig?
@@ -409,6 +410,19 @@ model ReciboConfig {
   logoUrl     String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ReciboCobroConfig {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  emisorNombre    String?
+  emisorDoc       String?
+  emisorDireccion String?
+  logoUrl         String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

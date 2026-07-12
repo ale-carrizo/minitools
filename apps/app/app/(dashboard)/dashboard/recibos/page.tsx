@@ -1,13 +1,16 @@
 import Link from 'next/link'
-import { getRecibos } from '@/lib/actions/recibos'
+import { getRecibos, getReciboCobroConfig } from '@/lib/actions/recibos'
 import { formatCurrency } from '@/types/recibos'
 import type { ReciboCobro } from '@/types/recibos'
+import ReciboCobroConfigPanel from '@/app/components/recibos/ReciboCobroConfigPanel'
 
 export default async function RecibosPage() {
-  const recibos = await getRecibos()
+  const [recibos, config] = await Promise.all([getRecibos(), getReciboCobroConfig()])
 
   return (
     <div>
+      <ReciboCobroConfigPanel config={config} />
+
       <div className="flex items-center justify-between mb-5">
         <p className="text-[13px] text-white/40">{recibos.length} recibo{recibos.length !== 1 ? 's' : ''}</p>
         <Link

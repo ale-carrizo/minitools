@@ -25,8 +25,9 @@ function estimateAdjuntosBytes(adjuntosJson: string | null | undefined): number 
 
 /** Recalcula el storage usado por un usuario a partir de todos los campos "archivo" conocidos. */
 export async function recalcUserStorage(userId: string) {
-  const [reciboConfig, templates, presupuestos, tareas] = await Promise.all([
+  const [reciboConfig, reciboCobroConfig, templates, presupuestos, tareas] = await Promise.all([
     prisma.reciboConfig.findUnique({ where: { userId }, select: { logoUrl: true } }),
+    prisma.reciboCobroConfig.findUnique({ where: { userId }, select: { logoUrl: true } }),
     prisma.presupuestoTemplate.findMany({ where: { userId }, select: { logoUrl: true } }),
     prisma.presupuesto.findMany({ where: { userId }, select: { logoUrl: true } }),
     prisma.tarea.findMany({ where: { userId }, select: { adjuntos: true } }),
@@ -34,6 +35,7 @@ export async function recalcUserStorage(userId: string) {
 
   const total =
     estimateFileBytes(reciboConfig?.logoUrl) +
+    estimateFileBytes(reciboCobroConfig?.logoUrl) +
     templates.reduce((sum, t) => sum + estimateFileBytes(t.logoUrl), 0) +
     presupuestos.reduce((sum, p) => sum + estimateFileBytes(p.logoUrl), 0) +
     tareas.reduce((sum, t) => sum + estimateAdjuntosBytes(t.adjuntos), 0)

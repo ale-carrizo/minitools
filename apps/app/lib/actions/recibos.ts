@@ -4,7 +4,8 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
-import type { ReciboCobro } from '@/types/recibos'
+import { recalcUserStorage, estimateFileBytes } from '@/lib/storage'
+import type { ReciboCobro, ReciboCobroConfig } from '@/types/recibos'
 
 const db = prisma as any
 
@@ -12,6 +13,84 @@ async function getUserId(): Promise<string> {
   const session = await auth()
   if (!session?.user?.id) redirect('/login')
   return session.user.id
+}
+
+const MAX_LOGO_BYTES = 3 * 1024 * 1024 // 3MB
+const TIPOS_LOGO_PERMITIDOS = ['image/png', 'image/jpeg', 'image/webp']
+
+function verificarLogoBase64(dataUrl: string): boolean {
+  const match = dataUrl.match(/^data:([^;]+);base64,(.+)$/)
+  if (!match) return false
+  const mime = match[1]
+  if (!TIPOS_LOGO_PERMITIDOS.includes(mime)) return false
+  const buffer = Buffer.from(match[2].slice(0, 24), 'base64')
+  const head = buffer.subarray(0, 12)
+  switch (mime) {
+    case 'image/jpeg':
+      return head[0] === 0xFF && head[1] === 0xD8 && head[2] === 0xFF
+    case 'image/png':
+      return head[0] === 0x89 && head[1] === 0x50 && head[2] === 0x4E && head[3] === 0x47 &&
+             head[4] === 0x0D && head[5] === 0x0A && head[6] === 0x1A && head[7] === 0x0A
+    case 'image/webp':
+      return head[0] === 0x52 && head[1] === 0x49 && head[2] === 0x46 && head[3] === 0x46 &&
+             head[8] === 0x57 && head[9] === 0x45 && head[10] === 0x42 && head[11] === 0x50
+    default:
+      return false
+  }
+}
+
+export async function getReciboCobroConfig(): Promise<ReciboCobroConfig | null> {
+  const userId = await getUserId()
+  const row = await db.reciboCobroConfig.findUnique({ where: { userId } })
+  if (!row) return null
+  return {
+    id: row.id,
+    userId: row.userId,
+    emisorNombre: row.emisorNombre ?? null,
+    emisorDoc: row.emisorDoc ?? null,
+    emisorDireccion: row.emisorDireccion ?? null,
+    logoUrl: row.logoUrl ?? null,
+  }
+}
+
+export async function guardarReciboCobroConfig(data: {
+  emisorNombre?: string
+  emisorDoc?: string
+  emisorDireccion?: string
+  logoUrl?: string
+}): Promise<ReciboCobroConfig> {
+  const userId = await getUserId()
+
+  if (data.logoUrl && data.logoUrl.trim()) {
+    if (estimateFileBytes(data.logoUrl) > MAX_LOGO_BYTES) throw new Error('El logo no puede superar los 3MB')
+    if (!verificarLogoBase64(data.logoUrl)) throw new Error('El logo no es una imagen válida (PNG, JPG o WebP)')
+  }
+
+  const payload = {
+    emisorNombre: data.emisorNombre?.trim() || null,
+    emisorDoc: data.emisorDoc?.trim() || null,
+    emisorDireccion: data.emisorDireccion?.trim() || null,
+    logoUrl: data.logoUrl?.trim() || null,
+  }
+
+  const row = await db.reciboCobroConfig.upsert({
+    where: { userId },
+    update: payload,
+    create: { userId, ...payload },
+  })
+
+  await recalcUserStorage(userId)
+  revalidatePath('/dashboard/recibos')
+  revalidatePath('/dashboard/recibos/nuevo')
+
+  return {
+    id: row.id,
+    userId: row.userId,
+    emisorNombre: row.emisorNombre ?? null,
+    emisorDoc: row.emisorDoc ?? null,
+    emisorDireccion: row.emisorDireccion ?? null,
+    logoUrl: row.logoUrl ?? null,
+  }
 }
 
 export async function getRecibos(): Promise<ReciboCobro[]> {

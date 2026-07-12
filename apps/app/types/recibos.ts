@@ -17,6 +17,15 @@ export interface ReciboCobro {
   updatedAt: string
 }
 
+export interface ReciboCobroConfig {
+  id: string
+  userId: string
+  emisorNombre?: string | null
+  emisorDoc?: string | null
+  emisorDireccion?: string | null
+  logoUrl?: string | null
+}
+
 export const MEDIOS_PAGO = [
   'Efectivo',
   'Transferencia',

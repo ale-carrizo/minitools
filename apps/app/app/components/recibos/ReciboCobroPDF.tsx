@@ -1,9 +1,11 @@
-import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
-import { formatCurrency, numeroALetras, type ReciboCobro } from '@/types/recibos'
+import { Document, Page, StyleSheet, Text, View, Image } from '@react-pdf/renderer'
+import { formatCurrency, numeroALetras, type ReciboCobro, type ReciboCobroConfig } from '@/types/recibos'
 
 const styles = StyleSheet.create({
   page:       { padding: 40, fontSize: 9, color: '#111827', backgroundColor: '#ffffff', fontFamily: 'Helvetica' },
   header:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20, paddingBottom: 14, borderBottomWidth: 2, borderBottomColor: '#5448EE' },
+  headerLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
+  logo:       { width: 40, height: 40, objectFit: 'contain', marginRight: 10 },
   empresaNombre: { fontSize: 16, fontFamily: 'Helvetica-Bold', color: '#5448EE', marginBottom: 2 },
   empresaMuted:  { color: '#6B7280', fontSize: 8.5 },
   tituloBox:  { alignItems: 'flex-end' },
@@ -35,7 +37,7 @@ const styles = StyleSheet.create({
   footer:     { marginTop: 30, textAlign: 'center', color: '#D1D5DB', fontSize: 7.5, borderTopWidth: 1, borderTopColor: '#F3F4F6', paddingTop: 8 },
 })
 
-export function ReciboCobroPDF({ recibo }: { recibo: ReciboCobro }) {
+export function ReciboCobroPDF({ recibo, config }: { recibo: ReciboCobro; config?: ReciboCobroConfig | null }) {
   const formatearFecha = (fechaStr: string) => {
     if (!fechaStr) return ''
     const [y, m, d] = fechaStr.split('-')
@@ -47,10 +49,13 @@ export function ReciboCobroPDF({ recibo }: { recibo: ReciboCobro }) {
       <Page size="A4" style={styles.page}>
         {/* Header */}
         <View style={styles.header}>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.empresaNombre}>{recibo.emisorNombre}</Text>
-            {recibo.emisorDoc && <Text style={styles.empresaMuted}>CUIT: {recibo.emisorDoc}</Text>}
-            {recibo.emisorDireccion && <Text style={styles.empresaMuted}>{recibo.emisorDireccion}</Text>}
+          <View style={styles.headerLeft}>
+            {config?.logoUrl && <Image src={config.logoUrl} style={styles.logo} />}
+            <View style={{ flex: 1 }}>
+              <Text style={styles.empresaNombre}>{recibo.emisorNombre}</Text>
+              {recibo.emisorDoc && <Text style={styles.empresaMuted}>CUIT: {recibo.emisorDoc}</Text>}
+              {recibo.emisorDireccion && <Text style={styles.empresaMuted}>{recibo.emisorDireccion}</Text>}
+            </View>
           </View>
           <View style={styles.tituloBox}>
             <Text style={styles.tituloLabel}>Recibo de Cobro</Text>
