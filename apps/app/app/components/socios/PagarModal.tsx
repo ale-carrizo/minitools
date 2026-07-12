@@ -4,6 +4,7 @@ import { useState } from 'react'
 import type { CobroProgramado } from '@/types/socios'
 import { MEDIOS_PAGO } from '@/types/socios'
 import { pagarCobro } from '@/lib/actions/socios'
+import { firmaCoincide } from '@/lib/file-signature'
 
 function fmtN(n: number) {
   return new Intl.NumberFormat('es-AR', {
@@ -19,24 +20,6 @@ interface Props {
 }
 
 const MAX_SIZE = 3 * 1024 * 1024
-
-function firmasCoinciden(buffer: ArrayBuffer, mime: string): boolean {
-  const head = new Uint8Array(buffer.slice(0, 12))
-  switch (mime) {
-    case 'image/jpeg':
-      return head[0] === 0xFF && head[1] === 0xD8 && head[2] === 0xFF
-    case 'image/png':
-      return head[0] === 0x89 && head[1] === 0x50 && head[2] === 0x4E && head[3] === 0x47 &&
-             head[4] === 0x0D && head[5] === 0x0A && head[6] === 0x1A && head[7] === 0x0A
-    case 'image/webp':
-      return head[0] === 0x52 && head[1] === 0x49 && head[2] === 0x46 && head[3] === 0x46 &&
-             head[8] === 0x57 && head[9] === 0x45 && head[10] === 0x42 && head[11] === 0x50
-    case 'application/pdf':
-      return head[0] === 0x25 && head[1] === 0x50 && head[2] === 0x44 && head[3] === 0x46
-    default:
-      return false
-  }
-}
 
 export default function PagarModal({ cobro, nombre, onClose, onDone }: Props) {
   const [medio, setMedio]           = useState('Efectivo')
@@ -63,8 +46,8 @@ export default function PagarModal({ cobro, nombre, onClose, onDone }: Props) {
       return
     }
 
-    const head = await f.slice(0, 12).arrayBuffer()
-    if (!firmasCoinciden(head, f.type)) {
+    const head = new Uint8Array(await f.slice(0, 12).arrayBuffer())
+    if (!firmaCoincide(head, f.type)) {
       setFileError('El archivo no coincide con su tipo declarado')
       e.target.value = ''
       return

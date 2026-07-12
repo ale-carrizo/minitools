@@ -5,6 +5,7 @@ import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import type { Tablero, Columna, Tarea, Prioridad } from '@/types/tareas'
 import { MAX_ADJUNTO_BYTES, TIPOS_ADJUNTO_PERMITIDOS } from '@/types/tareas'
+import { verificarFirmaBase64 } from '@/lib/file-signature'
 
 async function uid() {
   const s = await auth()
@@ -177,26 +178,6 @@ export async function createTarea(data: {
   return mapTarea(r)
 }
 
-function verificarFirmaBase64(dataUrl: string, mime: string): boolean {
-  const match = dataUrl.match(/^data:([^;]+);base64,(.+)$/)
-  if (!match) return false
-  const buffer = Buffer.from(match[2].slice(0, 24), 'base64')
-  const head = buffer.subarray(0, 12)
-  switch (mime) {
-    case 'image/jpeg':
-      return head[0] === 0xFF && head[1] === 0xD8 && head[2] === 0xFF
-    case 'image/png':
-      return head[0] === 0x89 && head[1] === 0x50 && head[2] === 0x4E && head[3] === 0x47 &&
-             head[4] === 0x0D && head[5] === 0x0A && head[6] === 0x1A && head[7] === 0x0A
-    case 'image/webp':
-      return head[0] === 0x52 && head[1] === 0x49 && head[2] === 0x46 && head[3] === 0x46 &&
-             head[8] === 0x57 && head[9] === 0x45 && head[10] === 0x42 && head[11] === 0x50
-    case 'application/pdf':
-      return head[0] === 0x25 && head[1] === 0x50 && head[2] === 0x44 && head[3] === 0x46
-    default:
-      return false
-  }
-}
 
 export async function updateTarea(id: string, data: Partial<{
   titulo:      string

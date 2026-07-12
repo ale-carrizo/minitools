@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { recalcUserStorage, estimateFileBytes } from '@/lib/storage'
+import { verificarFirmaBase64 } from '@/lib/file-signature'
 import type { ReciboCobro, ReciboCobroConfig } from '@/types/recibos'
 
 const db = prisma as any
@@ -19,24 +20,11 @@ const MAX_LOGO_BYTES = 3 * 1024 * 1024 // 3MB
 const TIPOS_LOGO_PERMITIDOS = ['image/png', 'image/jpeg', 'image/webp']
 
 function verificarLogoBase64(dataUrl: string): boolean {
-  const match = dataUrl.match(/^data:([^;]+);base64,(.+)$/)
+  const match = dataUrl.match(/^data:([^;]+);base64,/)
   if (!match) return false
   const mime = match[1]
   if (!TIPOS_LOGO_PERMITIDOS.includes(mime)) return false
-  const buffer = Buffer.from(match[2].slice(0, 24), 'base64')
-  const head = buffer.subarray(0, 12)
-  switch (mime) {
-    case 'image/jpeg':
-      return head[0] === 0xFF && head[1] === 0xD8 && head[2] === 0xFF
-    case 'image/png':
-      return head[0] === 0x89 && head[1] === 0x50 && head[2] === 0x4E && head[3] === 0x47 &&
-             head[4] === 0x0D && head[5] === 0x0A && head[6] === 0x1A && head[7] === 0x0A
-    case 'image/webp':
-      return head[0] === 0x52 && head[1] === 0x49 && head[2] === 0x46 && head[3] === 0x46 &&
-             head[8] === 0x57 && head[9] === 0x45 && head[10] === 0x42 && head[11] === 0x50
-    default:
-      return false
-  }
+  return verificarFirmaBase64(dataUrl, mime)
 }
 
 export async function getReciboCobroConfig(): Promise<ReciboCobroConfig | null> {
