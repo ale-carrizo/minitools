@@ -293,27 +293,48 @@ export async function registrarCobrosLote(cobros: RegistrarCobroPayload[]): Prom
 export async function anularCobro(id: string, motivo?: string): Promise<void> {
   const userId = await getUserId()
 
-  const cobro = await prisma.cajaCobro.findFirst({
+  const cobro = await (prisma.cajaCobro as any).findFirst({
     where:   { id, userId },
-    include: { dia: true },
+    include: { dia: true, items: true },
   })
 
   if (!cobro)            throw new Error('Cobro no encontrado')
   if (cobro.dia.cerrada) throw new Error('No se puede anular un cobro de una caja cerrada')
   if (cobro.anulado)     return
 
-  await prisma.$transaction([
-    prisma.cajaCobro.update({
+  await prisma.$transaction(async (tx) => {
+    await tx.cajaCobro.update({
       where: { id },
       data:  { anulado: true, anuladoAt: new Date(), anuladoMotivo: motivo ?? null },
-    }),
-    prisma.cajaDia.update({
+    })
+    await tx.cajaDia.update({
       where: { id: cobro.diaId },
       data:  { totalCache: { decrement: cobro.monto } },
-    }),
-  ])
+    })
+
+    // Si el cobro tenía productos vinculados, devolver el stock descontado.
+    for (const item of cobro.items ?? []) {
+      const producto = await tx.producto.findUnique({ where: { id: item.productoId } })
+      if (!producto) continue
+      await tx.producto.update({
+        where: { id: item.productoId },
+        data:  { stock: { increment: item.cantidad } },
+      })
+      await tx.movimientoStock.create({
+        data: {
+          userId,
+          productoId: item.productoId,
+          tipo: 'entrada',
+          cantidad: item.cantidad,
+          stockAntes: producto.stock,
+          motivo: `Anulación de cobro${motivo ? ` · ${motivo}` : ''}`,
+        },
+      })
+    }
+  })
 
   revalidatePath('/dashboard/caja')
+  revalidatePath('/dashboard/stock')
 }
 
 // ── Cierre ────────────────────────────────────────────────────────────────────

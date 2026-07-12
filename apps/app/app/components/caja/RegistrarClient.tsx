@@ -7,16 +7,17 @@ import { todayAR } from '@/lib/date'
 import type { BancoExtracto, ExtractoRow } from '@/types/caja'
 import { BANCOS_EXTRACTO } from '@/types/caja'
 import type { Producto } from '@/types/stock'
+import VentaItemsPicker, { nuevoVentaItem, buildVentaItemsPayload, type VentaItem } from './VentaItemsPicker'
 
 export default function RegistrarClient({ productos }: { productos: Producto[] }) {
   const router = useRouter()
 
   return (
     <div className="max-w-lg">
-      <ComprobanteIA onSuccess={() => router.push('/dashboard/caja')} />
+      <ComprobanteIA productos={productos} onSuccess={() => router.push('/dashboard/caja')} />
 
       <div className="my-5">
-        <RegistrarDesdeArchivo onSuccess={() => router.push('/dashboard/caja')} />
+        <RegistrarDesdeArchivo productos={productos} onSuccess={() => router.push('/dashboard/caja')} />
       </div>
 
       {/* Divider */}
@@ -35,17 +36,21 @@ export default function RegistrarClient({ productos }: { productos: Producto[] }
 
 // ── Panel: Comprobante por IA (foto/PDF) ───────────────────────────────────────
 // No necesita saber el banco de antemano — la IA lo detecta del comprobante.
-function ComprobanteIA({ onSuccess }: { onSuccess: () => void }) {
+function ComprobanteIA({ productos, onSuccess }: { productos: Producto[]; onSuccess: () => void }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [preview, setPreview] = useState<any>(null)
   const [confirming, setConfirming] = useState(false)
+  const [esVenta, setEsVenta] = useState(false)
+  const [items, setItems] = useState<VentaItem[]>([nuevoVentaItem()])
 
   const fileRef = useRef<HTMLInputElement>(null)
 
   function reset() {
     setPreview(null)
     setError('')
+    setEsVenta(false)
+    setItems([nuevoVentaItem()])
   }
 
   async function handleFile(file: File) {
@@ -67,6 +72,11 @@ function ComprobanteIA({ onSuccess }: { onSuccess: () => void }) {
 
   async function handleConfirmIA() {
     if (!preview) return
+    const ventaItems = esVenta ? buildVentaItemsPayload(items) : []
+    if (esVenta && ventaItems.length === 0) {
+      setError('Agregá al menos un producto para descontar stock')
+      return
+    }
     setConfirming(true)
     try {
       await registrarCobro({
@@ -82,6 +92,7 @@ function ComprobanteIA({ onSuccess }: { onSuccess: () => void }) {
         ia_confidence: preview.confidence,
         ia_provider:   preview.ia_provider,
         ia_model:      preview.ia_model,
+        items:         ventaItems,
       })
       onSuccess()
     } catch (err: any) {
@@ -124,6 +135,20 @@ function ComprobanteIA({ onSuccess }: { onSuccess: () => void }) {
                 </div>
               ))}
             </div>
+            {productos.length > 0 && (
+              <div className="px-3 pb-3">
+                <label className="mb-3 flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3 py-3 text-[12px] text-white/65">
+                  <input
+                    type="checkbox"
+                    checked={esVenta}
+                    onChange={(e) => setEsVenta(e.target.checked)}
+                    className="h-4 w-4 rounded border-white/20 bg-white/[0.05] accent-[#5448EE]"
+                  />
+                  Esta operación fue una venta de productos
+                </label>
+                {esVenta && <VentaItemsPicker productos={productos} items={items} onChange={setItems} />}
+              </div>
+            )}
             {error && <div className="px-4 py-2 text-[11px] text-red-400">{error}</div>}
             <div className="flex gap-2 p-3">
               <button onClick={reset} className="flex-1 py-2.5 text-[12px] text-white/50 border border-white/[0.08] rounded-xl hover:text-white transition-colors">
@@ -173,13 +198,15 @@ function ComprobanteIA({ onSuccess }: { onSuccess: () => void }) {
 }
 
 // ── Panel: Registrar pagos desde archivo (extracto bancario Excel/CSV) ─────────
-function RegistrarDesdeArchivo({ onSuccess }: { onSuccess: () => void }) {
+function RegistrarDesdeArchivo({ productos, onSuccess }: { productos: Producto[]; onSuccess: () => void }) {
   const [banco, setBanco] = useState<BancoExtracto>('Banco Nación')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
   const [rows, setRows] = useState<ExtractoRow[]>([])
   const [selected, setSelected] = useState<Set<number>>(new Set())
+  const [expanded, setExpanded] = useState<Set<number>>(new Set())
+  const [itemsPorFila, setItemsPorFila] = useState<Record<number, VentaItem[]>>({})
   const [importing, setImporting] = useState(false)
 
   const fileRef = useRef<HTMLInputElement>(null)
@@ -187,7 +214,22 @@ function RegistrarDesdeArchivo({ onSuccess }: { onSuccess: () => void }) {
   function reset() {
     setRows([])
     setSelected(new Set())
+    setExpanded(new Set())
+    setItemsPorFila({})
     setError('')
+  }
+
+  function toggleExpanded(i: number) {
+    setExpanded((prev) => {
+      const next = new Set(prev)
+      if (next.has(i)) {
+        next.delete(i)
+      } else {
+        next.add(i)
+        setItemsPorFila((prevItems) => (prevItems[i] ? prevItems : { ...prevItems, [i]: [nuevoVentaItem()] }))
+      }
+      return next
+    })
   }
 
   async function handleFile(file: File) {
@@ -210,10 +252,12 @@ function RegistrarDesdeArchivo({ onSuccess }: { onSuccess: () => void }) {
   }
 
   async function handleImportExtracto() {
-    const toImport = rows.filter((_, i) => selected.has(i))
+    const toImport = rows
+      .map((r, i) => ({ r, i }))
+      .filter(({ i }) => selected.has(i))
     setImporting(true)
     try {
-      await registrarCobrosLote(toImport.map(r => ({
+      await registrarCobrosLote(toImport.map(({ r, i }) => ({
         monto:        r.monto,
         fecha_cobro:  r.fecha,
         hora_cobro:   r.hora ?? undefined,
@@ -223,6 +267,7 @@ function RegistrarDesdeArchivo({ onSuccess }: { onSuccess: () => void }) {
         referencia:   r.referencia ?? undefined,
         emisor_banco: banco,
         extracto_row: r.raw,
+        items:        itemsPorFila[i] ? buildVentaItemsPayload(itemsPorFila[i]) : [],
       })))
       onSuccess()
     } catch (err: any) {
@@ -296,33 +341,56 @@ function RegistrarDesdeArchivo({ onSuccess }: { onSuccess: () => void }) {
                 {selected.size === rows.length ? 'Deseleccionar todo' : 'Seleccionar todo'}
               </button>
             </div>
-            <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl overflow-hidden divide-y divide-white/[0.04] mb-4 max-h-64 overflow-y-auto">
-              {rows.map((row, i) => (
-                <div
-                  key={i}
-                  onClick={() => setSelected(prev => {
-                    const next = new Set(prev)
-                    next.has(i) ? next.delete(i) : next.add(i)
-                    return next
-                  })}
-                  className={`flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors ${
-                    selected.has(i) ? 'hover:bg-white/[0.03]' : 'opacity-40'
-                  }`}
-                >
-                  <div className={`w-4 h-4 rounded flex items-center justify-center flex-shrink-0 border ${
-                    selected.has(i) ? 'bg-[#5448EE] border-[#5448EE]' : 'border-white/20'
-                  }`}>
-                    {selected.has(i) && <span className="text-[#ffffff] text-[9px] font-bold">✓</span>}
+            <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl overflow-hidden divide-y divide-white/[0.04] mb-4 max-h-[28rem] overflow-y-auto">
+              {rows.map((row, i) => {
+                const tieneItems = (itemsPorFila[i] ?? []).some((it) => it.productoId)
+                return (
+                  <div key={i} className={`transition-colors ${selected.has(i) ? '' : 'opacity-40'}`}>
+                    <div
+                      onClick={() => setSelected(prev => {
+                        const next = new Set(prev)
+                        next.has(i) ? next.delete(i) : next.add(i)
+                        return next
+                      })}
+                      className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-white/[0.03] transition-colors"
+                    >
+                      <div className={`w-4 h-4 rounded flex items-center justify-center flex-shrink-0 border ${
+                        selected.has(i) ? 'bg-[#5448EE] border-[#5448EE]' : 'border-white/20'
+                      }`}>
+                        {selected.has(i) && <span className="text-[#ffffff] text-[9px] font-bold">✓</span>}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[12px] text-white truncate">{row.descripcion}</p>
+                        <p className="text-[10px] text-white/35">
+                          {row.fecha}{row.hora ? ` · ${row.hora}` : ''}
+                          {tieneItems && <span className="text-[#8880F5]"> · productos vinculados</span>}
+                        </p>
+                      </div>
+                      <span className="text-[13px] font-medium text-emerald-400 flex-shrink-0">
+                        ${row.monto.toLocaleString('es-AR')}
+                      </span>
+                      {productos.length > 0 && selected.has(i) && (
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); toggleExpanded(i) }}
+                          className="flex-shrink-0 rounded-lg border border-white/[0.08] px-2 py-1 text-[10px] text-white/40 hover:text-white hover:border-white/20 transition-colors"
+                        >
+                          {expanded.has(i) ? 'Cerrar' : 'Productos'}
+                        </button>
+                      )}
+                    </div>
+                    {expanded.has(i) && selected.has(i) && (
+                      <div className="px-4 pb-3" onClick={(e) => e.stopPropagation()}>
+                        <VentaItemsPicker
+                          productos={productos}
+                          items={itemsPorFila[i] ?? [nuevoVentaItem()]}
+                          onChange={(next) => setItemsPorFila((prev) => ({ ...prev, [i]: next }))}
+                        />
+                      </div>
+                    )}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[12px] text-white truncate">{row.descripcion}</p>
-                    <p className="text-[10px] text-white/35">{row.fecha}{row.hora ? ` · ${row.hora}` : ''}</p>
-                  </div>
-                  <span className="text-[13px] font-medium text-emerald-400 flex-shrink-0">
-                    ${row.monto.toLocaleString('es-AR')}
-                  </span>
-                </div>
-              ))}
+                )
+              })}
             </div>
             {error && <p className="text-[11px] text-red-400 mb-2">{error}</p>}
             <div className="flex gap-2">
@@ -378,35 +446,13 @@ function EfectivoManual({ productos, onSuccess }: { productos: Producto[]; onSuc
   const [hora, setHora]         = useState(new Date().toTimeString().slice(0, 5))
   const [concepto, setConcepto] = useState('')
   const [esVenta, setEsVenta]   = useState(false)
-  const [items, setItems]       = useState<Array<{ productoId: string; cantidad: number; precio: string }>>([
-    { productoId: '', cantidad: 1, precio: '' },
-  ])
+  const [items, setItems]       = useState<VentaItem[]>([nuevoVentaItem()])
   const [loading, setLoading]   = useState(false)
   const [error, setError]       = useState('')
 
-  function setItem(index: number, patch: Partial<{ productoId: string; cantidad: number; precio: string }>) {
-    setItems((prev) => prev.map((item, itemIndex) => (itemIndex === index ? { ...item, ...patch } : item)))
-  }
-
-  function addItem() {
-    setItems((prev) => [...prev, { productoId: '', cantidad: 1, precio: '' }])
-  }
-
-  function removeItem(index: number) {
-    setItems((prev) => (prev.length === 1 ? [{ productoId: '', cantidad: 1, precio: '' }] : prev.filter((_, itemIndex) => itemIndex !== index)))
-  }
-
   async function handleSubmit() {
     if (!monto || parseFloat(monto) <= 0) { setError('Ingresá un monto válido'); return }
-    const ventaItems = esVenta
-      ? items
-          .map((item) => ({
-            producto_id: item.productoId,
-            cantidad: Number(item.cantidad),
-            precio: item.precio ? Number(item.precio) : undefined,
-          }))
-          .filter((item) => item.producto_id && item.cantidad > 0)
-      : []
+    const ventaItems = esVenta ? buildVentaItemsPayload(items) : []
 
     if (esVenta && ventaItems.length === 0) {
       setError('Agregá al menos un producto para descontar stock')
@@ -474,69 +520,8 @@ function EfectivoManual({ productos, onSuccess }: { productos: Producto[]; onSuc
       </label>
 
       {esVenta ? (
-        <div className="mb-3 rounded-2xl border border-white/[0.08] bg-white/[0.03] p-3">
-          <div className="mb-3 flex items-center justify-between">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-white/30">Productos vendidos</p>
-            <button type="button" onClick={addItem} className="rounded-xl bg-[#5448EE] px-3 py-1.5 text-[11px] font-medium text-white btn-solid-text hover:bg-[#4438DE]">
-              + Agregar
-            </button>
-          </div>
-          <div className="space-y-3">
-            {items.map((item, index) => {
-              const producto = productos.find((p) => p.id === item.productoId)
-              return (
-                <div key={index} className="grid gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] p-3 md:grid-cols-[1.5fr_0.65fr_0.8fr_auto]">
-                  <div>
-                    <label className="mb-1 block text-[10px] text-white/35">Producto</label>
-                    <select
-                      value={item.productoId}
-                      onChange={(e) => setItem(index, { productoId: e.target.value })}
-                      className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[12px] text-white focus:border-[#5448EE]/60 focus:outline-none"
-                    >
-                      <option value="">Seleccionar producto</option>
-                      {productos.map((producto) => (
-                        <option key={producto.id} value={producto.id}>
-                          {producto.nombre} · stock {producto.stock}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-[10px] text-white/35">Cantidad</label>
-                    <input
-                      type="number"
-                      min={1}
-                      value={item.cantidad}
-                      onChange={(e) => setItem(index, { cantidad: Number(e.target.value || 1) })}
-                      className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[12px] text-white focus:border-[#5448EE]/60 focus:outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-[10px] text-white/35">Precio ref.</label>
-                    <input
-                      type="number"
-                      min={0}
-                      step="any"
-                      value={item.precio}
-                      onChange={(e) => setItem(index, { precio: e.target.value })}
-                      placeholder={producto ? String(producto.precioVenta) : 'Opcional'}
-                      className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[12px] text-white placeholder:text-white/20 focus:border-[#5448EE]/60 focus:outline-none"
-                    />
-                  </div>
-                  <div className="flex items-end">
-                    <button type="button" onClick={() => removeItem(index)} className="rounded-xl border border-red-500/20 px-3 py-2 text-[11px] font-medium text-red-400">
-                      Quitar
-                    </button>
-                  </div>
-                  {producto ? (
-                    <p className="md:col-span-4 text-[10px] text-white/35">
-                      Disponible: {producto.stock} {producto.unidad}
-                    </p>
-                  ) : null}
-                </div>
-              )
-            })}
-          </div>
+        <div className="mb-3">
+          <VentaItemsPicker productos={productos} items={items} onChange={setItems} />
         </div>
       ) : null}
       {error && <p className="text-[11px] text-red-400 mb-2">{error}</p>}
