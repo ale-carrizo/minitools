@@ -1,7 +1,9 @@
 'use client'
 
 import { useRef, useState, useTransition } from 'react'
-import { guardarPresupuestoTemplate } from '@/lib/actions/presupuesto'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { crearPresupuestoTemplate, guardarPresupuestoTemplate } from '@/lib/actions/presupuesto'
 import type { PresupuestoServicioFrecuente, PresupuestoTemplate } from '@/types/presupuesto'
 
 interface Props {
@@ -21,11 +23,13 @@ function defaultServicio(): PresupuestoServicioFrecuente {
 }
 
 export default function TemplateForm({ template }: Props) {
+  const router = useRouter()
+  const isEdit = Boolean(template)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
   const [form, setForm] = useState({
+    nombre: template?.nombre ?? '',
     nombreComercial: template?.nombreComercial ?? '',
     razonSocial: template?.razonSocial ?? '',
     cuit: template?.cuit ?? '',
@@ -81,10 +85,10 @@ export default function TemplateForm({ template }: Props) {
 
   function handleSubmit() {
     setError(null)
-    setSuccess(null)
+    if (!form.nombre.trim()) { setError('Ponele un nombre al template'); return }
     startTransition(async () => {
       try {
-        await guardarPresupuestoTemplate({
+        const payload = {
           ...form,
           serviciosFrecuentes: servicios.map((item) => ({
             id: item.id,
@@ -92,8 +96,14 @@ export default function TemplateForm({ template }: Props) {
             descripcion: item.descripcion ?? '',
             precioSugerido: item.precioSugerido,
           })),
-        })
-        setSuccess('Template guardado. Ya se aplica en nuevos presupuestos y en el PDF.')
+        }
+        if (isEdit) {
+          await guardarPresupuestoTemplate(template!.id, payload)
+        } else {
+          await crearPresupuestoTemplate(payload)
+        }
+        router.push('/dashboard/presupuestos/template')
+        router.refresh()
       } catch (err: any) {
         setError(err.message ?? 'No se pudo guardar la configuracion.')
       }
@@ -108,9 +118,18 @@ export default function TemplateForm({ template }: Props) {
         {error ? (
           <div className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-[13px] text-red-400">{error}</div>
         ) : null}
-        {success ? (
-          <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-[13px] text-emerald-300">{success}</div>
-        ) : null}
+
+        {/* Nombre del template */}
+        <div className="rounded-2xl border border-white/[0.08] bg-white/[0.04] p-5">
+          <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-white/40">Nombre del template</label>
+          <input
+            value={form.nombre}
+            onChange={(e) => setField('nombre', e.target.value)}
+            placeholder="Ej: Principal, Sucursal Norte..."
+            className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white placeholder:text-white/20 focus:border-[#5448EE]/60 focus:outline-none"
+          />
+          <p className="mt-1 text-[11px] text-white/25">Solo para identificarlo en la lista — no aparece en el PDF.</p>
+        </div>
 
         {/* Empresa — simplificado */}
         <div className="rounded-2xl border border-white/[0.08] bg-white/[0.04] p-5">
@@ -218,9 +237,17 @@ export default function TemplateForm({ template }: Props) {
           </div>
         </div>
 
-        <button type="button" onClick={handleSubmit} disabled={isPending} className="w-full rounded-xl bg-[#5448EE] px-4 py-3 text-[13px] font-medium text-white btn-solid-text hover:bg-[#4438DE] disabled:cursor-not-allowed disabled:opacity-50">
-          {isPending ? 'Guardando...' : 'Guardar configuración'}
-        </button>
+        <div className="flex gap-2">
+          <Link
+            href="/dashboard/presupuestos/template"
+            className="flex-1 rounded-xl border border-white/[0.09] px-4 py-3 text-center text-[13px] font-medium text-white/50 hover:text-white transition-colors"
+          >
+            Cancelar
+          </Link>
+          <button type="button" onClick={handleSubmit} disabled={isPending} className="flex-[2] rounded-xl bg-[#5448EE] px-4 py-3 text-[13px] font-medium text-white btn-solid-text hover:bg-[#4438DE] disabled:cursor-not-allowed disabled:opacity-50">
+            {isPending ? 'Guardando...' : isEdit ? 'Guardar cambios' : 'Crear template'}
+          </button>
+        </div>
       </div>
 
       {/* Vista rapida */}

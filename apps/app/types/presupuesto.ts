@@ -22,9 +22,13 @@ export interface PresupuestoServicioFrecuente {
   precioSugerido: number
 }
 
+export const MAX_PRESUPUESTO_TEMPLATES = 4
+
 export interface PresupuestoTemplate {
   id: string
   userId: string
+  nombre: string
+  activo: boolean
   nombreComercial: string | null
   razonSocial: string | null
   cuit: string | null

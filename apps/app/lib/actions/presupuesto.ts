@@ -5,9 +5,11 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { recalcUserStorage, estimateFileBytes } from '@/lib/storage'
+import { getActiveTemplate } from '@/lib/presupuesto-template'
 import { todayAR } from '@/lib/date'
 import {
   calcularTotales,
+  MAX_PRESUPUESTO_TEMPLATES,
   type Cliente,
   type Presupuesto,
   type PresupuestoEstado,
@@ -122,6 +124,8 @@ function toPresupuestoTemplate(template: any): PresupuestoTemplate {
   return {
     id: template.id,
     userId: template.userId,
+    nombre: template.nombre,
+    activo: template.activo,
     nombreComercial: template.nombreComercial ?? null,
     razonSocial: template.razonSocial ?? null,
     cuit: template.cuit ?? null,
@@ -302,16 +306,8 @@ export async function getClientes(): Promise<Cliente[]> {
   return clientes.map(toCliente)
 }
 
-export async function getPresupuestoTemplate(): Promise<PresupuestoTemplate | null> {
-  const userId = await getUserId()
-  const template = await prisma.presupuestoTemplate.findUnique({
-    where: { userId },
-  })
-
-  return template ? toPresupuestoTemplate(template) : null
-}
-
-export async function guardarPresupuestoTemplate(data: {
+type PresupuestoTemplateInput = {
+  nombre?: string
   nombreComercial?: string
   razonSocial?: string
   cuit?: string
@@ -331,21 +327,71 @@ export async function guardarPresupuestoTemplate(data: {
     descripcion?: string
     precioSugerido?: number
   }>
-}): Promise<PresupuestoTemplate> {
-  const userId = await getUserId()
+}
 
-  if (data.logoUrl && data.logoUrl.trim()) {
-    if (estimateFileBytes(data.logoUrl) > MAX_LOGO_BYTES) throw new Error('El logo no puede superar los 3MB')
-    if (!verificarLogoBase64(data.logoUrl)) throw new Error('El logo no es una imagen válida (PNG, JPG o WebP)')
-  }
+function validateLogoInput(logoUrl?: string) {
+  if (!logoUrl || !logoUrl.trim()) return
+  if (estimateFileBytes(logoUrl) > MAX_LOGO_BYTES) throw new Error('El logo no puede superar los 3MB')
+  if (!verificarLogoBase64(logoUrl)) throw new Error('El logo no es una imagen válida (PNG, JPG o WebP)')
+}
+
+/** Template "en uso" — el que se aplica a nuevos presupuestos y a la generación de PDF. */
+export async function getPresupuestoTemplate(): Promise<PresupuestoTemplate | null> {
+  const userId = await getUserId()
+  const template = await getActiveTemplate(userId)
+  return template ? toPresupuestoTemplate(template) : null
+}
+
+export async function getPresupuestoTemplates(): Promise<PresupuestoTemplate[]> {
+  const userId = await getUserId()
+  const templates = await prisma.presupuestoTemplate.findMany({
+    where: { userId },
+    orderBy: { createdAt: 'asc' },
+  })
+  return templates.map(toPresupuestoTemplate)
+}
+
+export async function getPresupuestoTemplateById(id: string): Promise<PresupuestoTemplate | null> {
+  const userId = await getUserId()
+  const template = await prisma.presupuestoTemplate.findFirst({ where: { id, userId } })
+  return template ? toPresupuestoTemplate(template) : null
+}
+
+export async function crearPresupuestoTemplate(data: PresupuestoTemplateInput): Promise<PresupuestoTemplate> {
+  const userId = await getUserId()
+  validateLogoInput(data.logoUrl)
+
+  const count = await prisma.presupuestoTemplate.count({ where: { userId } })
+  if (count >= MAX_PRESUPUESTO_TEMPLATES) throw new Error(`Máximo ${MAX_PRESUPUESTO_TEMPLATES} templates`)
 
   const payload = normalizeTemplateInput(data)
-
-  const template = await prisma.presupuestoTemplate.upsert({
-    where: { userId },
-    update: payload,
-    create: {
+  const template = await prisma.presupuestoTemplate.create({
+    data: {
       userId,
+      nombre: maybeTrim(data.nombre) ?? 'Nuevo template',
+      activo: count === 0,
+      ...payload,
+    },
+  })
+
+  await recalcUserStorage(userId)
+  revalidatePath('/dashboard/presupuestos/template')
+
+  return toPresupuestoTemplate(template)
+}
+
+export async function guardarPresupuestoTemplate(id: string, data: PresupuestoTemplateInput): Promise<PresupuestoTemplate> {
+  const userId = await getUserId()
+  const existing = await prisma.presupuestoTemplate.findFirst({ where: { id, userId } })
+  if (!existing) throw new Error('Template no encontrado')
+
+  validateLogoInput(data.logoUrl)
+  const payload = normalizeTemplateInput(data)
+
+  const template = await prisma.presupuestoTemplate.update({
+    where: { id },
+    data: {
+      ...(data.nombre?.trim() ? { nombre: data.nombre.trim() } : {}),
       ...payload,
     },
   })
@@ -356,6 +402,40 @@ export async function guardarPresupuestoTemplate(data: {
   revalidatePath('/dashboard/presupuestos/template')
 
   return toPresupuestoTemplate(template)
+}
+
+export async function activarPresupuestoTemplate(id: string): Promise<void> {
+  const userId = await getUserId()
+  await prisma.$transaction(async (tx) => {
+    const target = await tx.presupuestoTemplate.findFirst({ where: { id, userId } })
+    if (!target) throw new Error('Template no encontrado')
+    await tx.presupuestoTemplate.updateMany({ where: { userId }, data: { activo: false } })
+    await tx.presupuestoTemplate.update({ where: { id }, data: { activo: true } })
+  })
+  revalidatePath('/dashboard/presupuestos')
+  revalidatePath('/dashboard/presupuestos/nuevo')
+  revalidatePath('/dashboard/presupuestos/template')
+}
+
+export async function eliminarPresupuestoTemplate(id: string): Promise<void> {
+  const userId = await getUserId()
+  const target = await prisma.presupuestoTemplate.findFirst({ where: { id, userId } })
+  if (!target) return
+
+  await prisma.presupuestoTemplate.delete({ where: { id } })
+
+  if (target.activo) {
+    const siguiente = await prisma.presupuestoTemplate.findFirst({
+      where: { userId },
+      orderBy: { createdAt: 'asc' },
+    })
+    if (siguiente) {
+      await prisma.presupuestoTemplate.update({ where: { id: siguiente.id }, data: { activo: true } })
+    }
+  }
+
+  await recalcUserStorage(userId)
+  revalidatePath('/dashboard/presupuestos/template')
 }
 
 export async function getCliente(id: string): Promise<Cliente | null> {

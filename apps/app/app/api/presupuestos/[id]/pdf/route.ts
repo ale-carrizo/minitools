@@ -3,6 +3,7 @@ import { renderToBuffer } from '@react-pdf/renderer'
 import { auth } from '@/auth'
 import { PresupuestoPDF } from '@/app/components/presupuesto/PresupuestoPDF'
 import { prisma } from '@/lib/prisma'
+import { getActiveTemplate } from '@/lib/presupuesto-template'
 import { type Presupuesto, type PresupuestoTemplate } from '@/types/presupuesto'
 import type { DocumentProps } from '@react-pdf/renderer'
 
@@ -60,6 +61,8 @@ function serializeTemplate(raw: any): PresupuestoTemplate {
   return {
     id: raw.id,
     userId: raw.userId,
+    nombre: raw.nombre,
+    activo: raw.activo,
     nombreComercial: raw.nombreComercial ?? null,
     razonSocial: raw.razonSocial ?? null,
     cuit: raw.cuit ?? null,
@@ -98,9 +101,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
     return new Response('Not found', { status: 404 })
   }
 
-  const template = await prisma.presupuestoTemplate.findUnique({
-    where: { userId: session.user.id },
-  })
+  const template = await getActiveTemplate(session.user.id)
 
   const buffer = await renderToBuffer(
     React.createElement(PresupuestoPDF, {

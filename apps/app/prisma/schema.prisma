@@ -55,7 +55,7 @@ model User {
   movimientos  MovimientoStock[]
   clientes     Cliente[]
   presupuestos Presupuesto[]
-  presupuestoTemplate PresupuestoTemplate?
+  presupuestoTemplates PresupuestoTemplate[]
   empleados    Empleado[]
   asistencias  RegistroAsistencia[]
   reciboConfig ReciboConfig?
@@ -317,7 +317,9 @@ model Presupuesto {
 
 model PresupuestoTemplate {
   id                   String   @id @default(cuid())
-  userId               String   @unique
+  userId               String
+  nombre               String   @default("Principal")
+  activo               Boolean  @default(false)
   nombreComercial      String?
   razonSocial          String?
   cuit                 String?
@@ -336,6 +338,8 @@ model PresupuestoTemplate {
   updatedAt            DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model PresupuestoItem {
