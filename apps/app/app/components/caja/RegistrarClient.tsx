@@ -7,7 +7,7 @@ import { todayAR } from '@/lib/date'
 import type { BancoExtracto, ExtractoRow } from '@/types/caja'
 import { BANCOS_EXTRACTO } from '@/types/caja'
 import type { Producto } from '@/types/stock'
-import VentaItemsPicker, { nuevoVentaItem, buildVentaItemsPayload, type VentaItem } from './VentaItemsPicker'
+import VentaItemsPicker, { nuevoVentaItem, buildVentaItemsPayload, type VentaItem } from '../stock/VentaItemsPicker'
 
 export default function RegistrarClient({ productos }: { productos: Producto[] }) {
   const router = useRouter()

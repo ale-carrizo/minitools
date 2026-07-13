@@ -14,6 +14,7 @@ export default function StockShell({ children, alertas = 0 }: Props) {
 
   const tabs = [
     { label: 'Inventario', href: '/dashboard/stock' },
+    { label: 'Ventas', href: '/dashboard/stock/ventas' },
     { label: alertas > 0 ? `Alertas  ${alertas}` : 'Alertas', href: '/dashboard/stock/alertas' },
     { label: '+ Producto', href: '/dashboard/stock/nuevo' },
   ]

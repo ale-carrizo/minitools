@@ -220,6 +220,48 @@ export async function registrarMovimiento(
   return toProducto(producto)
 }
 
+/** Registra una venta con uno o varios productos, descontando stock de cada uno. */
+export async function registrarVenta(items: Array<{
+  productoId: string
+  cantidad: number
+}>): Promise<void> {
+  const userId = await getUserId()
+
+  const limpios = items
+    .map((item) => ({ productoId: item.productoId, cantidad: Number(item.cantidad) }))
+    .filter((item) => item.productoId && Number.isFinite(item.cantidad) && item.cantidad > 0)
+
+  if (limpios.length === 0) throw new Error('Agregá al menos un producto')
+
+  await prisma.$transaction(async (tx) => {
+    for (const item of limpios) {
+      const producto = await tx.producto.findFirst({ where: { id: item.productoId, userId, activo: true } })
+      if (!producto) throw new Error('Producto no encontrado')
+
+      const updated = await tx.producto.updateMany({
+        where: { id: producto.id, userId, stock: { gte: item.cantidad } },
+        data: { stock: { decrement: item.cantidad } },
+      })
+      if (updated.count === 0) {
+        throw new Error(`Stock insuficiente para ${producto.nombre} (disponible: ${producto.stock})`)
+      }
+
+      await tx.movimientoStock.create({
+        data: {
+          userId,
+          productoId: producto.id,
+          tipo: 'salida',
+          cantidad: item.cantidad,
+          stockAntes: producto.stock,
+          motivo: 'Venta',
+        },
+      })
+    }
+  })
+
+  revalidatePath('/dashboard/stock')
+}
+
 export async function importarProductos(rows: Array<{
   nombre?: string
   sku?: string
