@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { crearRecibo } from '@/lib/actions/recibos'
 import { todayAR } from '@/lib/date'
@@ -59,6 +60,12 @@ export default function NuevoReciboClient({ config }: { config: ReciboCobroConfi
 
   return (
     <div className="max-w-xl space-y-5">
+      <div className="flex items-center gap-2 text-[13px] text-white/30">
+        <Link href="/dashboard/recibos" className="hover:text-white/60 transition-colors">Recibos</Link>
+        <span>/</span>
+        <span className="text-white/60">Nuevo</span>
+      </div>
+
       {error && (
         <div className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-[13px] text-red-400">{error}</div>
       )}
