@@ -113,8 +113,8 @@ export default function Home() {
           </div>
           <span className="font-display text-white font-semibold text-[16px] tracking-[-0.03em]">Zimple Tools</span>
         </div>
-        <a href="https://app.zimple.tools/register" className="btn-brand text-white text-[13px] font-semibold px-4 py-[7px] rounded-[8px]">
-          Empezar gratis
+        <a href="https://app.zimple.tools/login" className="btn-brand text-white text-[13px] font-semibold px-4 py-[7px] rounded-[8px]">
+          Ingresar
         </a>
       </nav>
 
@@ -150,7 +150,7 @@ export default function Home() {
           </p>
 
           <div className="flex items-center justify-center gap-3 mb-3">
-            <a href="https://app.zimple.tools/register" className="btn-brand text-white font-semibold text-[15px] px-6 py-3 rounded-xl">
+            <a href="https://app.zimple.tools/login" className="btn-brand text-white font-semibold text-[15px] px-6 py-3 rounded-xl">
               Empezar gratis — 14 días
             </a>
             <button className="group text-white font-medium text-[15px] px-6 py-3 rounded-xl border border-white/25 hover:border-white/50 hover:bg-white/[0.06] transition-all duration-200">
@@ -273,7 +273,7 @@ export default function Home() {
                 </li>
               ))}
             </ul>
-            <a href="https://app.zimple.tools/register" className="block w-full py-3 rounded-xl border border-[#E4E3F2] text-[#1a1a2e] font-semibold text-[14px] text-center hover:border-[#5448EE] hover:text-[#5448EE] transition-all duration-150">
+            <a href="https://app.zimple.tools/login" className="block w-full py-3 rounded-xl border border-[#E4E3F2] text-[#1a1a2e] font-semibold text-[14px] text-center hover:border-[#5448EE] hover:text-[#5448EE] transition-all duration-150">
               Empezar con Mensual
             </a>
           </div>
@@ -300,7 +300,7 @@ export default function Home() {
                 </li>
               ))}
             </ul>
-            <a href="https://app.zimple.tools/register" className="block w-full py-3 rounded-xl bg-[#5448EE] hover:bg-[#4035d4] text-white font-semibold text-[14px] text-center transition-colors duration-150">
+            <a href="https://app.zimple.tools/login" className="block w-full py-3 rounded-xl bg-[#5448EE] hover:bg-[#4035d4] text-white font-semibold text-[14px] text-center transition-colors duration-150">
               Empezar con Anual
             </a>
           </div>
@@ -316,7 +316,7 @@ export default function Home() {
           Sin tarjeta de crédito. Sin compromisos. Cancelá cuando quieras.
         </p>
         <div className="flex items-center justify-center gap-3 flex-wrap">
-          <a href="https://app.zimple.tools/register" className="bg-white text-[#5448EE] font-semibold text-[15px] px-7 py-3.5 rounded-xl hover:bg-gray-50 transition-colors duration-150">
+          <a href="https://app.zimple.tools/login" className="bg-white text-[#5448EE] font-semibold text-[15px] px-7 py-3.5 rounded-xl hover:bg-gray-50 transition-colors duration-150">
             Crear cuenta gratis
           </a>
           <button className="text-white font-semibold text-[15px] px-7 py-3.5 rounded-xl border border-white/30 hover:bg-white/10 transition-colors duration-150">
