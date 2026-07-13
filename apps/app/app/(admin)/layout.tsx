@@ -15,8 +15,17 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!session?.user) redirect("/login");
   if (session.user.role !== "ADMIN") redirect("/dashboard");
 
+  // El panel de admin está diseñado como superficie oscura fija. En modo
+  // claro --color-white se invierte a oscuro y todo el texto `text-white`/
+  // lavados `bg-white/[x]` se vuelve invisible. Forzamos el token a blanco
+  // literal dentro del admin y marcamos data-theme="dark" para que los
+  // overrides globales de tema claro no apliquen aquí.
   return (
-    <div className="flex h-screen bg-[#0C0B1A] overflow-hidden">
+    <div
+      className="flex h-screen bg-[#0C0B1A] overflow-hidden"
+      data-theme="dark"
+      style={{ ["--color-white" as string]: "#ffffff" }}
+    >
       {/* Sidebar */}
       <aside className="flex-shrink-0 flex flex-col border-r border-white/[0.06] overflow-y-auto no-scrollbar" style={{ width: "200px" }}>
         {/* Brand */}
