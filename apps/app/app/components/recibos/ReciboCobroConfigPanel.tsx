@@ -64,7 +64,9 @@ export default function ReciboCobroConfigPanel({ config: initialConfig }: { conf
   const inputCls = 'w-full px-3 py-2.5 text-[12px] rounded-xl border border-white/[0.09] bg-white/[0.05] text-white placeholder:text-white/20 focus:outline-none focus:border-[#5448EE]/60'
 
   return (
-    <div className="rounded-2xl border border-white/[0.08] overflow-hidden mb-5">
+    <div className="mb-5">
+      <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-white/30">Tus datos</p>
+      <div className="rounded-2xl border border-white/[0.08] overflow-hidden">
       <button
         onClick={() => setShowConfig((v) => !v)}
         className="w-full flex items-center justify-between px-5 py-3.5 hover:bg-white/[0.02] transition-colors"
@@ -147,6 +149,7 @@ export default function ReciboCobroConfigPanel({ config: initialConfig }: { conf
           </div>
         </div>
       )}
+      </div>
     </div>
   )
 }
