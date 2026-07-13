@@ -3,6 +3,8 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
+import bcrypt from "bcryptjs";
+import { randomBytes } from "crypto";
 
 async function requireAdmin() {
   const session = await auth();
@@ -75,4 +77,50 @@ export async function promoteByEmail(
   await prisma.user.update({ where: { email }, data: { role: "ADMIN" } });
   revalidatePath("/admin/users");
   return { success: `${email} ahora es administrador.` };
+}
+
+export type CreateUserState = {
+  error?: string;
+  success?: string;
+  email?: string;
+  tempPassword?: string;
+};
+
+export async function createUserManual(
+  _prev: CreateUserState,
+  formData: FormData
+): Promise<CreateUserState> {
+  await requireAdmin();
+
+  const name = (formData.get("name") as string)?.trim();
+  let email = (formData.get("email") as string)?.trim().toLowerCase();
+  const role = (formData.get("role") as string) === "ADMIN" ? "ADMIN" : "USER";
+
+  if (!name || !email) {
+    return { error: "Nombre y email son obligatorios." };
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return { error: "El email no es válido." };
+  }
+
+  const existing = await prisma.user.findUnique({ where: { email } });
+  if (existing) {
+    return { error: `Ya existe una cuenta con el email ${email}.` };
+  }
+
+  const tempPassword = randomBytes(8).toString("hex");
+  const hashed = await bcrypt.hash(tempPassword, 12);
+
+  await prisma.user.create({
+    data: { name, email, password: hashed, role },
+  });
+
+  revalidatePath("/admin/users");
+  return {
+    success: `Usuario creado correctamente. Compartí esta contraseña temporal con ${name}.`,
+    email,
+    tempPassword,
+  };
 }

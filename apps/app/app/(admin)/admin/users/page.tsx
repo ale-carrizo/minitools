@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { suspendUser, unsuspendUser, makeAdmin, removeAdmin } from "./actions";
 import PromoteForm from "./promote-form";
+import CreateUserForm from "./create-user-form";
 
 export default async function AdminUsersPage() {
   const session = await auth();
@@ -18,6 +19,8 @@ export default async function AdminUsersPage() {
           {users.length} usuario{users.length !== 1 ? "s" : ""} registrado{users.length !== 1 ? "s" : ""}
         </p>
       </div>
+
+      <CreateUserForm />
 
       <PromoteForm />
 
