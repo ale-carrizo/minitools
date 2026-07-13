@@ -80,7 +80,7 @@ const tools = [
 ];
 
 const monthlyFeatures = ["Acceso a las 9 herramientas","Actualizaciones automáticas","Soporte por email","Cancelá en cualquier momento"];
-const annualFeatures = ["Todo lo del plan Mensual","Soporte prioritario 24/7","Acceso anticipado a nuevas tools","Ahorrás $36 al año"];
+const annualFeatures = ["Todo lo del plan Mensual","Soporte prioritario 24/7","Acceso anticipado a nuevas tools","Ahorrás pagando anual"];
 
 export default function Home() {
   const [scrolled, setScrolled] = useState(false);
@@ -260,8 +260,7 @@ export default function Home() {
           <div className="border border-[#E4E3F2] rounded-2xl p-7">
             <p className="text-[#1a1a2e]/35 text-[11px] font-semibold tracking-[0.1em] uppercase mb-5">MENSUAL</p>
             <div className="flex items-baseline gap-0.5 mb-1">
-              <span className="text-[20px] font-semibold text-[#1a1a2e] self-start mt-2">$</span>
-              <span className="text-[54px] font-semibold text-[#1a1a2e] leading-none tracking-[-0.03em]">12</span>
+              <span className="text-[54px] font-semibold text-[#1a1a2e] leading-none tracking-[-0.03em]">--</span>
             </div>
             <p className="text-[#1a1a2e]/40 text-[13px] mb-7">por mes · facturado mensualmente</p>
             <ul className="space-y-3 mb-8">
@@ -288,11 +287,9 @@ export default function Home() {
             </div>
             <p className="text-[#1a1a2e]/35 text-[11px] font-semibold tracking-[0.1em] uppercase mb-5">ANUAL</p>
             <div className="flex items-baseline gap-0.5 mb-1">
-              <span className="text-[20px] font-semibold text-[#1a1a2e] self-start mt-2">$</span>
-              <span className="text-[54px] font-semibold text-[#1a1a2e] leading-none tracking-[-0.03em]">8</span>
-              <span className="ml-2 self-center text-[12px] font-semibold bg-purple-100 text-purple-600 px-2 py-0.5 rounded-full">-33%</span>
+              <span className="text-[54px] font-semibold text-[#1a1a2e] leading-none tracking-[-0.03em]">--</span>
             </div>
-            <p className="text-[#1a1a2e]/40 text-[13px] mb-7">por mes · facturado $96/año</p>
+            <p className="text-[#1a1a2e]/40 text-[13px] mb-7">por mes · facturado anual</p>
             <ul className="space-y-3 mb-8">
               {annualFeatures.map(f => (
                 <li key={f} className="flex items-center gap-2.5 text-[13.5px] text-[#1a1a2e]/70">
