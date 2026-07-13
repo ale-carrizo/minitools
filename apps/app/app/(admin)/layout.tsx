@@ -15,21 +15,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!session?.user) redirect("/login");
   if (session.user.role !== "ADMIN") redirect("/dashboard");
 
-  // El panel de admin está diseñado como superficie oscura fija. En modo
-  // claro --color-white se invierte a oscuro y todo el texto `text-white`/
-  // lavados `bg-white/[x]` se vuelve invisible. Forzamos el token a blanco
-  // literal dentro del admin y marcamos data-theme="dark" para que los
-  // overrides globales de tema claro no apliquen aquí.
   return (
-    <div
-      className="flex h-screen bg-[#0C0B1A] overflow-hidden"
-      data-theme="dark"
-      style={{ ["--color-white" as string]: "#ffffff" }}
-    >
+    <div className="flex h-screen bg-[#0C0B1A] light:bg-[#F7F7FB] overflow-hidden">
       {/* Sidebar */}
-      <aside className="flex-shrink-0 flex flex-col border-r border-white/[0.06] overflow-y-auto no-scrollbar" style={{ width: "200px" }}>
+      <aside className="flex-shrink-0 flex flex-col border-r border-white/[0.06] light:border-black/[0.06] bg-[#0C0B1A] light:bg-[#fff] overflow-y-auto no-scrollbar" style={{ width: "200px" }}>
         {/* Brand */}
-        <div className="flex items-center gap-2.5 px-4 h-[52px] border-b border-white/[0.06] flex-shrink-0">
+        <div className="flex items-center gap-2.5 px-4 h-[52px] border-b border-white/[0.06] light:border-black/[0.06] flex-shrink-0">
           <ZimpleIcon size={24} />
           <div className="min-w-0">
             <p className="text-white text-[12px] font-semibold leading-none tracking-[-0.02em]">Zimple Tools</p>
@@ -52,7 +43,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </nav>
 
         {/* Footer */}
-        <div className="border-t border-white/[0.06] px-2.5 py-3 space-y-0.5">
+        <div className="border-t border-white/[0.06] light:border-black/[0.06] px-2.5 py-3 space-y-0.5">
           <Link
             href="/dashboard"
             className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-white/30 hover:text-white/60 hover:bg-white/[0.04] transition-colors"
@@ -77,7 +68,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       </aside>
 
       {/* Main */}
-      <main className="flex-1 overflow-y-auto" style={{ background: "#111028" }}>
+      <main className="flex-1 overflow-y-auto bg-[#111028] light:bg-[#FBFBFF]">
         {children}
       </main>
     </div>
