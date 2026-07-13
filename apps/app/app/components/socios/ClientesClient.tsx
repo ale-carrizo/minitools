@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Socio, CobroProgramado } from '@/types/socios'
 import {
   getSocioStatus, STATUS_UI_CONFIG, COBRO_STATUS_CONFIG,
   initials, MEDIOS_PAGO,
 } from '@/types/socios'
-import { agregarCobroPuntual } from '@/lib/actions/socios'
+import { agregarCobroPuntual, getSocio } from '@/lib/actions/socios'
 import { WAButton } from './WAButton'
 import PagarModal from './PagarModal'
 
@@ -26,11 +26,22 @@ type Modal = 'posponer' | 'cobro_puntual' | 'pagar' | null
 
 export default function ClientesClient({ socios }: { socios: Socio[] }) {
   const [selected, setSelected]   = useState<Socio | null>(null)
+  const [detalle, setDetalle]     = useState<Socio | null>(null)
   const [search, setSearch]       = useState('')
   const [modal, setModal]         = useState<Modal>(null)
   const [activeCobro, setActive]  = useState<CobroProgramado | null>(null)
   const [, startTrans]            = useTransition()
   const router                    = useRouter()
+
+  // La lista solo trae el próximo cobro pendiente de cada socio (por
+  // performance); al abrir la ficha se pide el detalle completo con
+  // todo el historial de cobros.
+  useEffect(() => {
+    if (!selected) { setDetalle(null); return }
+    let cancelado = false
+    getSocio(selected.id).then((full) => { if (!cancelado) setDetalle(full) })
+    return () => { cancelado = true }
+  }, [selected?.id])
 
   const filtered = socios.filter(s =>
     s.nombre.toLowerCase().includes(search.toLowerCase()) ||
@@ -106,9 +117,14 @@ export default function ClientesClient({ socios }: { socios: Socio[] }) {
   }
 
   // ── Ficha ──────────────────────────────────────────────────────────────────
-  const status = getSocioStatus(selected)
+  const ficha  = detalle ?? selected
+  const status = getSocioStatus(ficha)
   const cfg    = STATUS_UI_CONFIG[status]
-  const cobros = selected.cobros ?? []
+  const cobros = ficha.cobros ?? []
+
+  function refrescarDetalle() {
+    getSocio(ficha.id).then(setDetalle)
+  }
 
   return (
     <div>
@@ -127,14 +143,14 @@ export default function ClientesClient({ socios }: { socios: Socio[] }) {
         <div className="flex items-center gap-3 pb-4 border-b border-white/[0.06] mb-4">
           <div
             className="w-12 h-12 rounded-full flex items-center justify-center text-white text-base font-bold flex-shrink-0"
-            style={{ background: selected.avatarColor }}
+            style={{ background: ficha.avatarColor }}
           >
-            {initials(selected.nombre)}
+            {initials(ficha.nombre)}
           </div>
           <div className="flex-1">
-            <p className="text-[16px] font-bold text-white">{selected.nombre}</p>
+            <p className="text-[16px] font-bold text-white">{ficha.nombre}</p>
             <p className="text-[11px] text-white/35 mt-0.5">
-              +{selected.telefono} · desde {new Date(selected.createdAt).toLocaleDateString('es-AR', { month: 'short', year: 'numeric' })}
+              +{ficha.telefono} · desde {new Date(ficha.createdAt).toLocaleDateString('es-AR', { month: 'short', year: 'numeric' })}
             </p>
           </div>
           <span className="text-[10px] font-semibold px-2 py-1 rounded-full" style={{ background: cfg.bg, color: cfg.text }}>
@@ -142,14 +158,14 @@ export default function ClientesClient({ socios }: { socios: Socio[] }) {
           </span>
         </div>
         {[
-          ['Tipo de cobro', selected.concepto ?? 'Cuota'],
-          ['Monto', fmt(selected.monto)],
-          ['Frecuencia', selected.frecuencia === 'mensual'
-            ? `Mensual · día ${selected.diaVencimiento}`
-            : selected.frecuencia],
-          selected.proximoCobro ? ['Próximo cobro', fmtFecha(selected.proximoCobro.fechaVencimiento)] : null,
-          selected.deudaTotal > 0 ? ['Deuda acumulada', fmt(selected.deudaTotal)] : null,
-          selected.notas ? ['Notas', selected.notas] : null,
+          ['Tipo de cobro', ficha.concepto ?? 'Cuota'],
+          ['Monto', fmt(ficha.monto)],
+          ['Frecuencia', ficha.frecuencia === 'mensual'
+            ? `Mensual · día ${ficha.diaVencimiento}`
+            : ficha.frecuencia],
+          ficha.proximoCobro ? ['Próximo cobro', fmtFecha(ficha.proximoCobro.fechaVencimiento)] : null,
+          ficha.deudaTotal > 0 ? ['Deuda acumulada', fmt(ficha.deudaTotal)] : null,
+          ficha.notas ? ['Notas', ficha.notas] : null,
         ].filter((r): r is [string, string] => r !== null).map(([label, val]) => (
           <div key={String(label)} className="flex items-center justify-between py-2 border-b border-white/[0.05] last:border-0">
             <span className="text-[11px] text-white/35">{label}</span>
@@ -160,9 +176,9 @@ export default function ClientesClient({ socios }: { socios: Socio[] }) {
 
       {/* Acciones */}
       <div className="grid grid-cols-2 gap-2 mb-4">
-        {selected.proximoCobro && (
+        {ficha.proximoCobro && (
           <button
-            onClick={() => { setActive(selected.proximoCobro!); setModal('pagar') }}
+            onClick={() => { setActive(ficha.proximoCobro!); setModal('pagar') }}
             className="flex flex-col gap-1 p-3 rounded-2xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] text-left transition-colors"
           >
             <span className="text-[18px]">✅</span>
@@ -170,14 +186,14 @@ export default function ClientesClient({ socios }: { socios: Socio[] }) {
             <span className="text-[10px] text-white/35">Marcar como pagado</span>
           </button>
         )}
-        {selected.proximoCobro && (
+        {ficha.proximoCobro && (
           <a
-            href={`https://wa.me/${selected.telefono}?text=${encodeURIComponent(
-              selected.mensajeTemplate
-                .replace(/{nombre}/g, selected.nombre)
-                .replace(/{monto}/g, selected.proximoCobro.monto.toLocaleString('es-AR'))
-                .replace(/{fecha}/g, new Date(selected.proximoCobro.fechaVencimiento + 'T12:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'long' }))
-                .replace(/{concepto}/g, selected.proximoCobro.concepto ?? selected.concepto ?? 'cuota')
+            href={`https://wa.me/${ficha.telefono}?text=${encodeURIComponent(
+              ficha.mensajeTemplate
+                .replace(/{nombre}/g, ficha.nombre)
+                .replace(/{monto}/g, ficha.proximoCobro.monto.toLocaleString('es-AR'))
+                .replace(/{fecha}/g, new Date(ficha.proximoCobro.fechaVencimiento + 'T12:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'long' }))
+                .replace(/{concepto}/g, ficha.proximoCobro.concepto ?? ficha.concepto ?? 'cuota')
             )}`}
             target="_blank"
             rel="noopener noreferrer"
@@ -199,7 +215,7 @@ export default function ClientesClient({ socios }: { socios: Socio[] }) {
           <span className="text-[10px] text-white/35">Monto y fecha libre</span>
         </button>
         <button
-          onClick={() => router.push(`/dashboard/socios/${selected.id}/editar`)}
+          onClick={() => router.push(`/dashboard/socios/${ficha.id}/editar`)}
           className="flex flex-col gap-1 p-3 rounded-2xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] text-left transition-colors"
         >
           <span className="text-[18px]">✏️</span>
@@ -236,20 +252,22 @@ export default function ClientesClient({ socios }: { socios: Socio[] }) {
       {modal === 'pagar' && activeCobro && (
         <PagarModal
           cobro={activeCobro}
-          nombre={selected.nombre}
+          nombre={ficha.nombre}
           onClose={() => { setModal(null); setActive(null) }}
-          onDone={() => { setModal(null); setSelected(null) }}
+          onDone={() => { setModal(null); setActive(null); refrescarDetalle(); router.refresh() }}
         />
       )}
 
       {/* Modal: cobro puntual */}
       {modal === 'cobro_puntual' && (
         <CobroPuntualModal
-          socio={selected}
+          socio={ficha}
           onClose={() => setModal(null)}
           onConfirm={async (monto, fecha, concepto) => {
-            await agregarCobroPuntual({ socioId: selected.id, monto, fechaVencimiento: fecha, concepto })
+            await agregarCobroPuntual({ socioId: ficha.id, monto, fechaVencimiento: fecha, concepto })
             setModal(null)
+            refrescarDetalle()
+            router.refresh()
           }}
         />
       )}
