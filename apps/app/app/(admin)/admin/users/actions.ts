@@ -95,6 +95,7 @@ export async function createUserManual(
   const name = (formData.get("name") as string)?.trim();
   let email = (formData.get("email") as string)?.trim().toLowerCase();
   const role = (formData.get("role") as string) === "ADMIN" ? "ADMIN" : "USER";
+  const providedPassword = formData.get("password") as string;
 
   if (!name || !email) {
     return { error: "Nombre y email son obligatorios." };
@@ -110,7 +111,10 @@ export async function createUserManual(
     return { error: `Ya existe una cuenta con el email ${email}.` };
   }
 
-  const tempPassword = randomBytes(8).toString("hex");
+  const tempPassword = providedPassword?.trim() || randomBytes(8).toString("hex");
+  if (tempPassword.length < 8) {
+    return { error: "La contraseña debe tener al menos 8 caracteres." };
+  }
   const hashed = await bcrypt.hash(tempPassword, 12);
 
   await prisma.user.create({

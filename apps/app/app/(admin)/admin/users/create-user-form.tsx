@@ -31,6 +31,13 @@ export default function CreateUserForm() {
           />
         </div>
 
+        <input
+          name="password"
+          type="password"
+          placeholder="Contraseña (opcional — se genera una temporal si dejás esto vacío)"
+          className="w-full px-4 py-2.5 rounded-xl bg-white/[0.06] border border-white/[0.10] text-white text-sm placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-[#5448EE] focus:border-transparent transition"
+        />
+
         <div className="flex items-center justify-between gap-3">
           <label className="flex items-center gap-2 text-sm text-white/60">
             <input
