@@ -1,5 +1,6 @@
 import TurnoForm from '@/app/components/turnos/TurnoForm'
 import { getConfig, getEmpleados, getServicios } from '@/lib/actions/turno'
+import { getClientesSugeridos } from '@/lib/actions/clientes-sugeridos'
 import { todayString } from '@/types/turno'
 
 export default async function NuevoTurnoPage({
@@ -8,7 +9,9 @@ export default async function NuevoTurnoPage({
   searchParams: Promise<{ fecha?: string; hora?: string }>
 }) {
   const sp = await searchParams
-  const [servicios, empleados, config] = await Promise.all([getServicios(), getEmpleados(), getConfig()])
+  const [servicios, empleados, config, clientesSugeridos] = await Promise.all([
+    getServicios(), getEmpleados(), getConfig(), getClientesSugeridos(),
+  ])
 
   return (
     <div>
@@ -21,6 +24,7 @@ export default async function NuevoTurnoPage({
         servicios={servicios}
         empleados={empleados}
         config={config}
+        clientesSugeridos={clientesSugeridos}
         fechaDefault={sp.fecha ?? todayString()}
         horaDefault={sp.hora}
       />

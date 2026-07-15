@@ -34,6 +34,7 @@ export interface Tarea {
   adjuntos:    Adjunto[]
   fechaVenc:   string | null
   portada:     string | null
+  clienteNombre: string | null
   orden:       number
   archivada:   boolean
   createdAt:   string

@@ -3,8 +3,9 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useMemo, useState, useTransition } from 'react'
-import { crearPresupuesto, editarPresupuesto } from '@/lib/actions/presupuesto'
+import { crearPresupuesto, editarPresupuesto, crearCliente } from '@/lib/actions/presupuesto'
 import { todayAR } from '@/lib/date'
+import type { ClienteSugerido } from '@/lib/actions/clientes-sugeridos'
 import {
   calcularTotales,
   formatCurrency,
@@ -19,6 +20,7 @@ interface Props {
   clientes: Cliente[]
   presupuesto?: Presupuesto
   template?: PresupuestoTemplate | null
+  clientesSugeridos?: ClienteSugerido[]
 }
 
 type FormItem = {
@@ -49,11 +51,33 @@ function buildDefaultItem(servicio?: PresupuestoServicioFrecuente): FormItem {
   }
 }
 
-export default function PresupuestoForm({ clientes, presupuesto, template }: Props) {
+export default function PresupuestoForm({ clientes: clientesIniciales, presupuesto, template, clientesSugeridos = [] }: Props) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
+  const [clientes, setClientes] = useState(clientesIniciales)
+  const [creandoCliente, setCreandoCliente] = useState(false)
   const isEdit = Boolean(presupuesto)
+
+  // Socios de "Clientes y Pagos" que todavía no tienen un Cliente cargado
+  // en Presupuestos — se ofrecen como sugerencia y, al elegirlos, se crea
+  // el Cliente al toque en vez de tener que cargarlo de cero.
+  const sociosSugeridos = clientesSugeridos.filter((s) => s.origen === 'socio')
+
+  async function handleSeleccionarSocio(socioId: string) {
+    const socio = sociosSugeridos.find((s) => s.id === socioId)
+    if (!socio) return
+    setCreandoCliente(true)
+    try {
+      const nuevo = await crearCliente({ nombre: socio.nombre, telefono: socio.telefono ?? undefined })
+      setClientes((prev) => [...prev, nuevo])
+      setField('clienteId', nuevo.id)
+    } catch (err: any) {
+      setError(err.message ?? 'No se pudo cargar el cliente')
+    } finally {
+      setCreandoCliente(false)
+    }
+  }
   const defaultFechaEmision = presupuesto?.fechaEmision ?? todayDate()
   const [form, setForm] = useState({
     titulo: presupuesto?.titulo ?? '',
@@ -188,8 +212,16 @@ export default function PresupuestoForm({ clientes, presupuesto, template }: Pro
             </div>
             <select
               value={form.clienteId}
-              onChange={(e) => setField('clienteId', e.target.value)}
-              className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white focus:border-[#5448EE]/60 focus:outline-none"
+              onChange={(e) => {
+                const value = e.target.value
+                if (value.startsWith('socio:')) {
+                  handleSeleccionarSocio(value.slice('socio:'.length))
+                } else {
+                  setField('clienteId', value)
+                }
+              }}
+              disabled={creandoCliente}
+              className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white focus:border-[#5448EE]/60 focus:outline-none disabled:opacity-50"
             >
               <option value="">Sin cliente</option>
               {clientes.map((c) => (
@@ -197,7 +229,17 @@ export default function PresupuestoForm({ clientes, presupuesto, template }: Pro
                   {c.nombre}{c.empresa ? ` · ${c.empresa}` : ''}
                 </option>
               ))}
+              {sociosSugeridos.length > 0 && (
+                <optgroup label="Sugeridos de Clientes y Pagos">
+                  {sociosSugeridos.map((s) => (
+                    <option key={`socio:${s.id}`} value={`socio:${s.id}`}>
+                      {s.nombre}{s.telefono ? ` · ${s.telefono}` : ''}
+                    </option>
+                  ))}
+                </optgroup>
+              )}
             </select>
+            {creandoCliente && <p className="mt-1 text-[11px] text-white/30">Cargando cliente...</p>}
           </div>
 
           {/* Moneda */}

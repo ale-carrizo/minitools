@@ -22,6 +22,7 @@ function mapTarea(r: any): Tarea {
     checklist: JSON.parse(r.checklist ?? '[]'),
     adjuntos: JSON.parse(r.adjuntos ?? '[]'),
     fechaVenc: r.fechaVenc, portada: r.portada,
+    clienteNombre: r.clienteNombre,
     orden: r.orden, archivada: r.archivada,
     createdAt: r.createdAt?.toISOString?.() ?? r.createdAt,
     updatedAt: r.updatedAt?.toISOString?.() ?? r.updatedAt,
@@ -188,6 +189,7 @@ export async function updateTarea(id: string, data: Partial<{
   adjuntos:    string      // JSON
   fechaVenc:   string | null
   portada:     string | null
+  clienteNombre: string | null
   columnaId:   string
   orden:       number
   archivada:   boolean

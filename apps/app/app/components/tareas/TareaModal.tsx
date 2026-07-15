@@ -9,10 +9,13 @@ import {
 } from '@/types/tareas'
 import type { Tarea, Columna, Etiqueta, CheckItem, Prioridad, Adjunto } from '@/types/tareas'
 import { firmaCoincide } from '@/lib/file-signature'
+import ClienteCombobox from '@/app/components/shared/ClienteCombobox'
+import type { ClienteSugerido } from '@/lib/actions/clientes-sugeridos'
 
 interface Props {
   tarea:    Tarea
   columnas: Columna[]
+  clientesSugeridos?: ClienteSugerido[]
   onClose:  () => void
   onUpdate: (t: Tarea) => void
   onDelete: (id: string) => void
@@ -28,7 +31,7 @@ function fileToDataUrl(file: File): Promise<string> {
   })
 }
 
-export default function TareaModal({ tarea, columnas, onClose, onUpdate, onDelete, onMove }: Props) {
+export default function TareaModal({ tarea, columnas, clientesSugeridos = [], onClose, onUpdate, onDelete, onMove }: Props) {
   const [titulo,      setTitulo]      = useState(tarea.titulo)
   const [desc,        setDesc]        = useState(tarea.descripcion ?? '')
   const [prioridad,   setPrioridad]   = useState<Prioridad>(tarea.prioridad)
@@ -37,6 +40,7 @@ export default function TareaModal({ tarea, columnas, onClose, onUpdate, onDelet
   const [adjuntos,    setAdjuntos]    = useState<Adjunto[]>(tarea.adjuntos)
   const [fechaVenc,   setFechaVenc]   = useState(tarea.fechaVenc ?? '')
   const [portada,     setPortada]     = useState(tarea.portada ?? '')
+  const [clienteNombre, setClienteNombre] = useState(tarea.clienteNombre ?? '')
   const [nuevoItem,   setNuevoItem]   = useState('')
   const [showPortada, setShowPortada] = useState(false)
   const [showLabels,  setShowLabels]  = useState(false)
@@ -50,7 +54,7 @@ export default function TareaModal({ tarea, columnas, onClose, onUpdate, onDelet
     const h = (e: KeyboardEvent) => { if (e.key === 'Escape') save() }
     document.addEventListener('keydown', h)
     return () => document.removeEventListener('keydown', h)
-  }, [titulo, desc, prioridad, etiquetas, checklist, adjuntos, fechaVenc, portada])
+  }, [titulo, desc, prioridad, etiquetas, checklist, adjuntos, fechaVenc, portada, clienteNombre])
 
   function save() {
     startTrans(async () => {
@@ -63,6 +67,7 @@ export default function TareaModal({ tarea, columnas, onClose, onUpdate, onDelet
         adjuntos:    JSON.stringify(adjuntos),
         fechaVenc:   fechaVenc || null,
         portada:     portada || null,
+        clienteNombre: clienteNombre.trim() || null,
       })
       onUpdate(r)
       onClose()
@@ -288,6 +293,18 @@ export default function TareaModal({ tarea, columnas, onClose, onUpdate, onDelet
                     Quitar fecha
                   </button>
                 )}
+              </div>
+
+              {/* Cliente */}
+              <div>
+                <p className="text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-2">Cliente</p>
+                <ClienteCombobox
+                  sugerencias={clientesSugeridos}
+                  value={clienteNombre}
+                  onChange={setClienteNombre}
+                  placeholder="Nombre del cliente"
+                  className="w-full px-2.5 py-2 rounded-xl border border-white/[0.08] bg-white/[0.05] text-[11px] text-white placeholder:text-white/20 focus:outline-none focus:border-[#5448EE]/50"
+                />
               </div>
 
               {/* Mover a */}

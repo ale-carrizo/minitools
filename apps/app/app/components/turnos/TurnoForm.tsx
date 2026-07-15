@@ -13,6 +13,8 @@ import {
   type TurnoServicio,
 } from '@/types/turno'
 import EmpleadoRapidoModal from './EmpleadoRapidoModal'
+import ClienteCombobox from '@/app/components/shared/ClienteCombobox'
+import type { ClienteSugerido } from '@/lib/actions/clientes-sugeridos'
 
 export default function TurnoForm({
   turno,
@@ -21,6 +23,7 @@ export default function TurnoForm({
   fechaDefault,
   horaDefault,
   config,
+  clientesSugeridos = [],
 }: {
   turno?: Turno
   servicios: TurnoServicio[]
@@ -28,6 +31,7 @@ export default function TurnoForm({
   fechaDefault: string
   horaDefault?: string
   config: TurnoConfig
+  clientesSugeridos?: ClienteSugerido[]
 }) {
   const router = useRouter()
   const [servicioId, setServicioId] = useState(turno?.servicioId ?? '')
@@ -237,7 +241,13 @@ export default function TurnoForm({
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2 sm:col-span-2">
             <label className="text-[12px] text-white/50">Nombre *</label>
-            <input value={clienteNombre} onChange={(e) => setClienteNombre(e.target.value)} placeholder="Nombre del cliente" className="w-full bg-white/[0.05] border border-white/[0.09] rounded-xl text-white px-3 py-2.5 text-sm placeholder:text-white/20 focus:outline-none focus:border-[#5448EE]/60" />
+            <ClienteCombobox
+              sugerencias={clientesSugeridos}
+              value={clienteNombre}
+              onChange={setClienteNombre}
+              onSeleccionar={(c) => { if (c.telefono) setClienteTel(normalizarWhatsApp(c.telefono)) }}
+              placeholder="Nombre del cliente"
+            />
           </div>
           <div className="space-y-2">
             <label className="text-[12px] text-white/50">Teléfono</label>

@@ -9,6 +9,7 @@ import {
 import { PRIORIDAD_CONFIG, COLORES_COLUMNA, estaVencida, checkProgress } from '@/types/tareas'
 import type { Tablero, Columna, Tarea, Prioridad } from '@/types/tareas'
 import TareaModal from './TareaModal'
+import type { ClienteSugerido } from '@/lib/actions/clientes-sugeridos'
 import Link from 'next/link'
 
 // ── TareaCard ─────────────────────────────────────────────────────────────────
@@ -48,6 +49,15 @@ function TareaCard({
         )}
 
         <p className="text-[13px] font-medium text-white leading-snug mb-2">{tarea.titulo}</p>
+
+        {tarea.clienteNombre && (
+          <p className="flex items-center gap-1 text-[10px] text-white/40 mb-2 truncate">
+            <svg width="9" height="9" viewBox="0 0 20 20" fill="currentColor" className="flex-shrink-0">
+              <path d="M10 9a4 4 0 100-8 4 4 0 000 8zm-7 9a7 7 0 1114 0H3z"/>
+            </svg>
+            {tarea.clienteNombre}
+          </p>
+        )}
 
         {/* Pills */}
         <div className="flex flex-wrap items-center gap-1.5">
@@ -227,7 +237,7 @@ function KanbanColumn({
 }
 
 // ── KanbanBoard (main) ────────────────────────────────────────────────────────
-export default function KanbanBoard({ tablero: initial }: { tablero: Tablero }) {
+export default function KanbanBoard({ tablero: initial, clientesSugeridos = [] }: { tablero: Tablero; clientesSugeridos?: ClienteSugerido[] }) {
   const [tablero, setTablero]       = useState(initial)
   const [dragCard, setDragCard]     = useState<Tarea | null>(null)
   const [overCol, setOverCol]       = useState<string | null>(null)
@@ -418,6 +428,7 @@ export default function KanbanBoard({ tablero: initial }: { tablero: Tablero }) 
           key={modal.id}
           tarea={modal}
           columnas={tablero.columnas}
+          clientesSugeridos={clientesSugeridos}
           onClose={() => setModal(null)}
           onUpdate={t => { handleCardUpdate(t); setModal(null) }}
           onDelete={id => { handleCardDelete(id); setModal(null) }}

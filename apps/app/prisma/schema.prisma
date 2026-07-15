@@ -664,6 +664,7 @@ model Tarea {
   adjuntos    String   @default("[]")      // JSON [{nombre, url (base64), tipo, tamano}]
   fechaVenc   String?
   portada     String?
+  clienteNombre String?
   orden       Int      @default(0)
   archivada   Boolean  @default(false)
   createdAt   DateTime @default(now())

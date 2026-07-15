@@ -6,10 +6,12 @@ import { useRouter } from 'next/navigation'
 import { crearRecibo } from '@/lib/actions/recibos'
 import { todayAR } from '@/lib/date'
 import { MEDIOS_PAGO, type ReciboCobroConfig } from '@/types/recibos'
+import ClienteCombobox from '@/app/components/shared/ClienteCombobox'
+import type { ClienteSugerido } from '@/lib/actions/clientes-sugeridos'
 
 const INPUT_CLS = 'w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[13px] text-white placeholder:text-white/20 focus:border-[#5448EE]/60 focus:outline-none'
 
-export default function NuevoReciboClient({ config }: { config: ReciboCobroConfig | null }) {
+export default function NuevoReciboClient({ config, clientesSugeridos = [] }: { config: ReciboCobroConfig | null; clientesSugeridos?: ClienteSugerido[] }) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState('')
@@ -101,7 +103,14 @@ export default function NuevoReciboClient({ config }: { config: ReciboCobroConfi
           </div>
           <div>
             <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-white/40">Recibido de</label>
-            <input value={form.receptorNombre} onChange={e => set('receptorNombre', e.target.value)} placeholder="Nombre de quien pagó" className={INPUT_CLS} />
+            <ClienteCombobox
+              sugerencias={clientesSugeridos}
+              value={form.receptorNombre}
+              onChange={(v) => set('receptorNombre', v)}
+              onSeleccionar={(c) => { if (c.telefono) set('receptorTelefono', c.telefono) }}
+              placeholder="Nombre de quien pagó"
+              className={INPUT_CLS}
+            />
           </div>
           <div>
             <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-white/40">DNI/CUIT de quien pagó</label>
