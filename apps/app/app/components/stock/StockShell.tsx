@@ -13,8 +13,8 @@ export default function StockShell({ children, alertas = 0 }: Props) {
   const pathname = usePathname()
 
   const tabs = [
-    { label: 'Inventario', href: '/dashboard/stock' },
-    { label: 'Ventas', href: '/dashboard/stock/ventas' },
+    { label: 'Ventas', href: '/dashboard/stock' },
+    { label: 'Inventario', href: '/dashboard/stock/inventario' },
     { label: alertas > 0 ? `Alertas  ${alertas}` : 'Alertas', href: '/dashboard/stock/alertas' },
     { label: '+ Producto', href: '/dashboard/stock/nuevo' },
   ]
@@ -22,8 +22,8 @@ export default function StockShell({ children, alertas = 0 }: Props) {
   return (
     <div className="px-4 py-6 md:p-8">
       <div className="mb-6">
-        <h1 className="text-[24px] font-semibold text-white tracking-[-0.03em]"><AppTitle slug="stock" fallback="Control de Stock" /></h1>
-        <p className="text-white/40 text-sm mt-0.5">Inventario y alertas de stock mínimo</p>
+        <h1 className="text-[24px] font-semibold text-white tracking-[-0.03em]"><AppTitle slug="stock" fallback="Ventas y Stock" /></h1>
+        <p className="text-white/40 text-sm mt-0.5">Registrá ventas, inventario y alertas de stock mínimo</p>
       </div>
 
       {/* Tabs */}

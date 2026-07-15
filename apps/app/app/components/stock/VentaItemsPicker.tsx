@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useRef, useState } from 'react'
 import type { Producto } from '@/types/stock'
 
 export interface VentaItem {
@@ -20,6 +21,63 @@ export function buildVentaItemsPayload(items: VentaItem[]) {
       precio: item.precio ? Number(item.precio) : undefined,
     }))
     .filter((item) => item.producto_id && item.cantidad > 0)
+}
+
+function ProductoCombobox({ productos, value, onChange }: {
+  productos: Producto[]
+  value: string
+  onChange: (productoId: string) => void
+}) {
+  const [query, setQuery] = useState('')
+  const [open, setOpen] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const seleccionado = productos.find((p) => p.id === value)
+
+  useEffect(() => {
+    function handleClickFuera(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handleClickFuera)
+    return () => document.removeEventListener('mousedown', handleClickFuera)
+  }, [])
+
+  const q = query.trim().toLowerCase()
+  const filtrados = q
+    ? productos.filter((p) => p.nombre.toLowerCase().includes(q) || (p.sku ?? '').toLowerCase().includes(q))
+    : productos
+
+  return (
+    <div ref={containerRef} className="relative">
+      <input
+        type="text"
+        value={open ? query : (seleccionado?.nombre ?? '')}
+        onChange={(e) => { setQuery(e.target.value); if (value) onChange(''); setOpen(true) }}
+        onFocus={() => { setQuery(''); setOpen(true) }}
+        placeholder="Buscar por nombre o SKU..."
+        className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[12px] text-white placeholder:text-white/20 focus:border-[#5448EE]/60 focus:outline-none"
+      />
+      {open && (
+        <div className="absolute z-20 mt-1 w-full max-h-52 overflow-y-auto rounded-xl border border-white/[0.10] light:border-black/[0.10] bg-[#1A1830] light:bg-[#ffffff] shadow-xl">
+          {filtrados.length === 0 ? (
+            <p className="px-3 py-2.5 text-[12px] text-white/30">Sin resultados</p>
+          ) : filtrados.map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => { onChange(p.id); setQuery(''); setOpen(false) }}
+              className="flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-[12px] text-white hover:bg-white/[0.06] transition-colors"
+            >
+              <span className="truncate">
+                {p.nombre}
+                {p.sku ? <span className="text-white/30"> · {p.sku}</span> : null}
+              </span>
+              <span className="flex-shrink-0 text-white/30 text-[11px]">stock {p.stock}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
 }
 
 interface Props {
@@ -56,18 +114,11 @@ export default function VentaItemsPicker({ productos, items, onChange }: Props) 
             <div key={index} className="grid gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] p-3 md:grid-cols-[1.5fr_0.65fr_0.8fr_auto]">
               <div>
                 <label className="mb-1 block text-[10px] text-white/35">Producto</label>
-                <select
+                <ProductoCombobox
+                  productos={productos}
                   value={item.productoId}
-                  onChange={(e) => setItem(index, { productoId: e.target.value })}
-                  className="w-full rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2.5 text-[12px] text-white focus:border-[#5448EE]/60 focus:outline-none"
-                >
-                  <option value="">Seleccionar producto</option>
-                  {productos.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.nombre} · stock {p.stock}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(productoId) => setItem(index, { productoId })}
+                />
               </div>
               <div>
                 <label className="mb-1 block text-[10px] text-white/35">Cantidad</label>

@@ -6,7 +6,7 @@ import { PRICES } from "@/lib/mercadopago";
 
 const features = [
   "Acceso completo a las 10 herramientas",
-  "Control de Stock con alertas automáticas",
+  "Ventas y Stock con alertas automáticas",
   "Generador de presupuestos en PDF",
   "Control de Caja + lectura de comprobantes con IA",
   "Calculadora de precio de venta",

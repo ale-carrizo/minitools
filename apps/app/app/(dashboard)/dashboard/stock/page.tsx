@@ -1,14 +1,7 @@
 import { getProductos } from '@/lib/actions/stock'
-import StockToolbar from '@/app/components/stock/StockToolbar'
-import ProductoList from '@/app/components/stock/ProductoList'
+import VentasClient from '@/app/components/stock/VentasClient'
 
 export default async function StockPage() {
   const productos = await getProductos()
-
-  return (
-    <div>
-      <StockToolbar count={productos.length} />
-      <ProductoList productos={productos} />
-    </div>
-  )
+  return <VentasClient productos={productos} />
 }

@@ -30,7 +30,7 @@ export default async function ProductoPage({ params }: { params: { id: string } 
     <div className="max-w-3xl">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 mb-6 text-[13px] text-white/30">
-        <Link href="/dashboard/stock" className="hover:text-white/60 transition-colors">Inventario</Link>
+        <Link href="/dashboard/stock/inventario" className="hover:text-white/60 transition-colors">Inventario</Link>
         <span>/</span>
         <span className="text-white/60">{producto.nombre}</span>
       </div>

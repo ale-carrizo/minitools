@@ -6,7 +6,7 @@ export interface AppDef {
 }
 
 export const APPS: AppDef[] = [
-  { slug: 'stock',       label: 'Control de Stock',     desc: 'Inventario con alertas de stock mínimo',         icon: '📦' },
+  { slug: 'stock',       label: 'Ventas y Stock',       desc: 'Inventario con alertas de stock mínimo',         icon: '📦' },
   { slug: 'presupuestos',label: 'Presupuestos',          desc: 'PDFs con logo y seguimiento de estados',         icon: '📄' },
   { slug: 'caja',        label: 'Caja + Pagos',          desc: 'Ingresos, egresos y lectura de comprobantes IA', icon: '💰' },
   { slug: 'precios',     label: 'Calculadora de Precios',desc: 'Precio de venta, margen y punto de equilibrio',  icon: '🧮' },
