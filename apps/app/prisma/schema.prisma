@@ -73,6 +73,9 @@ model User {
   recibos      ReciboCobro[]
   tableros     Tablero[]
   tareas       Tarea[]
+  libretaConfig LibretaConfig?
+  libretaCajas  LibretaCaja[]
+  libretaVentas LibretaVenta[]
 }
 
 model Account {
@@ -184,6 +187,7 @@ model Producto {
   user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   movimientos MovimientoStock[]
   cajaCobroItems CajaCobroItem[]
+  libretaVentas LibretaVenta[]
 }
 
 model MovimientoStock {
@@ -709,4 +713,57 @@ model ReciboCobro {
   updatedAt     DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ── Libreta de Ventas ──────────────────────────────────────────────────────────
+
+model LibretaConfig {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  controlarStock Boolean  @default(true)
+  camposConfig   String   @default("{}")   // JSON: { campo: { label, visible, requerido, tipo } }
+  mediosPago     String   @default("[\"Efectivo\",\"Transferencia\",\"Tarjeta\"]") // JSON array
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model LibretaCaja {
+  id              String    @id @default(cuid())
+  userId          String
+  fecha           String    // YYYY-MM-DD
+  montoInicial    Float     @default(0)
+  nota            String?
+  estado          String    @default("abierta") // abierta | cerrada
+  efectivoContado Float?
+  notaCierre      String?
+  abiertaAt       DateTime  @default(now())
+  cerradaAt       DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user   User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ventas LibretaVenta[]
+
+  @@unique([userId, fecha])
+}
+
+model LibretaVenta {
+  id         String   @id @default(cuid())
+  userId     String
+  cajaId     String
+  productoId String?
+  concepto   String
+  cantidad   Float    @default(1)
+  precio     Float    @default(0)
+  total      Float    @default(0)
+  medioPago  String?
+  cliente    String?
+  nota       String?
+  createdAt  DateTime @default(now())
+
+  user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  caja     LibretaCaja  @relation(fields: [cajaId], references: [id], onDelete: Cascade)
+  producto Producto?    @relation(fields: [productoId], references: [id], onDelete: SetNull)
 }
