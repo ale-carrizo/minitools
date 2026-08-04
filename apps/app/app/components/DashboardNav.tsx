@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAppNames } from '@/hooks/useAppNames'
 import RenameAppsModal from './RenameAppsModal'
+import InstallPwaButton from './InstallPwaButton'
 
 const toolIcons: Record<string, React.ReactNode> = {
   stock: <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor"><path d="M4 3a2 2 0 100 4h12a2 2 0 100-4H4z"/><path fillRule="evenodd" d="M3 8h14v7a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm5 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" clipRule="evenodd"/></svg>,
@@ -100,6 +101,8 @@ export default function DashboardNav({ onNavigate }: { onNavigate?: () => void }
           })}
         </ul>
       </div>
+
+      <InstallPwaButton />
 
       <RenameAppsModal open={editOpen} onClose={() => setEditOpen(false)} />
     </>

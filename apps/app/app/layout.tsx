@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import AppSessionProvider from "./components/session-provider";
+import PwaRegister from "./components/PwaRegister";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -12,6 +13,18 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Zimple Tools — Dashboard",
   description: "Accedé a todas tus herramientas.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Zimple",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0C0B1A",
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -31,6 +44,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full">
+        <PwaRegister />
         <AppSessionProvider>{children}</AppSessionProvider>
       </body>
     </html>
