@@ -4,8 +4,8 @@
     {
       "name": "minitools-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
-      "port": 3000
+      "runtimeArgs": ["run", "dev:app"],
+      "port": 3002
     }
   ]
 }

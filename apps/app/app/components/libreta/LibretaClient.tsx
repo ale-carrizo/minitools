@@ -236,6 +236,19 @@ export default function LibretaClient({
     })
   }
 
+  // Los datos de historial/reportes se piden una sola vez al cargar la página,
+  // así que quedan desactualizados si el usuario abre caja, agrega ventas o
+  // cierra caja sin recargar. Refrescamos cada vez que entra a esta pestaña.
+  useEffect(() => {
+    if (tab !== 'historial') return
+    filtrarHistorial(historyDate, historyMonth)
+    startTrans(async () => {
+      const r = await getReporteMes(historyMonth)
+      setReporte(r)
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab])
+
   function cambiarMesReporte(mes: string) {
     setHistoryMonth(mes)
     setHistoryDate('')
