@@ -5,15 +5,14 @@ import { useRouter } from "next/navigation";
 import { PRICES } from "@/lib/mercadopago";
 
 const features = [
-  "Acceso completo a las 11 herramientas",
-  "Ventas y Stock con alertas automáticas",
+  "Acceso completo a las 10 herramientas",
   "Generador de presupuestos en PDF",
   "Control de Caja + lectura de comprobantes con IA",
   "Libreta de ventas con caja diaria simple",
   "Calculadora de precio de venta",
   "Recibos de sueldo y control de asistencia",
   "Agenda de turnos con recordatorios WhatsApp",
-  "CRM de clientes con historial completo",
+  "Gestión de clientes con calendario de cobros y WhatsApp",
   "Soporte por email incluido",
   "Actualizaciones automáticas sin costo adicional",
 ];

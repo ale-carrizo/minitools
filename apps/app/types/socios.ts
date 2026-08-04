@@ -18,6 +18,7 @@ export interface Socio {
   diaVencimiento:  number | null
   concepto:        string | null
   mensajeTemplate: string
+  camposPersonalizados: Record<string, string>
   totalCobrado:    number
   deudaTotal:      number
   createdAt:       string
@@ -25,6 +26,22 @@ export interface Socio {
   // Joined
   cobros?:         CobroProgramado[]
   proximoCobro?:   CobroProgramado | null
+}
+
+export interface CampoPersonalizado {
+  id:      string
+  name:    string
+  type:    'text' | 'number' | 'date'
+  visible: boolean
+}
+
+export interface SociosConfig {
+  id:                     string
+  userId:                 string
+  mensajeTemplateDefault: string
+  camposPersonalizados:   CampoPersonalizado[]
+  createdAt:              string
+  updatedAt:              string
 }
 
 export interface CobroProgramado {

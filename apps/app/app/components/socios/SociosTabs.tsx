@@ -4,8 +4,10 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const TABS = [
-  { label: 'Clientes',          href: '/dashboard/socios',        exact: true },
-  { label: 'Cobros pendientes', href: '/dashboard/socios/cobros', exact: true },
+  { label: 'Cobros y calendario', href: '/dashboard/socios/cobros', exact: true },
+  { label: 'Clientes',            href: '/dashboard/socios',        exact: true },
+  { label: 'Nuevo cliente',       href: '/dashboard/socios/nuevo',  exact: true },
+  { label: 'Configuración',       href: '/dashboard/socios/config', exact: true },
 ]
 
 export default function SociosTabs() {

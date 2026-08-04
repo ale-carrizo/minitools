@@ -3,15 +3,15 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createSocio, updateSocio } from '@/lib/actions/socios'
-import type { Socio } from '@/types/socios'
+import type { CampoPersonalizado, Socio } from '@/types/socios'
 import { FRECUENCIA_LABELS } from '@/types/socios'
 
 const DEFAULT_TEMPLATE =
   'Hola {nombre} 👋, te recuerdo que tu {concepto} de ${monto} vence el {fecha}. Cualquier consulta estoy a disposición. ¡Gracias!'
 
-interface Props { socio?: Socio }
+interface Props { socio?: Socio; camposDef?: CampoPersonalizado[] }
 
-export default function SocioForm({ socio }: Props) {
+export default function SocioForm({ socio, camposDef = [] }: Props) {
   const router = useRouter()
   const isEdit = !!socio
 
@@ -26,6 +26,7 @@ export default function SocioForm({ socio }: Props) {
     concepto:        socio?.concepto         ?? 'Cuota',
     mensajeTemplate: socio?.mensajeTemplate  ?? DEFAULT_TEMPLATE,
   })
+  const [camposValores, setCamposValores] = useState<Record<string, string>>(socio?.camposPersonalizados ?? {})
   const [loading, setLoading] = useState(false)
   const [error,   setError]   = useState('')
 
@@ -55,6 +56,7 @@ export default function SocioForm({ socio }: Props) {
         concepto:        form.concepto.trim() || null,
         mensajeTemplate: form.mensajeTemplate.trim() || DEFAULT_TEMPLATE,
         estado:          'activo' as const,
+        camposPersonalizados: camposValores,
       }
       if (isEdit) {
         await updateSocio(socio!.id, payload)
@@ -111,6 +113,28 @@ export default function SocioForm({ socio }: Props) {
           </div>
         </div>
       </div>
+
+      {/* Campos personalizados */}
+      {camposDef.filter((c) => c.visible).length > 0 && (
+        <div className={sectionCls}>
+          <div className={sectionHeaderCls}>
+            <span className="text-[11px] font-semibold text-white/25 uppercase tracking-wider">Datos adicionales</span>
+          </div>
+          <div className="p-4 space-y-3">
+            {camposDef.filter((c) => c.visible).map((c) => (
+              <div key={c.id}>
+                <label className="block text-[11px] text-white/40 mb-1.5">{c.name}</label>
+                <input
+                  type={c.type === 'number' ? 'number' : c.type === 'date' ? 'date' : 'text'}
+                  value={camposValores[c.id] ?? ''}
+                  onChange={(e) => setCamposValores((prev) => ({ ...prev, [c.id]: e.target.value }))}
+                  className={inputCls}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Cobro */}
       <div className={sectionCls}>

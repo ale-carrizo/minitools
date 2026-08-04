@@ -76,6 +76,7 @@ model User {
   libretaConfig LibretaConfig?
   libretaCajas  LibretaCaja[]
   libretaVentas LibretaVenta[]
+  sociosConfig  SociosConfig?
 }
 
 model Account {
@@ -598,6 +599,7 @@ model Socio {
   diaVencimiento   Int?
   concepto         String?
   mensajeTemplate  String   @default("Hola {nombre} 👋, te recuerdo que tu {concepto} de ${monto} vence el {fecha}. ¡Gracias!")
+  camposPersonalizados String @default("{}") // JSON: { campoId: valor }
   totalCobrado     Float    @default(0)
   deudaTotal       Float    @default(0)
   createdAt        DateTime @default(now())
@@ -605,6 +607,17 @@ model Socio {
 
   user   User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   cobros CobroProgramado[]
+}
+
+model SociosConfig {
+  id                     String   @id @default(cuid())
+  userId                 String   @unique
+  mensajeTemplateDefault String   @default("Hola {nombre} 👋, te recuerdo que tu {concepto} de ${monto} vence el {fecha}. ¡Gracias!")
+  camposPersonalizados   String   @default("[]") // JSON: [{ id, name, type, visible }]
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model CobroProgramado {

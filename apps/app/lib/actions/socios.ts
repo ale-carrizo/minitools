@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { avatarColor } from '@/types/socios'
-import type { Socio, CobroProgramado, CobroFrecuencia } from '@/types/socios'
+import type { Socio, CobroProgramado, CobroFrecuencia, SociosConfig, CampoPersonalizado } from '@/types/socios'
 
 // ── Auth helper ───────────────────────────────────────────────────────────────
 
@@ -39,6 +39,7 @@ function mapSocio(raw: any): Socio {
     diaVencimiento:  raw.diaVencimiento,
     concepto:        raw.concepto,
     mensajeTemplate: raw.mensajeTemplate,
+    camposPersonalizados: raw.camposPersonalizados ? JSON.parse(raw.camposPersonalizados) : {},
     totalCobrado:    raw.totalCobrado,
     deudaTotal:      raw.deudaTotal,
     createdAt:       raw.createdAt?.toISOString?.() ?? raw.createdAt,
@@ -177,6 +178,7 @@ export async function createSocio(data: {
   concepto?: string | null
   mensajeTemplate: string
   estado: 'activo'
+  camposPersonalizados?: Record<string, string>
 }): Promise<Socio> {
   const userId = await getUserId()
 
@@ -196,6 +198,7 @@ export async function createSocio(data: {
       concepto:        data.concepto ?? null,
       mensajeTemplate: data.mensajeTemplate,
       estado:          data.estado,
+      camposPersonalizados: JSON.stringify(data.camposPersonalizados ?? {}),
     },
   })
 
@@ -218,14 +221,20 @@ export async function updateSocio(id: string, data: Partial<{
   concepto: string | null
   mensajeTemplate: string
   estado: string
+  camposPersonalizados: Record<string, string>
 }>): Promise<Socio> {
   const userId = await getUserId()
 
   if (data.monto !== undefined && (!Number.isFinite(data.monto) || data.monto < 0)) throw new Error('Monto inválido')
 
+  const { camposPersonalizados, ...rest } = data
   const socio = await prisma.socio.update({
     where: { id, userId },
-    data: { ...data, updatedAt: new Date() },
+    data: {
+      ...rest,
+      ...(camposPersonalizados !== undefined ? { camposPersonalizados: JSON.stringify(camposPersonalizados) } : {}),
+      updatedAt: new Date(),
+    },
   })
 
   revalidatePath('/dashboard/socios')
@@ -243,50 +252,36 @@ export async function deleteSocio(id: string): Promise<void> {
 
 // ── COBROS ────────────────────────────────────────────────────────────────────
 
-export async function getCobrosHoy(): Promise<{
-  vencidos:          CobroProgramado[]
-  estaSemana:        CobroProgramado[]
-  totalVencido:      number
-  totalEstaSemana:   number
-}> {
+/** Cobros para la vista de calendario (día/semana/mes): trae los del rango
+ *  pedido más los vencidos previos al rango (arrastrados, como en la vista
+ *  original de "cobros pendientes"), sin duplicar. */
+export async function getCobrosEnRango(desde: string, hasta: string): Promise<CobroProgramado[]> {
   const userId = await getUserId()
-  const hoy    = dateStr(new Date())
-  const en7    = dateStr(new Date(Date.now() + 7 * 86400000))
 
-  const [vencidosRaw, proximosRaw] = await Promise.all([
+  const select = {
+    id: true, userId: true, socioId: true, monto: true, fechaVencimiento: true, estado: true,
+    concepto: true, fechaPago: true, medioPago: true, notaPago: true,
+    fechaOriginal: true, vecesPospuesto: true, createdAt: true, updatedAt: true,
+    socio: { select: { nombre: true, telefono: true, mensajeTemplate: true, avatarColor: true } },
+  } as const
+
+  const [enRango, vencidosPrevios] = await Promise.all([
     prisma.cobroProgramado.findMany({
-      where:   { userId, estado: 'vencido' },
-      select: {
-        id: true, userId: true, socioId: true, monto: true, fechaVencimiento: true, estado: true,
-        concepto: true, fechaPago: true, medioPago: true, notaPago: true,
-        fechaOriginal: true, vecesPospuesto: true, createdAt: true, updatedAt: true,
-        socio: { select: { nombre: true, telefono: true, mensajeTemplate: true, avatarColor: true } },
-      },
+      where: { userId, estado: { not: 'cancelado' }, fechaVencimiento: { gte: desde, lte: hasta } },
+      select,
       orderBy: { fechaVencimiento: 'asc' },
-      take:    50,
     }),
     prisma.cobroProgramado.findMany({
-      where:   { userId, estado: { in: ['pendiente', 'pospuesto'] }, fechaVencimiento: { gte: hoy, lte: en7 } },
-      select: {
-        id: true, userId: true, socioId: true, monto: true, fechaVencimiento: true, estado: true,
-        concepto: true, fechaPago: true, medioPago: true, notaPago: true,
-        fechaOriginal: true, vecesPospuesto: true, createdAt: true, updatedAt: true,
-        socio: { select: { nombre: true, telefono: true, mensajeTemplate: true, avatarColor: true } },
-      },
+      where: { userId, estado: { in: ['pendiente', 'vencido', 'pospuesto'] }, fechaVencimiento: { lt: desde } },
+      select,
       orderBy: { fechaVencimiento: 'asc' },
-      take:    50,
+      take: 50,
     }),
   ])
 
-  const v = vencidosRaw.map(mapCobro)
-  const p = proximosRaw.map(mapCobro)
-
-  return {
-    vencidos:        v,
-    estaSemana:      p,
-    totalVencido:    v.reduce((a, c) => a + c.monto, 0),
-    totalEstaSemana: p.reduce((a, c) => a + c.monto, 0),
-  }
+  const vistos = new Set(enRango.map((c) => c.id))
+  const combinados = [...vencidosPrevios.filter((c) => !vistos.has(c.id)), ...enRango]
+  return combinados.map(mapCobro)
 }
 
 export async function pagarCobro(
@@ -447,4 +442,47 @@ export async function marcarVencidosYGenerarCuotas(userId: string): Promise<{ ma
   }
 
   return { marcados: pendientes.length }
+}
+
+// ── Configuración ─────────────────────────────────────────────────────────────
+
+const DEFAULT_TEMPLATE_CONFIG =
+  'Hola {nombre} 👋, te recuerdo que tu {concepto} de ${monto} vence el {fecha}. ¡Gracias!'
+
+function mapSociosConfig(raw: any | null, userId: string): SociosConfig {
+  if (!raw) {
+    return {
+      id: '', userId,
+      mensajeTemplateDefault: DEFAULT_TEMPLATE_CONFIG,
+      camposPersonalizados: [],
+      createdAt: '', updatedAt: '',
+    }
+  }
+  return {
+    id: raw.id, userId: raw.userId,
+    mensajeTemplateDefault: raw.mensajeTemplateDefault,
+    camposPersonalizados: JSON.parse(raw.camposPersonalizados || '[]'),
+    createdAt: raw.createdAt.toISOString(),
+    updatedAt: raw.updatedAt.toISOString(),
+  }
+}
+
+export async function getSociosConfig(): Promise<SociosConfig> {
+  const userId = await getUserId()
+  const config = await prisma.sociosConfig.findUnique({ where: { userId } })
+  return mapSociosConfig(config, userId)
+}
+
+export async function guardarSociosConfig(data: {
+  mensajeTemplateDefault: string
+  camposPersonalizados: CampoPersonalizado[]
+}): Promise<void> {
+  const userId = await getUserId()
+  const camposPersonalizados = JSON.stringify(data.camposPersonalizados)
+  await prisma.sociosConfig.upsert({
+    where: { userId },
+    create: { userId, mensajeTemplateDefault: data.mensajeTemplateDefault, camposPersonalizados },
+    update: { mensajeTemplateDefault: data.mensajeTemplateDefault, camposPersonalizados },
+  })
+  revalidatePath('/dashboard/socios/config')
 }

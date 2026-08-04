@@ -27,7 +27,6 @@ export default function DashboardNav({ onNavigate }: { onNavigate?: () => void }
   const [editOpen, setEditOpen] = useState(false)
 
   const tools = [
-    { href: "/dashboard/stock" },
     { href: "/dashboard/presupuestos" },
     { href: "/dashboard/precios" },
     { href: "/dashboard/caja" },
