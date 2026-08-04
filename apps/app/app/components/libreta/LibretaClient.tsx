@@ -151,6 +151,10 @@ export default function LibretaClient({
         descontarStock: config.controlarStock && Boolean(productoId),
       })
       setVentas((prev) => [nueva, ...prev])
+      if (config.controlarStock && productoId) {
+        const descontado = Math.round(cant)
+        setStockList((prev) => prev.map((p) => (p.id === productoId ? { ...p, stock: p.stock - descontado } : p)))
+      }
       resetVentaForm()
     } catch (err: any) {
       setError(err.message)

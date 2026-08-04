@@ -12,10 +12,11 @@ function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' })
 }
 
-export default async function ProductoPage({ params }: { params: { id: string } }) {
+export default async function ProductoPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const [producto, movimientos] = await Promise.all([
-    getProducto(params.id),
-    getMovimientos(params.id),
+    getProducto(id),
+    getMovimientos(id),
   ])
 
   if (!producto) notFound()
