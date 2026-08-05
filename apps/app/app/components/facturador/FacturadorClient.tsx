@@ -401,7 +401,7 @@ function ClientesProductosTab({ clientesSugeridos, productos, facturas }: {
             ))}
           </div>
         )}
-        <p className="text-[11px] text-white/25 mt-3">Se sugieren automáticamente al escribir un concepto en Emitir. Se gestionan desde Libreta de ventas.</p>
+        <p className="text-[11px] text-white/25 mt-3">Se sugieren automáticamente al escribir un concepto en Emitir. Se gestionan desde Registro de Ventas y Stock.</p>
       </div>
     </div>
   )

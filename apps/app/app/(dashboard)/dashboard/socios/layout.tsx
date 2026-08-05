@@ -8,7 +8,7 @@ export default function SociosLayout({ children }: { children: React.ReactNode }
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="font-display text-[28px] font-semibold tracking-[-0.035em] text-white">
-            <AppTitle slug="socios" fallback="Gestión de clientes" />
+            <AppTitle slug="socios" fallback="Mini CRM" />
           </h1>
           <p className="text-white/40 text-sm mt-1">Tu base de clientes, con cobranza recurrente y recordatorios por WhatsApp</p>
         </div>
