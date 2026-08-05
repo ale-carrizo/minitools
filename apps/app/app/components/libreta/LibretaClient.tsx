@@ -509,9 +509,9 @@ export default function LibretaClient({
           {caja && (
             <div className="fixed left-1/2 bottom-2.5 -translate-x-1/2 z-20 flex flex-wrap items-center justify-end gap-2.5 w-[min(1180px,calc(100%-32px))] rounded-xl border border-[#8880F5]/40 bg-[#0c0b1a]/95 backdrop-blur px-3 py-2.5 shadow-2xl">
               {[['Inicial', totales.opening], ['Ventas', totales.sales], ['Esperado', totales.expected], ['Diferencia', totales.diff ?? 0]].map(([label, value]) => (
-                <div key={label as string} className="inline-flex items-baseline gap-1.5 rounded-xl border border-white/[0.12] bg-white/[0.055] px-2.5 py-1.5">
-                  <span className="text-[10px] font-bold uppercase text-white/40">{label}</span>
-                  <strong className="text-[14px] font-extrabold text-white">{money(value as number)}</strong>
+                <div key={label as string} className="inline-flex items-baseline gap-1.5 rounded-xl border border-[#ffffff]/[0.12] bg-[#ffffff]/[0.055] px-2.5 py-1.5">
+                  <span className="text-[10px] font-bold uppercase text-[#ffffff]/40">{label}</span>
+                  <strong className="text-[14px] font-extrabold text-[#ffffff]">{money(value as number)}</strong>
                 </div>
               ))}
             </div>

@@ -255,9 +255,9 @@ function EmitirTab({ config, clientesSugeridos, productos, onError, onEmitida }:
       )}
 
       <div className="fixed left-1/2 bottom-2.5 -translate-x-1/2 z-20 flex flex-wrap items-center justify-end gap-2.5 w-[min(1180px,calc(100%-32px))] rounded-xl border border-[#8880F5]/40 bg-[#0c0b1a]/95 backdrop-blur px-3 py-2.5 shadow-2xl">
-        <div className="inline-flex items-baseline gap-1.5 rounded-xl border border-white/[0.12] bg-[#5448EE]/20 px-3 py-1.5">
-          <span className="text-[10px] font-bold uppercase text-white/50">Total</span>
-          <strong className="text-[16px] font-extrabold text-white">{money(totales.total)}</strong>
+        <div className="inline-flex items-baseline gap-1.5 rounded-xl border border-[#ffffff]/[0.12] bg-[#5448EE]/20 px-3 py-1.5">
+          <span className="text-[10px] font-bold uppercase text-[#ffffff]/50">Total</span>
+          <strong className="text-[16px] font-extrabold text-[#ffffff]">{money(totales.total)}</strong>
         </div>
         <button type="button" onClick={handleEmitir} disabled={emitiendo || !config.conectado}
           className="rounded-xl bg-[#5448EE] px-5 py-2.5 text-[13px] font-medium text-white btn-solid-text hover:bg-[#4438DE] disabled:opacity-50">
