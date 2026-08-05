@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import { PRICES } from "@/lib/mercadopago";
 
 const features = [
-  "Acceso completo a las 10 herramientas",
+  "Acceso completo a las 11 herramientas",
   "Generador de presupuestos en PDF",
   "Control de Caja + lectura de comprobantes con IA",
   "Libreta de ventas con caja diaria simple",
+  "Facturador con CAE de ARCA, directo sin intermediarios",
   "Calculadora de precio de venta",
   "Recibos de sueldo y control de asistencia",
   "Agenda de turnos con recordatorios WhatsApp",

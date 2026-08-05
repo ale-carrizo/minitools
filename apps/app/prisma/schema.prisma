@@ -77,6 +77,8 @@ model User {
   libretaCajas  LibretaCaja[]
   libretaVentas LibretaVenta[]
   sociosConfig  SociosConfig?
+  facturadorConfig FacturadorConfig?
+  facturas      Factura[]
 }
 
 model Account {
@@ -779,4 +781,51 @@ model LibretaVenta {
   user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   caja     LibretaCaja  @relation(fields: [cajaId], references: [id], onDelete: Cascade)
   producto Producto?    @relation(fields: [productoId], references: [id], onDelete: SetNull)
+}
+
+// ── Facturador (ARCA) ─────────────────────────────────────────────────────────
+
+model FacturadorConfig {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  cuit           String
+  razonSocial    String
+  condicionIva   String   @default("monotributo") // monotributo | responsable_inscripto | exento
+  puntoVenta     Int      @default(1)
+  certificado    String?  // PEM, cifrado en reposo (lib/crypto.ts)
+  clavePrivada   String?  // PEM, cifrado en reposo (lib/crypto.ts)
+  produccion     Boolean  @default(false)          // false = homologación (testing)
+  conectado      Boolean  @default(false)
+  ultimaVerificacion DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Factura {
+  id             String    @id @default(cuid())
+  userId         String
+  tipo           String    // factura_c | nc_c
+  puntoVenta     Int
+  numero         Int
+  fecha          String    // YYYY-MM-DD
+  clienteNombre  String
+  clienteDocTipo String    @default("consumidor_final") // cuit | dni | consumidor_final
+  clienteDocNro  String?
+  condicionVenta String    @default("contado")
+  items          String    // JSON: [{ concepto, cantidad, precio, total }]
+  neto           Float     @default(0)
+  total          Float     @default(0)
+  cae            String?
+  caeVencimiento String?   // YYYY-MM-DD
+  estado         String    @default("emitida") // emitida | error | anulada
+  errorMsg       String?
+  facturaOrigenId String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, puntoVenta, tipo, numero])
 }
