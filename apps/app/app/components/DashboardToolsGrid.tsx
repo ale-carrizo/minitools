@@ -55,14 +55,27 @@ export default function DashboardToolsGrid() {
           </svg>
         </div>
         <div className="relative flex-1">
-          <p className="text-sm font-medium text-white/85">{toolsDef.length} herramientas disponibles</p>
-          <p className="text-xs text-white/40 mt-0.5">{toolsDef.map(t => getLabel(t.slug)).join(', ')}.</p>
+          <p className="text-sm font-medium text-white/85">Elegí por dónde empezar</p>
+          <p className="text-xs text-white/40 mt-0.5">No necesitás activar todo: podés arrancar con una sola app y sumar más después.</p>
         </div>
         <div className="relative flex items-center gap-1.5">
           {toolsDef.map((t) => (
             <div key={t.num} className={`w-1.5 h-1.5 rounded-full ${statusConfig[t.status].dot}`} />
           ))}
         </div>
+      </div>
+
+      <div className="grid gap-3 mb-8 sm:grid-cols-3">
+        {[
+          { title: 'Para cobrar', desc: 'Registro de Pagos, Recibos y Facturador para ordenar ingresos y comprobantes.' },
+          { title: 'Para vender', desc: 'Presupuestos, Precios y Registro de Ventas y Stock para cotizar y seguir operaciones.' },
+          { title: 'Para ordenar gestión', desc: 'Turnos, Garantías, Mini CRM, Tareas y Reportes para sumar orden cuando lo necesites.' },
+        ].map((item) => (
+          <div key={item.title} className="rounded-2xl border border-white/[0.08] bg-white/[0.03] px-4 py-4">
+            <p className="text-[13px] font-semibold text-white/80">{item.title}</p>
+            <p className="mt-1 text-[12px] leading-relaxed text-white/40">{item.desc}</p>
+          </div>
+        ))}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
@@ -103,6 +116,7 @@ export default function DashboardToolsGrid() {
                 <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${st.badge}`}>
                   {st.label}
                 </span>
+                <span className="text-[10px] text-white/30">Se puede usar sola</span>
                 {isAvailable && (
                   <span className="text-[#8880F5] opacity-0 -translate-x-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>

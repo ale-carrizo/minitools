@@ -61,8 +61,8 @@ function ZimpleIcon({ size = 28 }: { size?: number }) {
 const chipColors = ["#3B82F6","#14B8A6","#22C55E","#F59E0B","#EC4899","#8B5CF6","#3B82F6","#14B8A6","#22C55E"];
 
 const chips = [
-  "Control de Stock","Presupuestos","Caja + Pagos","Calculadora de Precios",
-  "Recibo de Sueldo","Gestión de Turnos","Garantías","Clientes y Pagos","Tareas / Kanban",
+  "Empezá con 1 app","Sumá otra cuando te sirva","Sin implementar todo","Módulos independientes",
+  "Para cobrar","Para vender","Para ordenar turnos","Para sueldos","Para seguimiento",
 ];
 
 const categories = ["Todos","Finanzas","Operaciones","Productividad","Comercio"];
@@ -138,28 +138,28 @@ export default function Home() {
               <span className="absolute inline-flex h-full w-full rounded-full bg-[#8880F5] opacity-75 animate-ping" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-[#8880F5]" />
             </span>
-            <span className="text-white/70 text-[12.5px] font-medium">9 herramientas · una sola suscripción</span>
+            <span className="text-white/70 text-[12.5px] font-medium">Apps modulares para negocios reales</span>
           </div>
 
           <h1 className="font-display text-5xl sm:text-[70px] lg:text-[82px] font-semibold leading-[1.04] tracking-[-0.045em] mb-5">
-            <span className="text-white block">Todas las herramientas</span>
-            <span className="text-gradient block">en una sola suscripción</span>
+            <span className="text-white block">Empezá con la app</span>
+            <span className="text-gradient block">que necesitás hoy</span>
           </h1>
           <p className="text-white/45 text-[17px] leading-relaxed mb-8 max-w-[360px] mx-auto">
-            Una suscripción. Acceso ilimitado. Sin complicaciones.
+            Zimple no está pensado para que uses todo junto. Elegís una app, resolvés un problema concreto y sumás otras solo si te sirven.
           </p>
 
           <div className="flex items-center justify-center gap-3 mb-3">
             <a href="https://app.zimple.tools/login" className="btn-brand text-white font-semibold text-[15px] px-6 py-3 rounded-xl">
-              Empezar gratis — 14 días
+              Empezar con 1 app
             </a>
             <button className="group text-white font-medium text-[15px] px-6 py-3 rounded-xl border border-white/25 hover:border-white/50 hover:bg-white/[0.06] transition-all duration-200">
-              Ver herramientas
+              Ver qué app me conviene
               <span className="inline-block ml-1.5 transition-transform duration-200 group-hover:translate-y-0.5">↓</span>
             </button>
           </div>
           <p className="text-white/30 text-[13px] mb-10">
-            No requiere tarjeta de crédito · Cancelá cuando quieras
+            Sin tarjeta · sin implementar un sistema gigante · cancelá cuando quieras
           </p>
 
           {/* Module chips with colored dots */}
@@ -183,13 +183,31 @@ export default function Home() {
       {/* ── TOOLS GRID ─────────────────────────────── */}
       <section className="bg-[#F6F6FB] pt-16 pb-24 px-6">
         <div className="text-center mb-10">
-          <p className="text-[#5448EE] text-[11px] font-semibold tracking-[0.12em] uppercase mb-3">9 HERRAMIENTAS INCLUIDAS</p>
+          <p className="text-[#5448EE] text-[11px] font-semibold tracking-[0.12em] uppercase mb-3">APPS QUE PODÉS ACTIVAR SEGÚN TU NECESIDAD</p>
           <h2 className="text-[36px] sm:text-[42px] font-semibold text-[#1a1a2e] tracking-[-0.03em] mb-3">
-            Todo lo que necesita tu negocio
+            No necesitás usar todo
           </h2>
           <p className="text-[#1a1a2e]/50 text-[16px] max-w-md mx-auto leading-relaxed">
-            Cada herramienta está lista para usar desde el primer día. Sin configuraciones complejas.
+            Podés arrancar con una sola app para cobrar, vender, organizar turnos o emitir documentos. Si después necesitás más, las sumás.
           </p>
+        </div>
+
+        <div className="max-w-4xl mx-auto rounded-3xl border border-[#D8D5FF] bg-white px-6 py-5 mb-10 shadow-sm">
+          <div className="grid gap-4 sm:grid-cols-3">
+            {[
+              { step: "1", title: "Elegí un problema", desc: "Pensá qué querés resolver primero: cobrar, presupuestar, turnos, sueldos o seguimiento." },
+              { step: "2", title: "Usá una app", desc: "Cada app funciona sola. No hace falta configurar una suite completa para empezar." },
+              { step: "3", title: "Sumá después", desc: "Cuando tu negocio lo pida, activás otra app y mantenés el mismo entorno de trabajo." },
+            ].map((item) => (
+              <div key={item.step} className="rounded-2xl border border-[#ECEAFB] bg-[#FAFAFF] p-4 text-left">
+                <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#5448EE]/10 text-[12px] font-bold text-[#5448EE]">
+                  {item.step}
+                </span>
+                <h3 className="mt-3 text-[15px] font-semibold text-[#1a1a2e]">{item.title}</h3>
+                <p className="mt-1 text-[12px] leading-relaxed text-[#1a1a2e]/55">{item.desc}</p>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Category filter tabs */}
@@ -228,18 +246,13 @@ export default function Home() {
               <h3 className="text-[#1a1a2e] font-semibold text-[14px] leading-snug mb-2 group-hover:text-[#5448EE] transition-colors">{tool.name}</h3>
               <p className="text-[#1a1a2e]/45 text-[12px] leading-relaxed flex-1 mb-4">{tool.desc}</p>
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-semibold text-[#5448EE] bg-[#5448EE]/10 px-2.5 py-1 rounded-full">
-                  {tool.category}
-                </span>
-                <span className="text-[11px] text-[#1a1a2e]/40 flex items-center gap-1">
-                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
-                    <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  Incluido
-                </span>
-              </div>
-            </div>
-          ))}
+            <span className="text-[11px] font-semibold text-[#5448EE] bg-[#5448EE]/10 px-2.5 py-1 rounded-full">
+              {tool.category}
+            </span>
+            <span className="text-[11px] text-[#1a1a2e]/40">Se puede usar sola</span>
+          </div>
+        </div>
+      ))}
         </div>
       </section>
 
@@ -248,10 +261,10 @@ export default function Home() {
         <div className="text-center mb-14">
           <p className="text-[#5448EE] text-[11px] font-semibold tracking-[0.12em] uppercase mb-3">PRECIOS</p>
           <h2 className="text-[36px] sm:text-[42px] font-semibold text-[#1a1a2e] tracking-[-0.03em] mb-3">
-            Simple y transparente
+            Simple, modular y transparente
           </h2>
           <p className="text-[#1a1a2e]/50 text-[16px] max-w-sm mx-auto leading-relaxed">
-            Elegí el plan que mejor se adapte. Todas las herramientas incluidas en ambos.
+            Entrás a Zimple para resolver una necesidad puntual y después decidís si querés ampliar tu stack.
           </p>
         </div>
 
@@ -309,12 +322,12 @@ export default function Home() {
 
       {/* ── CTA SECTION ────────────────────────────── */}
       <section className="py-20 px-6 text-center" style={{ background: "linear-gradient(135deg, #5448EE 0%, #8880F5 100%)" }}>
-        <h2 className="text-[36px] sm:text-[46px] font-semibold text-white tracking-[-0.03em] mb-3">
-          Empezá hoy. 14 días gratis.
-        </h2>
-        <p className="text-white/65 text-[16px] mb-9">
-          Sin tarjeta de crédito. Sin compromisos. Cancelá cuando quieras.
-        </p>
+          <h2 className="text-[36px] sm:text-[46px] font-semibold text-white tracking-[-0.03em] mb-3">
+            Arrancá simple. Crecé cuando quieras.
+          </h2>
+          <p className="text-white/65 text-[16px] mb-9">
+            Empezá con una sola app, validá si te sirve y sumá otras más adelante sin fricción.
+          </p>
         <div className="flex items-center justify-center gap-3 flex-wrap">
           <a href="https://app.zimple.tools/login" className="bg-white text-[#5448EE] font-semibold text-[15px] px-7 py-3.5 rounded-xl hover:bg-gray-50 transition-colors duration-150">
             Crear cuenta gratis

@@ -25,7 +25,14 @@ export default async function DashboardPage() {
           <span className="text-white"> 👋</span>
         </h1>
         <p className="text-white/40 text-sm mt-1.5">
-          Tus herramientas de negocio — MVP v1.0
+          Tu espacio Zimple. Podés usar una sola app o combinar varias según lo que necesites.
+        </p>
+      </div>
+
+      <div className="mb-6 rounded-2xl border border-[#5448EE]/20 bg-[#5448EE]/8 px-5 py-4 animate-[fade-up_0.6s_cubic-bezier(0.16,1,0.3,1)_0.04s_both]">
+        <p className="text-sm font-medium text-white/85">No hace falta usar todo</p>
+        <p className="mt-1 text-[13px] leading-relaxed text-white/45">
+          Zimple funciona mejor cuando arrancás por una necesidad concreta. Elegí la app que te resuelve el problema de hoy y sumá otras solo si después te aportan valor.
         </p>
       </div>
 
