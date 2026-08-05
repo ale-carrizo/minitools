@@ -312,11 +312,7 @@ export default function LibretaClient({
 
   return (
     <div className="max-w-5xl">
-      <div className="mb-5 flex items-center justify-between">
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-[#8880F5] mb-1">Zimple Tools / Módulo de ventas</p>
-          <h1 className="text-[22px] font-bold text-white">Libreta de ventas</h1>
-        </div>
+      <div className="mb-5 flex items-center justify-end">
         <span className={`inline-flex items-center gap-2 rounded-xl border px-3 py-1.5 text-[12px] font-semibold ${caja ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-400' : 'border-red-500/20 bg-red-500/10 text-red-400'}`}>
           <span className={`w-2 h-2 rounded-full ${caja ? 'bg-emerald-400' : 'bg-red-400'}`} />
           {caja ? `Caja abierta: ${caja.fecha}` : 'Caja cerrada'}
