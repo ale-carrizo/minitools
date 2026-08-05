@@ -20,6 +20,7 @@ export const APPS: AppDef[] = [
   { slug: 'recibos',     label: 'Recibos',                desc: 'Comprobantes de cobro en PDF',                   icon: '🧾' },
   { slug: 'libreta',     label: 'Registro de Ventas y Stock', desc: 'Caja diaria simple con carga rápida de ventas', icon: '📓' },
   { slug: 'facturador',  label: 'Facturador',             desc: 'Facturas C con CAE de ARCA, directo sin intermediarios', icon: '🧾' },
+  { slug: 'reportes',    label: 'Reportes',               desc: 'Ventas, presupuestos, clientes y tareas en un vistazo', icon: '📊' },
 ]
 
 export const APP_BY_SLUG: Record<string, AppDef> = Object.fromEntries(APPS.map(a => [a.slug, a]))
