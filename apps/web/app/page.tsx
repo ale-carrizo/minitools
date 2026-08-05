@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useEffect, useRef, useState } from "react";
 import ParticleField from "./components/ParticleField";
 
@@ -340,7 +342,14 @@ export default function Home() {
 
       {/* ── FOOTER ─────────────────────────────────── */}
       <footer className="bg-[#0C0B1A] py-8 px-6">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="max-w-5xl mx-auto">
+          <div className="mb-5 text-center">
+            <p className="text-white/50 text-[13px] leading-relaxed">
+              Empezá con una sola app. Sumá otras solo cuando tu negocio realmente las necesite.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-[5px] flex items-center justify-center flex-shrink-0">
               <ZimpleIcon size={24} />
@@ -348,11 +357,12 @@ export default function Home() {
             <span className="font-display text-white font-semibold text-[15px] tracking-[-0.025em]">Zimple Tools</span>
           </div>
           <div className="flex items-center gap-6 text-white/40 text-[13px]">
-            <a href="#" className="hover:text-white/70 transition-colors">Privacidad</a>
-            <a href="#" className="hover:text-white/70 transition-colors">Términos</a>
-            <a href="#" className="hover:text-white/70 transition-colors">Contacto</a>
+            <Link href="/privacidad" className="hover:text-white/70 transition-colors">Privacidad</Link>
+            <Link href="/terminos" className="hover:text-white/70 transition-colors">Términos</Link>
+            <a href="mailto:[EMAIL LEGAL / SOPORTE]" className="hover:text-white/70 transition-colors">Contacto</a>
           </div>
           <p className="text-white/30 text-[13px]">© 2026 Zimple Tools. Todos los derechos reservados.</p>
+          </div>
         </div>
       </footer>
     </main>

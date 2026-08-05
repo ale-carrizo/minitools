@@ -142,9 +142,9 @@ export default function RegisterPage() {
 
             <p className="text-[11px] text-center text-white/25">
               Al registrarte aceptás nuestros{" "}
-              <Link href="#" className="underline hover:text-white/50 transition-colors">Términos</Link>
+              <Link href="https://zimple.tools/terminos" target="_blank" rel="noreferrer" className="underline hover:text-white/50 transition-colors">Términos</Link>
               {" "}y{" "}
-              <Link href="#" className="underline hover:text-white/50 transition-colors">Privacidad</Link>.
+              <Link href="https://zimple.tools/privacidad" target="_blank" rel="noreferrer" className="underline hover:text-white/50 transition-colors">Privacidad</Link>.
             </p>
 
             {/* Divider */}
