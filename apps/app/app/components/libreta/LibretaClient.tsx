@@ -5,7 +5,8 @@ import {
   abrirCaja, cerrarCaja, crearVenta, getHistorialCajas, getReporteMes,
   getVentasDeCaja, guardarLibretaConfig,
 } from '@/lib/actions/libreta'
-import { registrarMovimiento } from '@/lib/actions/stock'
+import { crearProducto, getProductos, registrarMovimiento } from '@/lib/actions/stock'
+import ImportarProductosCard from '@/app/components/stock/ImportarProductosCard'
 import { todayAR } from '@/lib/date'
 import {
   calcularTotales,
@@ -198,10 +199,21 @@ export default function LibretaClient({
   // ── Stock rápido ────────────────────────────────────────────────────────────
   const [stockList, setStockList] = useState(productos)
   const [stockSearch, setStockSearch] = useState('')
+  const [movQuery, setMovQuery] = useState('')
   const [movProductoId, setMovProductoId] = useState('')
+  const [movOpen, setMovOpen] = useState(false)
   const [movCantidad, setMovCantidad] = useState('')
   const [movTipo, setMovTipo] = useState<'entrada' | 'salida'>('entrada')
   const [movLoading, setMovLoading] = useState(false)
+  const movRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function onClickFuera(e: MouseEvent) {
+      if (movRef.current && !movRef.current.contains(e.target as Node)) setMovOpen(false)
+    }
+    document.addEventListener('mousedown', onClickFuera)
+    return () => document.removeEventListener('mousedown', onClickFuera)
+  }, [])
 
   const stockFiltrado = useMemo(() => {
     const q = stockSearch.trim().toLowerCase()
@@ -209,15 +221,39 @@ export default function LibretaClient({
       .slice().sort((a, b) => a.nombre.localeCompare(b.nombre))
   }, [stockList, stockSearch])
 
+  const movFiltrados = useMemo(() => {
+    const q = movQuery.trim().toLowerCase()
+    return (q ? stockList.filter((p) => p.nombre.toLowerCase().includes(q) || (p.sku ?? '').toLowerCase().includes(q)) : stockList).slice(0, 8)
+  }, [stockList, movQuery])
+
+  const movHayCoincidenciaExacta = stockList.some((p) => p.nombre.trim().toLowerCase() === movQuery.trim().toLowerCase())
+
   async function handleMovimiento(e: React.FormEvent) {
     e.preventDefault()
-    if (!movProductoId || !movCantidad) return
+    if (!movCantidad) return
     setMovLoading(true)
     setError('')
     try {
-      const actualizado = await registrarMovimiento(movProductoId, movTipo, Number(movCantidad), 'Libreta de ventas')
-      setStockList((prev) => prev.map((p) => (p.id === actualizado.id ? actualizado : p)))
+      if (movProductoId) {
+        const actualizado = await registrarMovimiento(movProductoId, movTipo, Number(movCantidad), 'Libreta de ventas')
+        setStockList((prev) => prev.map((p) => (p.id === actualizado.id ? actualizado : p)))
+      } else if (movQuery.trim()) {
+        const nuevo = await crearProducto({
+          nombre: movQuery.trim(),
+          precioCosto: 0,
+          precioVenta: 0,
+          stock: Number(movCantidad) || 0,
+          stockMinimo: 0,
+          unidad: 'unidad',
+        })
+        setStockList((prev) => [...prev, nuevo])
+      } else {
+        setMovLoading(false)
+        return
+      }
       setMovCantidad('')
+      setMovQuery('')
+      setMovProductoId('')
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -494,11 +530,34 @@ export default function LibretaClient({
           <form onSubmit={handleMovimiento} className="mb-4 grid gap-2.5 sm:grid-cols-12 items-end">
             <div className="sm:col-span-5">
               <label className="mb-1.5 block text-[11px] font-medium text-white/50">Producto</label>
-              <select value={movProductoId} onChange={(e) => setMovProductoId(e.target.value)}
-                className="w-full min-h-[34px] rounded-[10px] border border-white/[0.09] bg-white/[0.05] px-[9px] py-[7px] text-[12px] text-white focus:outline-none focus:border-[#5448EE]/60">
-                <option value="">Elegir producto…</option>
-                {stockList.map((p) => <option key={p.id} value={p.id}>{p.nombre} (stock {p.stock})</option>)}
-              </select>
+              <div ref={movRef} className="relative">
+                <input
+                  value={movQuery}
+                  onChange={(e) => { setMovQuery(e.target.value); setMovProductoId(''); setMovOpen(true) }}
+                  onFocus={() => setMovOpen(true)}
+                  placeholder="Escribir para buscar o crear…"
+                  className="w-full min-h-[34px] rounded-[10px] border border-white/[0.09] bg-white/[0.05] px-[9px] py-[7px] text-[12px] text-white placeholder:text-white/20 focus:outline-none focus:border-[#5448EE]/60"
+                />
+                {movOpen && (movFiltrados.length > 0 || movQuery.trim()) && (
+                  <div className="absolute z-20 mt-1 w-full max-h-52 overflow-y-auto rounded-xl border border-white/[0.10] light:border-black/[0.10] bg-[#17162f] light:bg-[#ffffff] shadow-xl">
+                    {movFiltrados.map((p) => (
+                      <button key={p.id} type="button"
+                        onClick={() => { setMovProductoId(p.id); setMovQuery(p.nombre); setMovOpen(false) }}
+                        className="flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-[12px] text-white hover:bg-white/[0.06] transition-colors">
+                        <span className="truncate">{p.nombre}</span>
+                        <span className="flex-shrink-0 text-white/40 text-[11px]">stock {p.stock}</span>
+                      </button>
+                    ))}
+                    {movQuery.trim() && !movHayCoincidenciaExacta && (
+                      <button type="button"
+                        onClick={() => { setMovProductoId(''); setMovTipo('entrada'); setMovOpen(false) }}
+                        className="flex w-full items-center gap-2 px-3 py-2 text-left text-[12px] text-[#8880F5] hover:bg-white/[0.06] transition-colors border-t border-white/[0.06]">
+                        + Crear &quot;{movQuery.trim()}&quot; como producto nuevo
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
             <div className="sm:col-span-2">
               <label className="mb-1.5 block text-[11px] font-medium text-white/50">Cantidad</label>
@@ -507,15 +566,15 @@ export default function LibretaClient({
             </div>
             <div className="sm:col-span-3">
               <label className="mb-1.5 block text-[11px] font-medium text-white/50">Movimiento</label>
-              <select value={movTipo} onChange={(e) => setMovTipo(e.target.value as 'entrada' | 'salida')}
-                className="w-full min-h-[34px] rounded-[10px] border border-white/[0.09] bg-white/[0.05] px-[9px] py-[7px] text-[12px] text-white focus:outline-none focus:border-[#5448EE]/60">
+              <select value={movTipo} disabled={!movProductoId} onChange={(e) => setMovTipo(e.target.value as 'entrada' | 'salida')}
+                className="w-full min-h-[34px] rounded-[10px] border border-white/[0.09] bg-white/[0.05] px-[9px] py-[7px] text-[12px] text-white focus:outline-none focus:border-[#5448EE]/60 disabled:opacity-50">
                 <option value="entrada">Cargar stock</option>
                 <option value="salida">Descontar stock</option>
               </select>
             </div>
             <div className="sm:col-span-2">
-              <button type="submit" disabled={movLoading || !movProductoId} className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-3 py-2.5 text-[12px] font-medium text-white hover:bg-white/[0.09] disabled:opacity-40">
-                {movLoading ? 'Aplicando…' : 'Aplicar'}
+              <button type="submit" disabled={movLoading || !movCantidad || (!movProductoId && !movQuery.trim())} className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-3 py-2.5 text-[12px] font-medium text-white hover:bg-white/[0.09] disabled:opacity-40">
+                {movLoading ? 'Aplicando…' : movProductoId ? 'Aplicar' : 'Crear y cargar'}
               </button>
             </div>
           </form>
@@ -550,6 +609,10 @@ export default function LibretaClient({
                 })}
               </tbody>
             </table>
+          </div>
+
+          <div className="mt-4">
+            <ImportarProductosCard onImported={() => { startTrans(async () => { setStockList(await getProductos()) }) }} />
           </div>
         </div>
       )}

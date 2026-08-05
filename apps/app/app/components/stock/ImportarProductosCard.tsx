@@ -42,7 +42,16 @@ function normalizeKey(key: string) {
   return key.toLowerCase().replace(/\s+/g, '').replace(/[.-]/g, '')
 }
 
-export default function ImportarProductosCard() {
+function descargarPlantilla() {
+  const headers = ['nombre', 'sku', 'categoria', 'descripcion', 'precioCosto', 'precioVenta', 'stock', 'stockMinimo', 'unidad']
+  const ejemplo = ['Leche entera 1L', 'LEC-001', 'Almacén', 'Opcional', 900, 1450, 20, 5, 'unidad']
+  const ws = XLSX.utils.aoa_to_sheet([headers, ejemplo])
+  const wb = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(wb, ws, 'Productos')
+  XLSX.writeFile(wb, 'plantilla-productos-zimple.xlsx')
+}
+
+export default function ImportarProductosCard({ onImported }: { onImported?: () => void } = {}) {
   const [rows, setRows] = useState<ImportRow[]>([])
   const [error, setError] = useState<string | null>(null)
   const [importResult, setImportResult] = useState<{ creados: number; saltadas: number; errores: string[] } | null>(null)
@@ -84,7 +93,10 @@ export default function ImportarProductosCard() {
       try {
         const result = await importarProductos(rows)
         setImportResult(result)
-        if (result.creados > 0) setRows([])
+        if (result.creados > 0) {
+          setRows([])
+          onImported?.()
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'No se pudo importar el archivo')
       }
@@ -100,20 +112,29 @@ export default function ImportarProductosCard() {
         </p>
       </div>
 
-      <label className="block">
-        <input
-          type="file"
-          accept=".xlsx,.xls,.csv"
-          className="hidden"
-          onChange={(e) => {
-            const file = e.target.files?.[0]
-            if (file) void handleFile(file)
-          }}
-        />
-        <span className="inline-flex cursor-pointer rounded-xl border border-white/10 px-4 py-2.5 text-[13px] font-medium text-white/70 hover:border-white/20 hover:text-white transition-colors">
-          Seleccionar archivo
-        </span>
-      </label>
+      <div className="flex flex-wrap gap-2">
+        <label className="block">
+          <input
+            type="file"
+            accept=".xlsx,.xls,.csv"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0]
+              if (file) void handleFile(file)
+            }}
+          />
+          <span className="inline-flex cursor-pointer rounded-xl border border-white/10 px-4 py-2.5 text-[13px] font-medium text-white/70 hover:border-white/20 hover:text-white transition-colors">
+            Seleccionar archivo
+          </span>
+        </label>
+        <button
+          type="button"
+          onClick={descargarPlantilla}
+          className="inline-flex cursor-pointer rounded-xl border border-white/10 px-4 py-2.5 text-[13px] font-medium text-white/70 hover:border-white/20 hover:text-white transition-colors"
+        >
+          Descargar plantilla
+        </button>
+      </div>
 
       {rows.length > 0 ? (
         <div className="rounded-xl border border-white/[0.06] bg-white/[0.03] p-4">
