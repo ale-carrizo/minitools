@@ -11,18 +11,20 @@ export default function RegistrarClient({ productos }: { productos: Producto[] }
   const router = useRouter()
 
   return (
-    <div className="max-w-lg">
+    <div className="max-w-6xl grid gap-5 lg:grid-cols-2 items-start">
       <ComprobanteIA productos={productos} onSuccess={() => router.push('/dashboard/caja')} />
 
-      {/* Divider */}
-      <div className="flex items-center gap-3 my-5">
-        <div className="flex-1 h-px bg-white/[0.06]" />
-        <span className="text-[11px] text-white/30">o ingresá efectivo manualmente</span>
-        <div className="flex-1 h-px bg-white/[0.06]" />
+      <div>
+        <div className="flex items-center gap-3 mb-5 lg:hidden">
+          <div className="flex-1 h-px bg-white/[0.06]" />
+          <span className="text-[11px] text-white/30">o ingresá efectivo manualmente</span>
+          <div className="flex-1 h-px bg-white/[0.06]" />
+        </div>
+        <p className="hidden lg:block mb-2 text-[11px] font-semibold uppercase tracking-wider text-white/30">
+          O ingresá efectivo manualmente
+        </p>
+        <EfectivoManual productos={productos} onSuccess={() => router.push('/dashboard/caja')} />
       </div>
-
-      {/* Efectivo manual — siempre visible */}
-      <EfectivoManual productos={productos} onSuccess={() => router.push('/dashboard/caja')} />
     </div>
   )
 }
