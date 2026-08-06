@@ -32,13 +32,22 @@ function formatDate(value: string | null) {
 export default function PresupuestoList({ presupuestos }: { presupuestos: Presupuesto[] }) {
   const router = useRouter()
   const [filtro, setFiltro] = useState<'todos' | PresupuestoEstado>('todos')
+  const [moneda, setMoneda] = useState<'todas' | string>('todas')
+  const [busqueda, setBusqueda] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
+  const monedas = useMemo(() => Array.from(new Set(presupuestos.map((p) => p.moneda))), [presupuestos])
+
   const filtrados = useMemo(() => {
-    if (filtro === 'todos') return presupuestos
-    return presupuestos.filter((p) => p.estado === filtro)
-  }, [filtro, presupuestos])
+    const q = busqueda.trim().toLowerCase()
+    return presupuestos.filter((p) => {
+      if (filtro !== 'todos' && p.estado !== filtro) return false
+      if (moneda !== 'todas' && p.moneda !== moneda) return false
+      if (q && !`${p.titulo} ${p.cliente?.nombre ?? ''} ${p.cliente?.empresa ?? ''} ${formatPresupuestoNumero(p.numero)}`.toLowerCase().includes(q)) return false
+      return true
+    })
+  }, [filtro, moneda, busqueda, presupuestos])
 
   const aceptadosMes = useMemo(() => {
     const now = new Date()
@@ -93,7 +102,25 @@ export default function PresupuestoList({ presupuestos }: { presupuestos: Presup
         </div>
       </div>
 
-      {/* Filtros */}
+      {/* Búsqueda y filtros */}
+      <div className="flex flex-wrap items-center gap-2">
+        <input
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+          placeholder="Buscar presupuesto, cliente o número"
+          className="flex-1 min-w-[220px] rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2 text-[12px] text-white placeholder:text-white/20 focus:outline-none focus:border-[#5448EE]/60"
+        />
+        {monedas.length > 1 && (
+          <select
+            value={moneda}
+            onChange={(e) => setMoneda(e.target.value)}
+            className="rounded-xl border border-white/[0.09] bg-white/[0.05] px-3 py-2 text-[12px] text-white focus:outline-none focus:border-[#5448EE]/60"
+          >
+            <option value="todas">Todas las monedas</option>
+            {monedas.map((m) => <option key={m} value={m}>{m}</option>)}
+          </select>
+        )}
+      </div>
       <div className="flex flex-wrap gap-2">
         {FILTROS.map((item) => (
           <button
@@ -113,7 +140,17 @@ export default function PresupuestoList({ presupuestos }: { presupuestos: Presup
 
       {/* Lista fina */}
       <div className="overflow-x-auto rounded-2xl border border-white/[0.08]">
-        {filtrados.map((p, idx) => (
+        <div className="hidden sm:flex items-center gap-3 px-5 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-white/25 border-b border-white/[0.06] bg-white/[0.02]">
+          <span className="w-14 shrink-0">Nro.</span>
+          <span className="flex-1">Presupuesto</span>
+          <span className="shrink-0 w-24">Fecha</span>
+          <span className="shrink-0 w-24 text-right">Total</span>
+          <span className="shrink-0 w-20">Estado</span>
+          <span className="shrink-0 w-[148px]" />
+        </div>
+        {filtrados.length === 0 ? (
+          <p className="px-5 py-8 text-center text-[13px] text-white/30">Sin resultados para el filtro elegido</p>
+        ) : filtrados.map((p, idx) => (
           <div
             key={p.id}
             className={`flex items-center gap-3 px-5 py-3.5 transition-colors hover:bg-white/[0.03] ${idx !== filtrados.length - 1 ? 'border-b border-white/[0.06]' : ''}`}

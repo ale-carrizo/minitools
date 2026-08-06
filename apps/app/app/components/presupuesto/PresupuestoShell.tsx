@@ -16,14 +16,21 @@ export default function PresupuestoShell({
     { label: 'Presupuestos', href: '/dashboard/presupuestos', badge: borradores },
     { label: 'Clientes', href: '/dashboard/presupuestos/clientes' },
     { label: 'Template', href: '/dashboard/presupuestos/template' },
-    { label: '+ Nuevo', href: '/dashboard/presupuestos/nuevo' },
   ]
 
   return (
     <div className="px-4 py-6 md:p-8">
-      <div className="mb-6">
-        <h1 className="text-[24px] font-semibold tracking-[-0.03em] text-white"><AppTitle slug="presupuestos" fallback="Generador de Presupuestos" /></h1>
-        <p className="mt-0.5 text-sm text-white/40">Cotizaciones con estado, clientes y PDF descargable</p>
+      <div className="mb-6 flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-[24px] font-semibold tracking-[-0.03em] text-white"><AppTitle slug="presupuestos" fallback="Generador de Presupuestos" /></h1>
+          <p className="mt-0.5 text-sm text-white/40">Cotizaciones con estado, clientes y PDF descargable</p>
+        </div>
+        <Link
+          href="/dashboard/presupuestos/nuevo"
+          className="flex-shrink-0 rounded-xl bg-[#5448EE] px-4 py-2 text-[12px] font-medium text-white btn-solid-text hover:bg-[#4438DE] transition-colors"
+        >
+          + Nuevo presupuesto
+        </Link>
       </div>
 
       <div className="mb-6 flex w-fit gap-1 rounded-xl border border-white/[0.06] bg-white/[0.04] p-1">
