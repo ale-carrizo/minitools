@@ -16,10 +16,54 @@ interface Props {
   tarea:    Tarea
   columnas: Columna[]
   clientesSugeridos?: ClienteSugerido[]
+  responsablesSugeridos?: string[]
   onClose:  () => void
   onUpdate: (t: Tarea) => void
   onDelete: (id: string) => void
   onMove:   (tareaId: string, columnaId: string) => void
+}
+
+function ResponsableCombobox({ sugerencias, value, onChange }: {
+  sugerencias: string[]
+  value: string
+  onChange: (v: string) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function onClickFuera(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', onClickFuera)
+    return () => document.removeEventListener('mousedown', onClickFuera)
+  }, [])
+
+  const q = value.trim().toLowerCase()
+  const filtrados = (q ? sugerencias.filter((s) => s.toLowerCase().includes(q) && s.toLowerCase() !== q) : sugerencias).slice(0, 6)
+
+  return (
+    <div ref={ref} className="relative">
+      <input
+        value={value}
+        onChange={(e) => { onChange(e.target.value); setOpen(true) }}
+        onFocus={() => setOpen(true)}
+        placeholder="Nombre del responsable"
+        className="w-full px-3 py-2.5 text-[12px] rounded-xl border border-white/[0.09] bg-white/[0.05] text-white placeholder:text-white/20 focus:outline-none focus:border-[#5448EE]/60"
+      />
+      {open && filtrados.length > 0 && (
+        <div className="absolute z-20 mt-1 w-full max-h-40 overflow-y-auto rounded-xl border border-white/[0.10] light:border-black/[0.10] bg-[#1A1830] light:bg-[#ffffff] shadow-xl">
+          {filtrados.map((s) => (
+            <button key={s} type="button"
+              onClick={() => { onChange(s); setOpen(false) }}
+              className="flex w-full items-center px-3 py-2 text-left text-[12px] text-white hover:bg-white/[0.06] transition-colors">
+              {s}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
 }
 
 function fileToDataUrl(file: File): Promise<string> {
@@ -31,7 +75,7 @@ function fileToDataUrl(file: File): Promise<string> {
   })
 }
 
-export default function TareaModal({ tarea, columnas, clientesSugeridos = [], onClose, onUpdate, onDelete, onMove }: Props) {
+export default function TareaModal({ tarea, columnas, clientesSugeridos = [], responsablesSugeridos = [], onClose, onUpdate, onDelete, onMove }: Props) {
   const [titulo,      setTitulo]      = useState(tarea.titulo)
   const [desc,        setDesc]        = useState(tarea.descripcion ?? '')
   const [prioridad,   setPrioridad]   = useState<Prioridad>(tarea.prioridad)
@@ -41,6 +85,7 @@ export default function TareaModal({ tarea, columnas, clientesSugeridos = [], on
   const [fechaVenc,   setFechaVenc]   = useState(tarea.fechaVenc ?? '')
   const [portada,     setPortada]     = useState(tarea.portada ?? '')
   const [clienteNombre, setClienteNombre] = useState(tarea.clienteNombre ?? '')
+  const [responsable, setResponsable] = useState(tarea.responsable ?? '')
   const [nuevoItem,   setNuevoItem]   = useState('')
   const [showPortada, setShowPortada] = useState(false)
   const [showLabels,  setShowLabels]  = useState(false)
@@ -54,7 +99,7 @@ export default function TareaModal({ tarea, columnas, clientesSugeridos = [], on
     const h = (e: KeyboardEvent) => { if (e.key === 'Escape') save() }
     document.addEventListener('keydown', h)
     return () => document.removeEventListener('keydown', h)
-  }, [titulo, desc, prioridad, etiquetas, checklist, adjuntos, fechaVenc, portada, clienteNombre])
+  }, [titulo, desc, prioridad, etiquetas, checklist, adjuntos, fechaVenc, portada, clienteNombre, responsable])
 
   function save() {
     startTrans(async () => {
@@ -68,6 +113,7 @@ export default function TareaModal({ tarea, columnas, clientesSugeridos = [], on
         fechaVenc:   fechaVenc || null,
         portada:     portada || null,
         clienteNombre: clienteNombre.trim() || null,
+        responsable: responsable.trim() || null,
       })
       onUpdate(r)
       onClose()
@@ -304,6 +350,16 @@ export default function TareaModal({ tarea, columnas, clientesSugeridos = [], on
                   onChange={setClienteNombre}
                   placeholder="Nombre del cliente"
                   className="w-full px-2.5 py-2 rounded-xl border border-white/[0.08] bg-white/[0.05] text-[11px] text-white placeholder:text-white/20 focus:outline-none focus:border-[#5448EE]/50"
+                />
+              </div>
+
+              {/* Responsable */}
+              <div>
+                <p className="text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-2">Responsable</p>
+                <ResponsableCombobox
+                  sugerencias={responsablesSugeridos}
+                  value={responsable}
+                  onChange={setResponsable}
                 />
               </div>
 

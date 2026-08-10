@@ -6,7 +6,7 @@ import {
   createTarea, updateColumna, deleteColumna, addColumna,
   moverTarea, updateTablero, deleteTablero,
 } from '@/lib/actions/tareas'
-import { PRIORIDAD_CONFIG, COLORES_COLUMNA, estaVencida, checkProgress } from '@/types/tareas'
+import { PRIORIDAD_CONFIG, COLORES_COLUMNA, estaVencida, checkProgress, avatarColorFor, initialsFor } from '@/types/tareas'
 import type { Tablero, Columna, Tarea, Prioridad } from '@/types/tareas'
 import TareaModal from './TareaModal'
 import type { ClienteSugerido } from '@/lib/actions/clientes-sugeridos'
@@ -48,7 +48,18 @@ function TareaCard({
           </div>
         )}
 
-        <p className="text-[13px] font-medium text-white leading-snug mb-2">{tarea.titulo}</p>
+        <div className="flex items-start justify-between gap-2 mb-2">
+          <p className="text-[13px] font-medium text-white leading-snug flex-1">{tarea.titulo}</p>
+          {tarea.responsable && (
+            <span
+              title={tarea.responsable}
+              className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-white text-[9px] font-bold"
+              style={{ background: avatarColorFor(tarea.responsable) }}
+            >
+              {initialsFor(tarea.responsable)}
+            </span>
+          )}
+        </div>
 
         {tarea.clienteNombre && (
           <p className="flex items-center gap-1 text-[10px] text-white/40 mb-2 truncate">
@@ -99,10 +110,12 @@ function TareaCard({
 
 // ── KanbanColumn ──────────────────────────────────────────────────────────────
 function KanbanColumn({
-  columna, tableroId, isDragOver,
+  columna, tareasVisibles, filtroActivo, tableroId, isDragOver,
   onDragOver, onDrop, onDragStart, onDragEnd, onCardClick, onColumnUpdate, onColumnDelete, onCardAdd,
 }: {
   columna:        Columna
+  tareasVisibles: Tarea[]
+  filtroActivo:   boolean
   tableroId:      string
   isDragOver:     boolean
   onDragOver:     (e: React.DragEvent, colId: string) => void
@@ -199,12 +212,15 @@ function KanbanColumn({
 
       {/* Cards */}
       <div className={`flex-1 space-y-2 min-h-[60px] rounded-xl p-2 transition-colors ${isDragOver ? 'bg-[#5448EE]/10 border border-dashed border-[#5448EE]/40' : ''}`}>
-        {columna.tareas.map(t => (
+        {tareasVisibles.map(t => (
           <TareaCard key={t.id} tarea={t}
             onDragStart={onDragStart} onDragEnd={onDragEnd}
             onClick={onCardClick}
           />
         ))}
+        {filtroActivo && tareasVisibles.length === 0 && columna.tareas.length > 0 && (
+          <p className="text-center text-[11px] text-white/20 py-3">Sin resultados</p>
+        )}
       </div>
 
       {/* Add card */}
@@ -245,8 +261,47 @@ export default function KanbanBoard({ tablero: initial, clientesSugeridos = [] }
   const [addingCol, setAddingCol]   = useState(false)
   const [newColName, setNewColName] = useState('')
   const [newColColor, setNewColColor] = useState(COLORES_COLUMNA[0])
+  const [busqueda, setBusqueda]     = useState('')
+  const [filtroPrioridad, setFiltroPrioridad] = useState<'todas' | Prioridad>('todas')
+  const [filtroResponsable, setFiltroResponsable] = useState('todos')
+  const [editandoNombre, setEditandoNombre] = useState(false)
+  const [nombreTablero, setNombreTablero] = useState(tablero.nombre)
   const [, startTrans]              = useTransition()
   const router                      = useRouter()
+
+  const todasLasTareas = tablero.columnas.flatMap(c => c.tareas)
+
+  const responsablesSugeridos = Array.from(
+    new Set(todasLasTareas.map(t => t.responsable).filter((r): r is string => Boolean(r)))
+  ).sort()
+
+  function tareaVisible(t: Tarea) {
+    const q = busqueda.trim().toLowerCase()
+    if (q && !`${t.titulo} ${t.clienteNombre ?? ''} ${t.responsable ?? ''} ${t.etiquetas.map(e => e.texto).join(' ')}`.toLowerCase().includes(q)) return false
+    if (filtroPrioridad !== 'todas' && t.prioridad !== filtroPrioridad) return false
+    if (filtroResponsable !== 'todos' && (t.responsable ?? '') !== filtroResponsable) return false
+    return true
+  }
+
+  const hayFiltrosActivos = busqueda.trim() !== '' || filtroPrioridad !== 'todas' || filtroResponsable !== 'todos'
+
+  const hoyStr = new Date().toISOString().slice(0, 10)
+  const metricas = {
+    activas: todasLasTareas.filter(t => !t.archivada).length,
+    vencenHoy: todasLasTareas.filter(t => !t.archivada && t.fechaVenc === hoyStr).length,
+    vencidas: todasLasTareas.filter(t => !t.archivada && estaVencida(t.fechaVenc)).length,
+    completadas: todasLasTareas.filter(t => t.archivada).length,
+  }
+
+  function saveNombreTablero() {
+    setEditandoNombre(false)
+    if (nombreTablero.trim() && nombreTablero !== tablero.nombre) {
+      setTablero(tb => ({ ...tb, nombre: nombreTablero.trim() }))
+      startTrans(async () => { await updateTablero(tablero.id, { nombre: nombreTablero.trim() }) })
+    } else {
+      setNombreTablero(tablero.nombre)
+    }
+  }
 
   function handleDragStart(t: Tarea) { setDragCard(t) }
   function handleDragEnd()           { setDragCard(null); setOverCol(null) }
@@ -352,14 +407,60 @@ export default function KanbanBoard({ tablero: initial, clientesSugeridos = [] }
             <path d="m15 18-6-6 6-6"/>
           </svg>
         </Link>
-        <div className="w-3 h-3 rounded-full" style={{ background: tablero.color }} />
-        <h1 className="font-display text-[20px] font-semibold text-white tracking-tight">{tablero.nombre}</h1>
+        <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: tablero.color }} />
+        {editandoNombre ? (
+          <input
+            value={nombreTablero}
+            onChange={e => setNombreTablero(e.target.value)}
+            onBlur={saveNombreTablero}
+            onKeyDown={e => { if (e.key === 'Enter') saveNombreTablero(); if (e.key === 'Escape') { setNombreTablero(tablero.nombre); setEditandoNombre(false) } }}
+            autoFocus
+            className="font-display text-[20px] font-semibold text-white tracking-tight bg-transparent border-b border-[#5448EE] outline-none max-w-[280px]"
+          />
+        ) : (
+          <button onClick={() => setEditandoNombre(true)} title="Click para renombrar"
+            className="font-display text-[20px] font-semibold text-white tracking-tight hover:text-[#8880F5] transition-colors">
+            {tablero.nombre}
+          </button>
+        )}
         {tablero.descripcion && (
           <span className="text-[12px] text-white/30 hidden md:block">· {tablero.descripcion}</span>
         )}
         <div className="ml-auto flex items-center gap-2 text-[11px] text-white/30">
           <span>{tablero.columnas.reduce((a, c) => a + c.tareas.length, 0)} tareas</span>
         </div>
+      </div>
+
+      {/* Toolbar: búsqueda + filtros */}
+      <div className="flex flex-wrap items-center gap-2 px-6 py-3 border-b border-white/[0.06] flex-shrink-0">
+        <input
+          value={busqueda}
+          onChange={e => setBusqueda(e.target.value)}
+          placeholder="Buscar tarea, cliente o etiqueta"
+          className="flex-1 min-w-[200px] px-3 py-2 text-[12px] rounded-xl border border-white/[0.09] bg-white/[0.05] text-white placeholder:text-white/20 focus:outline-none focus:border-[#5448EE]/60"
+        />
+        <select value={filtroPrioridad} onChange={e => setFiltroPrioridad(e.target.value as 'todas' | Prioridad)}
+          className="px-3 py-2 text-[12px] rounded-xl border border-white/[0.09] bg-white/[0.05] text-white focus:outline-none focus:border-[#5448EE]/60">
+          <option value="todas">Todas las prioridades</option>
+          {(Object.keys(PRIORIDAD_CONFIG) as Prioridad[]).map(p => <option key={p} value={p}>{PRIORIDAD_CONFIG[p].label}</option>)}
+        </select>
+        {responsablesSugeridos.length > 0 && (
+          <select value={filtroResponsable} onChange={e => setFiltroResponsable(e.target.value)}
+            className="px-3 py-2 text-[12px] rounded-xl border border-white/[0.09] bg-white/[0.05] text-white focus:outline-none focus:border-[#5448EE]/60">
+            <option value="todos">Todos los responsables</option>
+            {responsablesSugeridos.map(r => <option key={r} value={r}>{r}</option>)}
+          </select>
+        )}
+      </div>
+
+      {/* Métricas */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 px-6 py-3 border-b border-white/[0.06] flex-shrink-0">
+        {[['Tareas activas', metricas.activas], ['Vencen hoy', metricas.vencenHoy], ['Vencidas', metricas.vencidas], ['Completadas', metricas.completadas]].map(([label, value]) => (
+          <div key={label as string} className="rounded-xl border border-white/[0.08] bg-white/[0.03] px-3 py-2">
+            <p className="text-[10px] font-bold uppercase text-white/40 mb-0.5">{label}</p>
+            <p className="text-[16px] font-bold text-white">{value}</p>
+          </div>
+        ))}
       </div>
 
       {/* Board canvas */}
@@ -369,6 +470,8 @@ export default function KanbanBoard({ tablero: initial, clientesSugeridos = [] }
             <KanbanColumn
               key={col.id}
               columna={col}
+              tareasVisibles={col.tareas.filter(tareaVisible)}
+              filtroActivo={hayFiltrosActivos}
               tableroId={tablero.id}
               isDragOver={overCol === col.id}
               onDragOver={handleDragOver}
@@ -429,6 +532,7 @@ export default function KanbanBoard({ tablero: initial, clientesSugeridos = [] }
           tarea={modal}
           columnas={tablero.columnas}
           clientesSugeridos={clientesSugeridos}
+          responsablesSugeridos={responsablesSugeridos}
           onClose={() => setModal(null)}
           onUpdate={t => { handleCardUpdate(t); setModal(null) }}
           onDelete={id => { handleCardDelete(id); setModal(null) }}

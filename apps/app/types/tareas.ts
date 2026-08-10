@@ -35,6 +35,7 @@ export interface Tarea {
   fechaVenc:   string | null
   portada:     string | null
   clienteNombre: string | null
+  responsable: string | null
   orden:       number
   archivada:   boolean
   createdAt:   string
@@ -101,4 +102,19 @@ export function estaVencida(fecha: string | null): boolean {
 
 export function checkProgress(checklist: CheckItem[]): { hechos: number; total: number } {
   return { hechos: checklist.filter(c => c.hecho).length, total: checklist.length }
+}
+
+const COLORES_AVATAR = [
+  '#7C3AED', '#06B6D4', '#059669', '#D97706',
+  '#DC2626', '#2563EB', '#DB2777', '#374151',
+]
+
+export function avatarColorFor(nombre: string): string {
+  let hash = 0
+  for (const c of nombre) hash = c.charCodeAt(0) + ((hash << 5) - hash)
+  return COLORES_AVATAR[Math.abs(hash) % COLORES_AVATAR.length]
+}
+
+export function initialsFor(nombre: string): string {
+  return nombre.trim().split(/\s+/).slice(0, 2).map(w => w[0]?.toUpperCase() ?? '').join('')
 }

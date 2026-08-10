@@ -685,6 +685,7 @@ model Tarea {
   fechaVenc   String?
   portada     String?
   clienteNombre String?
+  responsable String?
   orden       Int      @default(0)
   archivada   Boolean  @default(false)
   createdAt   DateTime @default(now())

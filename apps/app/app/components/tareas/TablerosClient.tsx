@@ -45,6 +45,16 @@ const PLANTILLAS = [
 
 const BOARD_COLORS = ['#5448EE', '#059669', '#D97706', '#DC2626', '#7C3AED', '#06B6D4', '#DB2777', '#374151']
 
+function tiempoRelativo(iso: string): string {
+  const diffMs = Date.now() - new Date(iso).getTime()
+  const dias = Math.floor(diffMs / 86400000)
+  if (dias <= 0) return 'Hoy'
+  if (dias === 1) return 'Ayer'
+  if (dias < 30) return `Hace ${dias} días`
+  const meses = Math.floor(dias / 30)
+  return `Hace ${meses} mes${meses !== 1 ? 'es' : ''}`
+}
+
 export default function TablerosClient({ tableros: initial }: { tableros: Tablero[] }) {
   const [tableros, setTableros]     = useState(initial)
   const [creating, setCreating]     = useState(false)
@@ -232,18 +242,33 @@ export default function TablerosClient({ tableros: initial }: { tableros: Tabler
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {tableros.map(t => {
-              const total = t.columnas.reduce((a, c) => a + c.tareas.length, 0)
+              const cols = [...t.columnas].sort((a, b) => a.orden - b.orden)
+              const total = cols.reduce((a, c) => a + c.tareas.length, 0)
+              const enUltima = cols.length > 0 ? cols[cols.length - 1].tareas.length : 0
+              const avance = total > 0 ? Math.round((enUltima / total) * 100) : 0
               return (
                 <div key={t.id} className="group relative rounded-2xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.05] overflow-hidden transition-colors">
                   <div className="h-1.5 w-full" style={{ background: t.color }} />
                   <div className="p-4">
                     <p className="text-[14px] font-semibold text-white mb-1 truncate">{t.nombre}</p>
+                    <p className="text-[11px] text-white/30 mb-2">Actualizado {tiempoRelativo(t.updatedAt)}</p>
                     {t.descripcion && <p className="text-[11px] text-white/35 mb-3 truncate">{t.descripcion}</p>}
-                    <div className="flex items-center gap-3 text-[11px] text-white/30">
+                    <div className="flex items-center gap-3 text-[11px] text-white/30 mb-2">
                       <span>{t.columnas.length} columnas</span>
                       <span>·</span>
                       <span>{total} tareas</span>
+                      {total > 0 && (
+                        <>
+                          <span>·</span>
+                          <span className="text-emerald-400">{avance}% avance</span>
+                        </>
+                      )}
                     </div>
+                    {total > 0 && (
+                      <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden mb-1">
+                        <div className="h-full rounded-full bg-emerald-500" style={{ width: `${avance}%` }} />
+                      </div>
+                    )}
                     <div className="flex gap-2 mt-4">
                       <a href={`/dashboard/tareas/${t.id}`}
                         className="flex-1 text-center py-2 rounded-xl bg-[#5448EE]/15 text-[#8880F5] text-[11px] font-medium hover:bg-[#5448EE]/25 transition-colors">
