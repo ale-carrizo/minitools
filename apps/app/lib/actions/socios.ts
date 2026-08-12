@@ -67,7 +67,10 @@ function mapCobro(raw: any): CobroProgramado {
     createdAt:        raw.createdAt?.toISOString?.() ?? raw.createdAt,
     updatedAt:        raw.updatedAt?.toISOString?.() ?? raw.updatedAt,
     socio:            raw.socio
-      ? { nombre: raw.socio.nombre, telefono: raw.socio.telefono, mensajeTemplate: raw.socio.mensajeTemplate, avatarColor: raw.socio.avatarColor }
+      ? {
+          nombre: raw.socio.nombre, telefono: raw.socio.telefono, mensajeTemplate: raw.socio.mensajeTemplate, avatarColor: raw.socio.avatarColor,
+          frecuencia: raw.socio.frecuencia, diaVencimiento: raw.socio.diaVencimiento ?? null,
+        }
       : undefined,
   }
 }
@@ -262,7 +265,7 @@ export async function getCobrosEnRango(desde: string, hasta: string): Promise<Co
     id: true, userId: true, socioId: true, monto: true, fechaVencimiento: true, estado: true,
     concepto: true, fechaPago: true, medioPago: true, notaPago: true,
     fechaOriginal: true, vecesPospuesto: true, createdAt: true, updatedAt: true,
-    socio: { select: { nombre: true, telefono: true, mensajeTemplate: true, avatarColor: true } },
+    socio: { select: { nombre: true, telefono: true, mensajeTemplate: true, avatarColor: true, frecuencia: true, diaVencimiento: true } },
   } as const
 
   const [enRango, vencidosPrevios] = await Promise.all([

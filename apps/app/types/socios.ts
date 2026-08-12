@@ -61,7 +61,7 @@ export interface CobroProgramado {
   createdAt:        string
   updatedAt:        string
   // Joined
-  socio?: Pick<Socio, 'nombre' | 'telefono' | 'mensajeTemplate' | 'avatarColor'>
+  socio?: Pick<Socio, 'nombre' | 'telefono' | 'mensajeTemplate' | 'avatarColor' | 'frecuencia' | 'diaVencimiento'>
 }
 
 // ── Status helpers ────────────────────────────────────────────────────────────
@@ -118,6 +118,11 @@ export const FRECUENCIA_LABELS: Record<CobroFrecuencia, string> = {
   semanal:   'Semanal',
   quincenal: 'Quincenal',
   mensual:   'Mensual',
+}
+
+export function frecuenciaDetallada(frecuencia: CobroFrecuencia, diaVencimiento: number | null): string {
+  if (frecuencia === 'mensual' && diaVencimiento) return `Mensual día ${diaVencimiento}`
+  return FRECUENCIA_LABELS[frecuencia]
 }
 
 export const MEDIOS_PAGO = [

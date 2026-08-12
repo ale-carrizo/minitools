@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import type { Socio, CobroProgramado } from '@/types/socios'
 import {
   getSocioStatus, STATUS_UI_CONFIG, COBRO_STATUS_CONFIG,
-  initials, MEDIOS_PAGO,
+  initials, MEDIOS_PAGO, frecuenciaDetallada,
 } from '@/types/socios'
 import { agregarCobroPuntual, getSocio } from '@/lib/actions/socios'
 import { WAButton } from './WAButton'
@@ -71,45 +71,52 @@ export default function ClientesClient({ socios }: { socios: Socio[] }) {
             <p className="text-sm text-white/40">{search ? 'Sin resultados' : 'Aún no tenés clientes'}</p>
           </div>
         ) : (
-          <div className="rounded-2xl border border-white/[0.08] overflow-hidden">
-            {filtered.map((socio, idx) => {
-              const status = getSocioStatus(socio)
-              const cfg    = STATUS_UI_CONFIG[status]
-              const prox   = socio.proximoCobro?.fechaVencimiento
-              return (
-                <button
-                  key={socio.id}
-                  onClick={() => setSelected(socio)}
-                  className={`flex items-center gap-3 w-full px-4 py-3.5 text-left transition-colors hover:bg-white/[0.03] ${idx !== filtered.length - 1 ? 'border-b border-white/[0.06]' : ''}`}
-                >
-                  <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
-                    style={{ background: socio.avatarColor }}
-                  >
-                    {initials(socio.nombre)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[14px] font-semibold text-white truncate">{socio.nombre}</p>
-                    <p className="text-[11px] text-white/35 mt-0.5">
-                      {socio.concepto ?? 'Cuota'} · {fmt(socio.monto)}
-                    </p>
-                  </div>
-                  <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ background: cfg.bg, color: cfg.text }}>
-                      {cfg.label}
-                    </span>
-                    {prox && (
-                      <span className="text-[11px]" style={{ color: cfg.text }}>
-                        {new Date(prox + 'T12:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'short' })}
-                      </span>
-                    )}
-                  </div>
-                  <svg className="w-4 h-4 text-white/20 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path d="m9 18 6-6-6-6" strokeLinecap="round"/>
-                  </svg>
-                </button>
-              )
-            })}
+          <div className="rounded-xl border border-white/[0.09] overflow-x-auto">
+            <table className="w-full min-w-[720px] text-[12px]">
+              <thead>
+                <tr className="text-white/35 text-[11px] uppercase">
+                  <th className="text-left px-2.5 py-2 border-b border-white/[0.06]">Cliente</th>
+                  <th className="text-left px-2.5 py-2 border-b border-white/[0.06]">WhatsApp</th>
+                  <th className="text-left px-2.5 py-2 border-b border-white/[0.06]">Pago</th>
+                  <th className="text-left px-2.5 py-2 border-b border-white/[0.06]">Próximo cobro</th>
+                  <th className="text-right px-2.5 py-2 border-b border-white/[0.06]">Monto</th>
+                  <th className="text-right px-2.5 py-2 border-b border-white/[0.06]">Acción</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((socio) => {
+                  const prox = socio.proximoCobro?.fechaVencimiento
+                  return (
+                    <tr key={socio.id} className="text-white/80">
+                      <td className="px-2.5 py-2.5 border-b border-white/[0.04]">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-7 h-7 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0" style={{ background: socio.avatarColor }}>
+                            {initials(socio.nombre)}
+                          </div>
+                          <span className="font-medium text-white">{socio.nombre}</span>
+                        </div>
+                      </td>
+                      <td className="px-2.5 py-2.5 border-b border-white/[0.04] text-white/50">{socio.telefono}</td>
+                      <td className="px-2.5 py-2.5 border-b border-white/[0.04] text-white/50">{frecuenciaDetallada(socio.frecuencia, socio.diaVencimiento)}</td>
+                      <td className="px-2.5 py-2.5 border-b border-white/[0.04] text-white/50">{prox ? fmtFecha(prox) : '—'}</td>
+                      <td className="px-2.5 py-2.5 border-b border-white/[0.04] text-right font-semibold text-white tabular-nums">{fmt(socio.monto)}</td>
+                      <td className="px-2.5 py-2.5 border-b border-white/[0.04]">
+                        <div className="flex justify-end gap-1.5">
+                          <button onClick={() => setSelected(socio)}
+                            className="rounded-lg border border-white/10 bg-white/[0.06] px-2.5 py-1.5 text-[11px] font-medium text-white hover:bg-white/[0.09] transition-colors">
+                            Ver
+                          </button>
+                          <button onClick={() => router.push(`/dashboard/socios/${socio.id}/editar`)}
+                            className="rounded-lg border border-white/10 bg-white/[0.06] px-2.5 py-1.5 text-[11px] font-medium text-white hover:bg-white/[0.09] transition-colors">
+                            Editar
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
@@ -160,9 +167,7 @@ export default function ClientesClient({ socios }: { socios: Socio[] }) {
         {[
           ['Tipo de cobro', ficha.concepto ?? 'Cuota'],
           ['Monto', fmt(ficha.monto)],
-          ['Frecuencia', ficha.frecuencia === 'mensual'
-            ? `Mensual · día ${ficha.diaVencimiento}`
-            : ficha.frecuencia],
+          ['Frecuencia', frecuenciaDetallada(ficha.frecuencia, ficha.diaVencimiento)],
           ficha.proximoCobro ? ['Próximo cobro', fmtFecha(ficha.proximoCobro.fechaVencimiento)] : null,
           ficha.deudaTotal > 0 ? ['Deuda acumulada', fmt(ficha.deudaTotal)] : null,
           ficha.notas ? ['Notas', ficha.notas] : null,
