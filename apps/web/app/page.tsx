@@ -33,6 +33,15 @@ function IconCalculadora() {
 function IconGarantia() {
   return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>;
 }
+function IconRecibos() {
+  return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>;
+}
+function IconFacturador() {
+  return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 9h6M9 13h6M9 17h3"/><path d="M15.5 15.5 17 17l2-2" stroke="#5448EE"/></svg>;
+}
+function IconReportes() {
+  return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="21" x2="20" y2="21"/><rect x="6" y="12" width="3" height="7"/><rect x="13" y="7" width="3" height="12"/><rect x="17.5" y="3" width="3" height="16"/></svg>;
+}
 function IconCheck() {
   return <svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="#5448EE" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>;
 }
@@ -70,19 +79,24 @@ const chips = [
 const categories = ["Todos","Finanzas","Operaciones","Productividad","Comercio"];
 
 const tools = [
-  { id: "stock", Icon: IconStock, name: "Control de Stock", desc: "Controlá el stock en tiempo real. Alertas de bajo inventario.", category: "Operaciones" },
   { id: "presupuestos", Icon: IconPresupuestos, name: "Presupuestos", desc: "Creá cotizaciones profesionales y haceles seguimiento de estado.", category: "Finanzas" },
-  { id: "caja", Icon: IconCobranzas, name: "Caja + Pagos", desc: "Registrá ingresos y egresos. Lectura de comprobantes por IA.", category: "Finanzas" },
+  { id: "caja", Icon: IconCobranzas, name: "Registro de Pagos", desc: "Registrá ingresos y egresos. Lectura de comprobantes por IA.", category: "Finanzas" },
   { id: "precios", Icon: IconCalculadora, name: "Calculadora de Precios", desc: "Calculá precio de venta desde costo, IVA, margen y punto de equilibrio.", category: "Finanzas" },
   { id: "sueldos", Icon: IconSueldos, name: "Recibo de Sueldo", desc: "Generá recibos de sueldo PDF para empleados y monotributistas.", category: "Finanzas" },
   { id: "turnos", Icon: IconAgenda, name: "Gestión de Turnos", desc: "Sistema de turnos online con recordatorios automáticos.", category: "Productividad" },
   { id: "garantias", Icon: IconGarantia, name: "Garantías", desc: "Seguimiento de garantías con alertas de vencimiento e historial.", category: "Operaciones" },
-  { id: "socios", Icon: IconCRM, name: "Clientes y Pagos", desc: "Cobranza recurrente, recordatorios y seguimiento de clientes.", category: "Comercio" },
+  { id: "socios", Icon: IconCRM, name: "Gestión de Clientes", desc: "Cobranza recurrente, recordatorios y seguimiento de clientes.", category: "Comercio" },
   { id: "tareas", Icon: IconProyectos, name: "Tareas / Kanban", desc: "Organizá tareas en tableros kanban con hasta 8 columnas.", category: "Productividad" },
+  { id: "recibos", Icon: IconRecibos, name: "Recibos", desc: "Generá comprobantes de cobro en PDF para tus clientes.", category: "Finanzas" },
+  { id: "libreta", Icon: IconStock, name: "Registro de Ventas y Stock", desc: "Caja diaria simple con carga rápida de ventas y control de stock.", category: "Operaciones" },
+  { id: "facturador", Icon: IconFacturador, name: "Facturador", desc: "Facturas electrónicas con CAE de ARCA, directo desde tu cuenta.", category: "Finanzas" },
+  { id: "reportes", Icon: IconReportes, name: "Reportes", desc: "Ventas, presupuestos, clientes y tareas en un solo vistazo.", category: "Productividad" },
 ];
 
-const monthlyFeatures = ["Acceso a las 9 herramientas","Actualizaciones automáticas","Soporte por email","Cancelá en cualquier momento"];
-const annualFeatures = ["Todo lo del plan Mensual","Soporte prioritario 24/7","Acceso anticipado a nuevas tools","Ahorrás pagando anual"];
+const oneToolFeatures = ["Elegí 1 herramienta", "Actualizaciones incluidas", "Soporte por email", "Cancelá cuando quieras"];
+const starterFeatures = ["Elegí hasta 3 herramientas", "Cambiá herramientas cuando lo necesites", "Actualizaciones incluidas", "Soporte por email"];
+const proFeatures = ["Elegí hasta 6 herramientas", "Cambiá herramientas cuando lo necesites", "Actualizaciones incluidas", "Soporte prioritario"];
+const fullFeatures = ["Acceso a las 12 herramientas", "Nuevas herramientas incluidas automáticamente", "Actualizaciones incluidas", "Soporte prioritario", "Sin límites de herramientas"];
 
 export default function Home() {
   const [scrolled, setScrolled] = useState(false);
@@ -140,15 +154,15 @@ export default function Home() {
               <span className="absolute inline-flex h-full w-full rounded-full bg-[#8880F5] opacity-75 animate-ping" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-[#8880F5]" />
             </span>
-            <span className="text-white/70 text-[12.5px] font-medium">Apps modulares para negocios reales</span>
+            <span className="text-white/70 text-[12.5px] font-medium">Software de gestión para kioscos, talleres, comercios y profesionales independientes</span>
           </div>
 
           <h1 className="font-display text-5xl sm:text-[70px] lg:text-[82px] font-semibold leading-[1.04] tracking-[-0.045em] mb-5">
-            <span className="text-white block">Empezá con la app</span>
-            <span className="text-gradient block">que necesitás hoy</span>
+            <span className="text-white block">Empezá con la herramienta</span>
+            <span className="text-gradient block">de gestión que necesitás hoy</span>
           </h1>
-          <p className="text-white/45 text-[17px] leading-relaxed mb-8 max-w-[360px] mx-auto">
-            Zimple no está pensado para que uses todo junto. Elegís una app, resolvés un problema concreto y sumás otras solo si te sirven.
+          <p className="text-white/45 text-[17px] leading-relaxed mb-8 max-w-[420px] mx-auto">
+            Stock, presupuestos, caja, turnos, sueldos y clientes: elegís la app que resuelve tu problema de hoy y sumás otras solo si te sirven.
           </p>
 
           <div className="flex items-center justify-center gap-3 mb-3">
@@ -263,24 +277,26 @@ export default function Home() {
         <div className="text-center mb-14">
           <p className="text-[#5448EE] text-[11px] font-semibold tracking-[0.12em] uppercase mb-3">PRECIOS</p>
           <h2 className="text-[36px] sm:text-[42px] font-semibold text-[#1a1a2e] tracking-[-0.03em] mb-3">
-            Simple, modular y transparente
+            Elegí cuántas herramientas necesitás
           </h2>
           <p className="text-[#1a1a2e]/50 text-[16px] max-w-sm mx-auto leading-relaxed">
             Entrás a Zimple para resolver una necesidad puntual y después decidís si querés ampliar tu stack.
           </p>
         </div>
 
-        <div className="max-w-2xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-5">
-          {/* Mensual */}
-          <div className="border border-[#E4E3F2] rounded-2xl p-7">
-            <p className="text-[#1a1a2e]/35 text-[11px] font-semibold tracking-[0.1em] uppercase mb-5">MENSUAL</p>
+        <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {/* Una herramienta */}
+          <div className="border border-[#E4E3F2] rounded-2xl p-7 flex flex-col">
+            <p className="text-[#1a1a2e]/35 text-[11px] font-semibold tracking-[0.1em] uppercase mb-5">UNA HERRAMIENTA</p>
             <div className="flex items-baseline gap-0.5 mb-1">
-              <span className="text-[54px] font-semibold text-[#1a1a2e] leading-none tracking-[-0.03em]">--</span>
+              <span className="text-[40px] font-semibold text-[#1a1a2e] leading-none tracking-[-0.03em]">3,99 USD</span>
             </div>
-            <p className="text-[#1a1a2e]/40 text-[13px] mb-7">por mes · facturado mensualmente</p>
-            <ul className="space-y-3 mb-8">
-              {monthlyFeatures.map(f => (
-                <li key={f} className="flex items-center gap-2.5 text-[13.5px] text-[#1a1a2e]/70">
+            <p className="text-[#1a1a2e]/40 text-[13px] mb-2">por mes</p>
+            <p className="text-[#1a1a2e] text-[15px] font-bold mb-1">Para un caso puntual.</p>
+            <p className="text-[#1a1a2e]/50 text-[13px] leading-relaxed mb-5 min-h-[36px]">Si solo necesitás cubrir una tarea específica.</p>
+            <ul className="space-y-2.5 mb-6">
+              {oneToolFeatures.map(f => (
+                <li key={f} className="flex items-center gap-2.5 text-[13px] text-[#1a1a2e]/70">
                   <span className="w-4 h-4 rounded-full bg-[#5448EE]/10 flex items-center justify-center flex-shrink-0">
                     <IconCheck />
                   </span>
@@ -288,26 +304,54 @@ export default function Home() {
                 </li>
               ))}
             </ul>
-            <a href="https://app.zimple.tools/login" className="block w-full py-3 rounded-xl border border-[#E4E3F2] text-[#1a1a2e] font-semibold text-[14px] text-center hover:border-[#5448EE] hover:text-[#5448EE] transition-all duration-150">
-              Empezar con Mensual
+            <a href="https://app.zimple.tools/login" className="mt-auto block w-full py-3 rounded-xl border border-[#E4E3F2] text-[#1a1a2e] font-semibold text-[13.5px] text-center hover:border-[#5448EE] hover:text-[#5448EE] transition-all duration-150">
+              Elegir opción puntual
             </a>
           </div>
 
-          {/* Anual */}
-          <div className="border-2 border-[#5448EE] rounded-2xl p-7 relative">
+          {/* Starter */}
+          <div className="border border-[#E4E3F2] rounded-2xl p-7 flex flex-col">
+            <p className="text-[#1a1a2e]/35 text-[11px] font-semibold tracking-[0.1em] uppercase mb-5">STARTER</p>
+            <div className="flex items-baseline gap-0.5 mb-1">
+              <span className="text-[40px] font-semibold text-[#1a1a2e] leading-none tracking-[-0.03em]">7,99 USD</span>
+            </div>
+            <p className="text-[#1a1a2e]/40 text-[13px] mb-2">por mes</p>
+            <span className="inline-flex w-fit items-center bg-[#5448EE]/10 text-[#5448EE] text-[11px] font-bold px-2.5 py-1 rounded-full mb-3">Ahorrás 33%</span>
+            <p className="text-[#1a1a2e] text-[15px] font-bold mb-1">Hasta 3 herramientas</p>
+            <p className="text-[#1a1a2e]/50 text-[13px] leading-relaxed mb-5 min-h-[36px]">Lo esencial para empezar a ordenar tu negocio.</p>
+            <ul className="space-y-2.5 mb-6">
+              {starterFeatures.map(f => (
+                <li key={f} className="flex items-center gap-2.5 text-[13px] text-[#1a1a2e]/70">
+                  <span className="w-4 h-4 rounded-full bg-[#5448EE]/10 flex items-center justify-center flex-shrink-0">
+                    <IconCheck />
+                  </span>
+                  {f}
+                </li>
+              ))}
+            </ul>
+            <a href="https://app.zimple.tools/login" className="mt-auto block w-full py-3 rounded-xl border border-[#E4E3F2] text-[#1a1a2e] font-semibold text-[13.5px] text-center hover:border-[#5448EE] hover:text-[#5448EE] transition-all duration-150">
+              Elegir Starter
+            </a>
+          </div>
+
+          {/* Pro */}
+          <div className="border-2 border-[#5448EE] rounded-2xl p-7 relative flex flex-col">
             <div className="absolute -top-[14px] left-1/2 -translate-x-1/2">
               <span className="bg-[#5448EE] text-white text-[11px] font-semibold tracking-wider px-4 py-1.5 rounded-full whitespace-nowrap">
                 MÁS POPULAR
               </span>
             </div>
-            <p className="text-[#1a1a2e]/35 text-[11px] font-semibold tracking-[0.1em] uppercase mb-5">ANUAL</p>
+            <p className="text-[#1a1a2e]/35 text-[11px] font-semibold tracking-[0.1em] uppercase mb-5">PRO</p>
             <div className="flex items-baseline gap-0.5 mb-1">
-              <span className="text-[54px] font-semibold text-[#1a1a2e] leading-none tracking-[-0.03em]">--</span>
+              <span className="text-[40px] font-semibold text-[#1a1a2e] leading-none tracking-[-0.03em]">14,99 USD</span>
             </div>
-            <p className="text-[#1a1a2e]/40 text-[13px] mb-7">por mes · facturado anual</p>
-            <ul className="space-y-3 mb-8">
-              {annualFeatures.map(f => (
-                <li key={f} className="flex items-center gap-2.5 text-[13.5px] text-[#1a1a2e]/70">
+            <p className="text-[#1a1a2e]/40 text-[13px] mb-2">por mes</p>
+            <span className="inline-flex w-fit items-center bg-[#5448EE]/10 text-[#5448EE] text-[11px] font-bold px-2.5 py-1 rounded-full mb-3">Ahorrás 37%</span>
+            <p className="text-[#1a1a2e] text-[15px] font-bold mb-1">Hasta 6 herramientas</p>
+            <p className="text-[#1a1a2e]/50 text-[13px] leading-relaxed mb-5 min-h-[36px]">Más herramientas para más tareas del día a día.</p>
+            <ul className="space-y-2.5 mb-6">
+              {proFeatures.map(f => (
+                <li key={f} className="flex items-center gap-2.5 text-[13px] text-[#1a1a2e]/70">
                   <span className="w-4 h-4 rounded-full bg-[#5448EE]/10 flex items-center justify-center flex-shrink-0">
                     <IconCheck />
                   </span>
@@ -315,11 +359,40 @@ export default function Home() {
                 </li>
               ))}
             </ul>
-            <a href="https://app.zimple.tools/login" className="block w-full py-3 rounded-xl bg-[#5448EE] hover:bg-[#4035d4] text-white font-semibold text-[14px] text-center transition-colors duration-150">
-              Empezar con Anual
+            <a href="https://app.zimple.tools/login" className="mt-auto block w-full py-3 rounded-xl bg-[#5448EE] hover:bg-[#4035d4] text-white font-semibold text-[13.5px] text-center transition-colors duration-150">
+              Elegir Pro
+            </a>
+          </div>
+
+          {/* Full */}
+          <div className="border border-[#E4E3F2] rounded-2xl p-7 flex flex-col">
+            <p className="text-[#1a1a2e]/35 text-[11px] font-semibold tracking-[0.1em] uppercase mb-5">FULL</p>
+            <div className="flex items-baseline gap-0.5 mb-1">
+              <span className="text-[40px] font-semibold text-[#1a1a2e] leading-none tracking-[-0.03em]">19,99 USD</span>
+            </div>
+            <p className="text-[#1a1a2e]/40 text-[13px] mb-2">por mes</p>
+            <span className="inline-flex w-fit items-center bg-[#5448EE]/10 text-[#5448EE] text-[11px] font-bold px-2.5 py-1 rounded-full mb-3">Ahorrás 44%</span>
+            <p className="text-[#1a1a2e] text-[15px] font-bold mb-1">Todas las herramientas</p>
+            <p className="text-[#1a1a2e]/50 text-[13px] leading-relaxed mb-5 min-h-[36px]">Toda la caja Zimple, hoy y mañana.</p>
+            <ul className="space-y-2.5 mb-4">
+              {fullFeatures.map(f => (
+                <li key={f} className="flex items-center gap-2.5 text-[13px] text-[#1a1a2e]/70">
+                  <span className="w-4 h-4 rounded-full bg-[#5448EE]/10 flex items-center justify-center flex-shrink-0">
+                    <IconCheck />
+                  </span>
+                  {f}
+                </li>
+              ))}
+            </ul>
+            <p className="bg-[#5448EE]/10 text-[#1a1a2e]/70 text-[12px] font-semibold leading-relaxed rounded-xl px-3.5 py-3 mb-5">
+              Incluye las nuevas herramientas que vayamos incorporando.
+            </p>
+            <a href="https://app.zimple.tools/login" className="mt-auto block w-full py-3 rounded-xl border border-[#E4E3F2] text-[#1a1a2e] font-semibold text-[13.5px] text-center hover:border-[#5448EE] hover:text-[#5448EE] transition-all duration-150">
+              Elegir Full
             </a>
           </div>
         </div>
+        <p className="text-center text-[#1a1a2e]/45 text-[13.5px] mt-8">Podés cambiar de plan cuando quieras.</p>
       </section>
 
       {/* ── CTA SECTION ────────────────────────────── */}
