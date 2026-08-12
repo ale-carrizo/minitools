@@ -15,8 +15,8 @@ const bricolage = Bricolage_Grotesque({
 });
 
 export const metadata: Metadata = {
-  title: "Zimple Tools — Empezá con la app que necesitás hoy",
-  description: "Apps modulares para negocios reales. Empezá simple y sumá herramientas cuando te sirvan.",
+  title: "Zimple Tools — Software de gestión para kioscos, talleres y comercios",
+  description: "Stock, presupuestos, caja, turnos, sueldos y clientes. Empezá con la herramienta que necesitás hoy y sumá otras cuando te sirvan.",
 };
 
 export default function RootLayout({
