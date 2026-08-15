@@ -69,6 +69,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           select: { role: true },
         });
         token.role = dbUser?.role ?? "USER";
+
+        const now = new Date();
+        await prisma.user.update({
+          where: { id: user.id! },
+          data: { lastLoginAt: now, lastActiveAt: now },
+        });
       }
       return token;
     },

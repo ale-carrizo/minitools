@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { suspendUser, unsuspendUser, makeAdmin, removeAdmin } from "./actions";
 import PromoteForm from "./promote-form";
 import CreateUserForm from "./create-user-form";
+import { timeAgo, isOnline } from "@/lib/date";
 
 export default async function AdminUsersPage() {
   const session = await auth();
@@ -33,13 +34,14 @@ export default async function AdminUsersPage() {
                 <th className="text-left px-4 py-3.5 text-[10px] font-semibold text-white/30 uppercase tracking-wider">Rol</th>
                 <th className="text-left px-4 py-3.5 text-[10px] font-semibold text-white/30 uppercase tracking-wider">Plan</th>
                 <th className="text-left px-4 py-3.5 text-[10px] font-semibold text-white/30 uppercase tracking-wider">Estado</th>
+                <th className="text-left px-4 py-3.5 text-[10px] font-semibold text-white/30 uppercase tracking-wider">Última actividad</th>
                 <th className="text-left px-4 py-3.5 text-[10px] font-semibold text-white/30 uppercase tracking-wider">Registro</th>
                 <th className="text-right px-6 py-3.5 text-[10px] font-semibold text-white/30 uppercase tracking-wider">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/[0.04]">
               {users.length === 0 ? (
-                <tr><td colSpan={6} className="text-center py-12 text-white/25 text-sm">No hay usuarios todavía.</td></tr>
+                <tr><td colSpan={7} className="text-center py-12 text-white/25 text-sm">No hay usuarios todavía.</td></tr>
               ) : (
                 users.map((user) => (
                   <tr key={user.id} className="hover:bg-white/[0.02] transition-colors">
@@ -71,6 +73,16 @@ export default async function AdminUsersPage() {
                       }`}>
                         {user.suspended ? "Suspendido" : user.subscription ? (user.subscription.status === "ACTIVE" ? "Activo" : user.subscription.status === "TRIAL" ? "En prueba" : user.subscription.status) : "Sin plan"}
                       </span>
+                    </td>
+                    <td className="px-4 py-4 text-xs">
+                      <div className="flex items-center gap-1.5">
+                        {isOnline(user.lastActiveAt) && (
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" title="En línea ahora" />
+                        )}
+                        <span className={isOnline(user.lastActiveAt) ? "text-emerald-400 font-medium" : "text-white/30"}>
+                          {isOnline(user.lastActiveAt) ? "En línea" : timeAgo(user.lastActiveAt)}
+                        </span>
+                      </div>
                     </td>
                     <td className="px-4 py-4 text-xs text-white/25">
                       {new Date(user.createdAt).toLocaleDateString("es-AR", { day: "2-digit", month: "short", year: "numeric" })}

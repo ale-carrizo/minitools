@@ -41,6 +41,8 @@ model User {
   storageUsedBytes     Float     @default(0)
   storageLimitBytes    Float     @default(5368709120) // 5 GB
   storageExceededAt    DateTime?
+  lastLoginAt          DateTime?
+  lastActiveAt         DateTime?
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
 
