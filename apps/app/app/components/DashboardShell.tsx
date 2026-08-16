@@ -113,7 +113,7 @@ export default function DashboardShell({
       </button>
 
       {/* Main content */}
-      <main className="relative flex-1 overflow-y-auto grain bg-[#111028] light:bg-[#FBFBFF]">
+      <main className="relative flex-1 overflow-y-auto grain bg-[#111028] light:bg-[#FBFBFF] pt-14 md:pt-0">
         <div className="pointer-events-none fixed inset-0 z-0 opacity-60 light:opacity-30">
           <div className="absolute -top-[10%] right-[2%] h-[420px] w-[520px] rounded-full"
             style={{ background: 'radial-gradient(circle, rgba(84,72,238,0.18), transparent 70%)', filter: 'blur(20px)' }} />

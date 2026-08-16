@@ -24,7 +24,7 @@ export default function PreciosShell({ children }: { children: React.ReactNode }
         </p>
       </div>
 
-      <div className="flex gap-1 p-1 bg-white/[0.04] border border-white/[0.06] rounded-xl mb-8 w-fit">
+      <div className="flex gap-1 p-1 bg-white/[0.04] border border-white/[0.06] rounded-xl mb-8 w-full overflow-x-auto no-scrollbar md:w-fit">
         {tabs.map((t) => {
           const isActive = t.href === '/dashboard/precios'
             ? pathname === '/dashboard/precios'
