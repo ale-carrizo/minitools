@@ -135,7 +135,7 @@ export default function Home() {
       </nav>
 
       {/* ── HERO ───────────────────────────────────── */}
-      <section className="relative min-h-screen bg-[#0C0B1A] flex flex-col items-center justify-center overflow-hidden">
+      <section className="relative min-h-screen bg-[#0C0B1A] flex flex-col items-center justify-center overflow-hidden pb-24">
         {/* Aurora mesh + central glow + particles */}
         <div className="aurora" />
         <ParticleField className="z-[1] opacity-60" />
@@ -192,7 +192,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 h-28 pointer-events-none z-[2]"
+        <div className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none z-[2]"
           style={{ background: "linear-gradient(to bottom, transparent, #F6F6FB)" }} />
       </section>
 
