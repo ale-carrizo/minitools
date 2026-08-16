@@ -289,7 +289,7 @@ export default function Home() {
           <div className="border border-[#E4E3F2] rounded-2xl p-7 flex flex-col">
             <p className="text-[#1a1a2e]/35 text-[11px] font-semibold tracking-[0.1em] uppercase mb-5">UNA HERRAMIENTA</p>
             <div className="flex items-baseline gap-0.5 mb-1">
-              <span className="text-[40px] font-semibold text-[#1a1a2e] leading-none tracking-[-0.03em]">$6.185</span>
+              <span className="text-[40px] font-semibold text-[#1a1a2e] leading-none tracking-[-0.03em]">$6.000</span>
             </div>
             <p className="text-[#1a1a2e]/40 text-[13px] mb-2">por mes</p>
             <p className="text-[#1a1a2e] text-[15px] font-bold mb-1">Para un caso puntual.</p>
@@ -313,7 +313,7 @@ export default function Home() {
           <div className="border border-[#E4E3F2] rounded-2xl p-7 flex flex-col">
             <p className="text-[#1a1a2e]/35 text-[11px] font-semibold tracking-[0.1em] uppercase mb-5">STARTER</p>
             <div className="flex items-baseline gap-0.5 mb-1">
-              <span className="text-[40px] font-semibold text-[#1a1a2e] leading-none tracking-[-0.03em]">$12.385</span>
+              <span className="text-[40px] font-semibold text-[#1a1a2e] leading-none tracking-[-0.03em]">$12.000</span>
             </div>
             <p className="text-[#1a1a2e]/40 text-[13px] mb-2">por mes</p>
             <span className="inline-flex w-fit items-center bg-[#5448EE]/10 text-[#5448EE] text-[11px] font-bold px-2.5 py-1 rounded-full mb-3">Ahorrás 33%</span>
@@ -343,7 +343,7 @@ export default function Home() {
             </div>
             <p className="text-[#1a1a2e]/35 text-[11px] font-semibold tracking-[0.1em] uppercase mb-5">PRO</p>
             <div className="flex items-baseline gap-0.5 mb-1">
-              <span className="text-[40px] font-semibold text-[#1a1a2e] leading-none tracking-[-0.03em]">$23.235</span>
+              <span className="text-[40px] font-semibold text-[#1a1a2e] leading-none tracking-[-0.03em]">$23.000</span>
             </div>
             <p className="text-[#1a1a2e]/40 text-[13px] mb-2">por mes</p>
             <span className="inline-flex w-fit items-center bg-[#5448EE]/10 text-[#5448EE] text-[11px] font-bold px-2.5 py-1 rounded-full mb-3">Ahorrás 37%</span>
@@ -368,7 +368,7 @@ export default function Home() {
           <div className="border border-[#E4E3F2] rounded-2xl p-7 flex flex-col">
             <p className="text-[#1a1a2e]/35 text-[11px] font-semibold tracking-[0.1em] uppercase mb-5">FULL</p>
             <div className="flex items-baseline gap-0.5 mb-1">
-              <span className="text-[40px] font-semibold text-[#1a1a2e] leading-none tracking-[-0.03em]">$30.985</span>
+              <span className="text-[40px] font-semibold text-[#1a1a2e] leading-none tracking-[-0.03em]">$30.000</span>
             </div>
             <p className="text-[#1a1a2e]/40 text-[13px] mb-2">por mes</p>
             <span className="inline-flex w-fit items-center bg-[#5448EE]/10 text-[#5448EE] text-[11px] font-bold px-2.5 py-1 rounded-full mb-3">Ahorrás 44%</span>
