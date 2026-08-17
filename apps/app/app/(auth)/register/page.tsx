@@ -157,7 +157,7 @@ export default function RegisterPage() {
             {/* Google */}
             <button
               type="button"
-              onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+              onClick={() => signIn("google", { callbackUrl: "/onboarding" })}
               className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl bg-white/[0.05] border border-white/[0.10] text-white/80 text-sm font-medium hover:bg-white/[0.10] hover:text-white hover:border-white/20"
             >
               <svg width="16" height="16" viewBox="0 0 24 24">

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyWebhookSignature, getSubscription } from "@/lib/mercadopago";
+import { PLANS, type PlanSlug } from "@/lib/plans";
 
 // Mapa de estados MP → estados internos
 const MP_STATUS_MAP: Record<string, "ACTIVE" | "SUSPENDED" | "CANCELED" | "TRIAL"> = {
@@ -99,7 +100,7 @@ export async function POST(req: NextRequest) {
               status: "paid",
               dueDate: new Date(),
               paidAt: new Date(),
-              description: `Suscripción ${sub.plan === "ANNUAL" ? "Anual" : "Mensual"} — Zimple Tools`,
+              description: `Plan ${PLANS[sub.plan as PlanSlug].label} — Zimple Tools`,
             },
           });
         }

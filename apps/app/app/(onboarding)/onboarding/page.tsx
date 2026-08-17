@@ -10,5 +10,5 @@ export default async function OnboardingPage() {
   const state = await getOnboardingState()
   if (state?.completed) redirect('/dashboard')
 
-  return <OnboardingClient initialState={state} userName={session.user?.name ?? ''} />
+  return <OnboardingClient initialState={state} />
 }

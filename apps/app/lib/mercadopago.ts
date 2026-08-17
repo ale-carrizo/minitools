@@ -1,4 +1,5 @@
-import { MercadoPagoConfig, PreApproval, PreApprovalPlan, Payment } from "mercadopago";
+import { MercadoPagoConfig, PreApproval } from "mercadopago";
+import { PLANS, type PlanSlug } from "@/lib/plans";
 
 // ─── Client singleton ────────────────────────────────────────────────────────
 // Keys se cargan desde env vars en Railway.
@@ -15,44 +16,41 @@ function getMpClient() {
   });
 }
 
-// ─── Plan IDs (se crean una vez en el dashboard de MP y se guardan en env) ───
-export const MP_PLANS = {
-  MONTHLY: process.env.MP_PLAN_MONTHLY_ID ?? "",
-  ANNUAL: process.env.MP_PLAN_ANNUAL_ID ?? "",
-} as const;
-
-// ─── Precios (ARS) ───────────────────────────────────────────────────────────
-export const PRICES = {
-  MONTHLY: { amount: 9900, label: "$9.900/mes", period: "Mensual" },
-  ANNUAL: { amount: 79200, label: "$79.200/año ($6.600/mes)", period: "Anual" },
-} as const;
-
-// ─── Crear suscripción (preapproval) para un usuario ─────────────────────────
+// ─── Crear suscripción (preapproval) con monto dinámico según el plan ────────
+// No usa preapproval_plan_id: el monto sale directo del plan elegido en
+// lib/plans.ts, así no hace falta crear/mantener 4 planes en el dashboard de MP.
+// `startDate` difiere el primer cobro (fin del trial) — MP igual pide la
+// tarjeta ahora, pero no cobra nada hasta esa fecha.
 export async function createSubscription({
-  planType,
+  planSlug,
   userEmail,
   userId,
   backUrl,
+  startDate,
 }: {
-  planType: "MONTHLY" | "ANNUAL";
+  planSlug: PlanSlug;
   userEmail: string;
   userId: string;
   backUrl: string;
+  startDate: Date;
 }) {
   const client = getMpClient();
   const preApproval = new PreApproval(client);
-
-  const planId = MP_PLANS[planType];
-  if (!planId) {
-    throw new Error(`MP_PLAN_${planType}_ID no está configurado.`);
-  }
+  const plan = PLANS[planSlug];
 
   const response = await preApproval.create({
     body: {
-      preapproval_plan_id: planId,
+      reason: `Zimple Tools — Plan ${plan.label}`,
       payer_email: userEmail,
       external_reference: userId,
       back_url: backUrl,
+      auto_recurring: {
+        frequency: 1,
+        frequency_type: "months",
+        transaction_amount: plan.priceARS,
+        currency_id: "ARS",
+        start_date: startDate.toISOString(),
+      },
     },
   });
 

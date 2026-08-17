@@ -4,6 +4,7 @@ import { suspendUser, unsuspendUser, makeAdmin, removeAdmin } from "./actions";
 import PromoteForm from "./promote-form";
 import CreateUserForm from "./create-user-form";
 import { timeAgo, isOnline } from "@/lib/date";
+import { PLANS, type PlanSlug } from "@/lib/plans";
 
 export default async function AdminUsersPage() {
   const session = await auth();
@@ -62,7 +63,7 @@ export default async function AdminUsersPage() {
                       </span>
                     </td>
                     <td className="px-4 py-4 text-white/40 text-xs">
-                      {user.subscription ? `${user.subscription.plan === "ANNUAL" ? "Anual" : "Mensual"} · $${user.subscription.priceMonthly}/mes` : <span className="text-white/20">Sin plan</span>}
+                      {user.subscription ? `${PLANS[user.subscription.plan as PlanSlug].label} · $${user.subscription.priceMonthly}/mes` : <span className="text-white/20">Sin plan</span>}
                     </td>
                     <td className="px-4 py-4">
                       <span className={`text-[10px] font-semibold px-2.5 py-1 rounded-full ${

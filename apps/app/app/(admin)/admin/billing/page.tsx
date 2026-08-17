@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { PLANS, type PlanSlug } from "@/lib/plans";
 
 const invoiceStyle: Record<string, string> = {
   paid: "bg-emerald-500/15 text-emerald-400",
@@ -63,7 +64,7 @@ export default async function AdminBillingPage() {
                     <p className="font-medium text-white/80">{inv.subscription.user.name ?? "—"}</p>
                     <p className="text-xs text-white/30">{inv.subscription.user.email}</p>
                   </td>
-                  <td className="px-5 py-4 text-xs text-white/40">{inv.description ?? `Plan ${inv.subscription.plan === "ANNUAL" ? "Anual" : "Mensual"}`}</td>
+                  <td className="px-5 py-4 text-xs text-white/40">{inv.description ?? `Plan ${PLANS[inv.subscription.plan as PlanSlug].label}`}</td>
                   <td className="px-5 py-4 font-semibold text-white/80">${inv.amount.toFixed(2)} {inv.currency}</td>
                   <td className="px-5 py-4">
                     <span className={`text-[10px] font-semibold px-2.5 py-1 rounded-full ${invoiceStyle[inv.status] ?? "bg-white/[0.06] text-white/30"}`}>

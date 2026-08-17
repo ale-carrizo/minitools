@@ -1,56 +1,60 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { createSubscription, PRICES } from "@/lib/mercadopago";
+import { createSubscription } from "@/lib/mercadopago";
+import { PLANS, type PlanSlug } from "@/lib/plans";
 
 export async function POST(req: NextRequest) {
   const session = await auth();
-  if (!session?.user?.id) {
+  if (!session?.user?.id || !session.user.email) {
     return NextResponse.json({ error: "No autenticado" }, { status: 401 });
   }
 
-  const { planType } = await req.json() as { planType: "MONTHLY" | "ANNUAL" };
-  if (!["MONTHLY", "ANNUAL"].includes(planType)) {
+  const { planSlug } = (await req.json()) as { planSlug: PlanSlug };
+  if (!Object.keys(PLANS).includes(planSlug)) {
     return NextResponse.json({ error: "Plan inválido" }, { status: 400 });
   }
 
-  // Verificar si ya tiene suscripción activa
   const existing = await prisma.subscription.findUnique({
     where: { userId: session.user.id },
   });
-  if (existing?.status === "ACTIVE") {
-    return NextResponse.json({ error: "Ya tenés una suscripción activa" }, { status: 400 });
+  if (existing?.status === "ACTIVE" && existing.plan === planSlug) {
+    return NextResponse.json({ error: "Ya tenés este plan activo" }, { status: 400 });
   }
 
   const baseUrl = process.env.NEXTAUTH_URL ?? process.env.AUTH_URL ?? "https://app.zimple.tools";
+  const plan = PLANS[planSlug];
 
   try {
+    // Cambio/alta de plan fuera del onboarding: se cobra ya, sin trial.
     const mpResponse = await createSubscription({
-      planType,
-      userEmail: session.user.email!,
+      planSlug,
+      userEmail: session.user.email,
       userId: session.user.id,
       backUrl: `${baseUrl}/dashboard?payment=success`,
+      startDate: new Date(),
     });
 
-    // Crear o actualizar suscripción en DB como TRIAL hasta que MP confirme
     await prisma.subscription.upsert({
       where: { userId: session.user.id },
       create: {
         userId: session.user.id,
-        plan: planType,
-        status: "TRIAL",
-        priceMonthly: planType === "ANNUAL"
-          ? PRICES.ANNUAL.amount / 12
-          : PRICES.MONTHLY.amount,
+        plan: planSlug,
+        status: "TRIAL", // pasa a ACTIVE cuando el webhook confirme
+        priceMonthly: plan.priceARS,
+        currency: "ARS",
         mpPreapprovalId: mpResponse.id ?? null,
         mpPayerEmail: session.user.email,
-        mpPlanId: process.env[`MP_PLAN_${planType}_ID`] ?? null,
+        paymentMethod: "mercadopago",
       },
       update: {
-        plan: planType,
+        plan: planSlug,
+        priceMonthly: plan.priceARS,
+        currency: "ARS",
         status: "TRIAL",
         mpPreapprovalId: mpResponse.id ?? null,
         mpPayerEmail: session.user.email,
+        paymentMethod: "mercadopago",
       },
     });
 

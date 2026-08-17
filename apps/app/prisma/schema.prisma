@@ -23,8 +23,10 @@ enum SubscriptionStatus {
 }
 
 enum SubscriptionPlan {
-  MONTHLY
-  ANNUAL
+  UNA_HERRAMIENTA
+  STARTER
+  PRO
+  FULL
 }
 
 model User {

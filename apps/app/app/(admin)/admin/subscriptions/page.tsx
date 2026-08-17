@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { PLANS, type PlanSlug } from "@/lib/plans";
 
 export default async function AdminSubscriptionsPage() {
   const subscriptions = await prisma.subscription.findMany({
@@ -62,7 +63,7 @@ export default async function AdminSubscriptionsPage() {
                   </td>
                   <td className="px-5 py-4">
                     <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#5448EE]/15 text-[#8880F5]">
-                      {sub.plan === "ANNUAL" ? "Anual" : "Mensual"}
+                      {PLANS[sub.plan as PlanSlug].label}
                     </span>
                   </td>
                   <td className="px-5 py-4">

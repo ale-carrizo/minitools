@@ -1,27 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { PRICES } from "@/lib/mercadopago";
+import { PLANS, PLAN_ORDER, type PlanSlug } from "@/lib/plans";
 
-const features = [
-  "Acceso completo a las 12 herramientas",
-  "Generador de presupuestos en PDF",
-  "Control de Caja + lectura de comprobantes con IA",
-  "Registro de Ventas y Stock con caja diaria simple",
-  "Facturador con CAE de ARCA, directo sin intermediarios",
-  "Reportes de ventas, presupuestos, clientes y tareas",
-  "Calculadora de precio de venta",
-  "Recibos de sueldo y control de asistencia",
-  "Agenda de turnos con recordatorios WhatsApp",
-  "Mini CRM con calendario de cobros y WhatsApp",
-  "Soporte por email incluido",
-  "Actualizaciones automáticas sin costo adicional",
-];
+const PLAN_FEATURES: Record<PlanSlug, string[]> = {
+  UNA_HERRAMIENTA: ["Elegí 1 herramienta", "Actualizaciones incluidas", "Soporte por email", "Cancelá cuando quieras"],
+  STARTER: ["Elegí hasta 3 herramientas", "Cambiá herramientas cuando lo necesites", "Actualizaciones incluidas", "Soporte por email"],
+  PRO: ["Elegí hasta 6 herramientas", "Cambiá herramientas cuando lo necesites", "Actualizaciones incluidas", "Soporte prioritario"],
+  FULL: ["Acceso a las 12 herramientas", "Nuevas herramientas incluidas automáticamente", "Actualizaciones incluidas", "Soporte prioritario"],
+};
+
+function fmtARS(n: number) {
+  return new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(n);
+}
 
 export default function UpgradePage() {
-  const router = useRouter();
-  const [selected, setSelected] = useState<"MONTHLY" | "ANNUAL">("ANNUAL");
+  const [selected, setSelected] = useState<PlanSlug>("PRO");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,7 +27,7 @@ export default function UpgradePage() {
       const res = await fetch("/api/payments/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ planType: selected }),
+        body: JSON.stringify({ planSlug: selected }),
       });
 
       const data = await res.json();
@@ -43,7 +37,6 @@ export default function UpgradePage() {
         return;
       }
 
-      // Redirigir al checkout de Mercado Pago
       window.location.href = data.checkoutUrl;
     } catch {
       setError("Error de conexión. Intentá de nuevo.");
@@ -52,66 +45,57 @@ export default function UpgradePage() {
     }
   }
 
-  const price = PRICES[selected];
+  const plan = PLANS[selected];
 
   return (
-    <div className="p-8 max-w-2xl mx-auto">
+    <div className="p-8 max-w-3xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-[#1a1a2e]">Activá tu suscripción</h1>
+        <h1 className="text-2xl font-semibold text-[#1a1a2e]">Activá o cambiá tu plan</h1>
         <p className="text-[#6b7280] text-sm mt-1">
-          Accedé a todas las herramientas de Zimple Tools.
+          Elegí cuántas herramientas necesitás.
         </p>
       </div>
 
       {/* Plan selector */}
-      <div className="grid grid-cols-2 gap-3 mb-6">
-        <button
-          onClick={() => setSelected("MONTHLY")}
-          className={`relative p-5 rounded-2xl border-2 text-left transition-all ${
-            selected === "MONTHLY"
-              ? "border-[#5448EE] bg-[#EEF0FF]"
-              : "border-[#e5e7eb] bg-[#ffffff] hover:border-[#c7c5f8]"
-          }`}
-        >
-          <p className="text-xs font-semibold text-[#9ca3af] uppercase tracking-wide mb-2">
-            Mensual
-          </p>
-          <p className="text-2xl font-semibold text-[#1a1a2e]">
-            ${(PRICES.MONTHLY.amount / 100).toLocaleString("es-AR")}
-          </p>
-          <p className="text-xs text-[#9ca3af] mt-0.5">por mes</p>
-        </button>
-
-        <button
-          onClick={() => setSelected("ANNUAL")}
-          className={`relative p-5 rounded-2xl border-2 text-left transition-all ${
-            selected === "ANNUAL"
-              ? "border-[#5448EE] bg-[#EEF0FF]"
-              : "border-[#e5e7eb] bg-[#ffffff] hover:border-[#c7c5f8]"
-          }`}
-        >
-          <div className="absolute -top-3 left-4">
-            <span className="bg-[#5448EE] text-white btn-solid-text text-[10px] font-bold px-2.5 py-1 rounded-full">
-              AHORRÁS 33%
-            </span>
-          </div>
-          <p className="text-xs font-semibold text-[#9ca3af] uppercase tracking-wide mb-2">
-            Anual
-          </p>
-          <p className="text-2xl font-semibold text-[#1a1a2e]">
-            ${(PRICES.ANNUAL.amount / 100 / 12).toLocaleString("es-AR")}
-          </p>
-          <p className="text-xs text-[#9ca3af] mt-0.5">
-            por mes · facturado ${(PRICES.ANNUAL.amount / 100).toLocaleString("es-AR")}/año
-          </p>
-        </button>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+        {PLAN_ORDER.map((slug) => {
+          const p = PLANS[slug];
+          return (
+            <button
+              key={slug}
+              onClick={() => setSelected(slug)}
+              className={`relative p-4 rounded-2xl border-2 text-left transition-all ${
+                selected === slug
+                  ? "border-[#5448EE] bg-[#EEF0FF]"
+                  : "border-[#e5e7eb] bg-[#ffffff] hover:border-[#c7c5f8]"
+              }`}
+            >
+              {p.savingsLabel && (
+                <div className="absolute -top-3 left-3">
+                  <span className="bg-[#5448EE] text-white btn-solid-text text-[9px] font-bold px-2 py-1 rounded-full whitespace-nowrap">
+                    {p.savingsLabel.toUpperCase()}
+                  </span>
+                </div>
+              )}
+              <p className="text-[10px] font-semibold text-[#9ca3af] uppercase tracking-wide mb-2">
+                {p.label}
+              </p>
+              <p className="text-xl font-semibold text-[#1a1a2e]">
+                ${fmtARS(p.priceARS)}
+              </p>
+              <p className="text-[11px] text-[#9ca3af] mt-0.5">
+                por mes · hasta {p.maxApps} app{p.maxApps > 1 ? "s" : ""}
+              </p>
+            </button>
+          );
+        })}
       </div>
 
       {/* Features */}
       <div className="bg-[#ffffff] rounded-2xl border border-[#e5e7eb] p-6 mb-6">
-        <p className="text-sm font-medium text-[#1a1a2e] mb-4">Todo incluido:</p>
+        <p className="text-sm font-medium text-[#1a1a2e] mb-4">Plan {plan.label} incluye:</p>
         <ul className="space-y-2.5">
-          {features.map((f) => (
+          {PLAN_FEATURES[selected].map((f) => (
             <li key={f} className="flex items-center gap-2.5 text-sm text-[#374151]">
               <span className="w-4 h-4 rounded-full bg-[#EEF0FF] flex items-center justify-center flex-shrink-0">
                 <svg width="10" height="10" viewBox="0 0 20 20" fill="#5448EE">
@@ -146,7 +130,7 @@ export default function UpgradePage() {
             Redirigiendo a Mercado Pago...
           </span>
         ) : (
-          `Suscribirse con ${price.period} — ${price.label}`
+          `Suscribirse a ${plan.label} — $${fmtARS(plan.priceARS)}/mes`
         )}
       </button>
 

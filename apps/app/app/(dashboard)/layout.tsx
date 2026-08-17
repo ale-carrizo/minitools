@@ -7,6 +7,14 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const session = await auth();
   if (!session?.user) redirect("/login");
 
+  if (session.user.id) {
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { onboardingCompleted: true },
+    });
+    if (!user?.onboardingCompleted) redirect("/onboarding");
+  }
+
   // Fire-and-forget, throttled a la DB: solo pisa lastActiveAt si pasaron >2 min desde el último update.
   if (session.user.id) {
     prisma.user
