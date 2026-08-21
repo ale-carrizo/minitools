@@ -51,6 +51,54 @@ function ReceiptIcon() {
   );
 }
 
+type ToolIconName = "presupuesto" | "factura" | "clientes" | "calculadora" | "stock" | "turnos" | "reportes" | "check" | "send" | "shield" | "cloud" | "clock";
+
+function ToolGlyph({ name }: { name: ToolIconName }) {
+  const common = { stroke: "currentColor", strokeWidth: "1.8", strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
+
+  if (name === "presupuesto" || name === "factura") {
+    return <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-7 w-7"><path d="M6 3.5h8l4 4v13H6z" {...common} /><path d="M14 3.5v4h4M9 12h6M9 16h4" {...common} />{name === "presupuesto" && <path d="M16.5 16.5c0 1-1 1.5-2 1.5s-2-.5-2-1.5 1-1.5 2-1.5 2 .5 2 1.5Z" {...common} />}</svg>;
+  }
+  if (name === "clientes") {
+    return <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-7 w-7"><circle cx="9" cy="8" r="3" {...common} /><path d="M3.5 20v-1.5A4.5 4.5 0 0 1 8 14h2a4.5 4.5 0 0 1 4.5 4.5V20M16 6.5a3 3 0 0 1 0 5.7M18 14.5a3.5 3.5 0 0 1 2.5 3.35V20" {...common} /></svg>;
+  }
+  if (name === "calculadora") {
+    return <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-7 w-7"><rect x="5" y="2.5" width="14" height="19" rx="2" {...common} /><path d="M8 7h8M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 16h.01M12 16h.01M15.5 16h.01" {...common} /></svg>;
+  }
+  if (name === "stock") {
+    return <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-7 w-7"><path d="m4 7 8-4 8 4-8 4-8-4Zm0 0v10l8 4 8-4V7M12 11v10" {...common} /></svg>;
+  }
+  if (name === "turnos") {
+    return <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-7 w-7"><rect x="3" y="4.5" width="18" height="16" rx="2" {...common} /><path d="M8 2.5v4M16 2.5v4M3 9h18M8 13h.01M12 13h.01M16 13h.01M8 17h.01M12 17h.01" {...common} /></svg>;
+  }
+  if (name === "reportes") {
+    return <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-7 w-7"><path d="M4 20.5h16M7 17v-5M12 17V7M17 17V3.5" {...common} /></svg>;
+  }
+  if (name === "send") {
+    return <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-6 w-6"><path d="m21 3-7.8 18-3.8-8-7.4-3.7L21 3Z" {...common} /><path d="m9.4 12.7 4.3-4.2" {...common} /></svg>;
+  }
+  if (name === "shield") {
+    return <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-6 w-6"><path d="M12 21s7-3.5 7-9.5V5l-7-2.5L5 5v6.5C5 17.5 12 21 12 21Z" {...common} /><path d="m9 12 2 2 4-4" {...common} /></svg>;
+  }
+  if (name === "cloud") {
+    return <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-6 w-6"><path d="M7.5 18.5h10a4 4 0 0 0 .6-7.95A6.5 6.5 0 0 0 5.7 9.1 4.7 4.7 0 0 0 7.5 18.5Z" {...common} /><path d="m12 8.5-2.5 2.5H11v3h2v-3h1.5L12 8.5Z" {...common} /></svg>;
+  }
+  if (name === "clock") {
+    return <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-6 w-6"><circle cx="12" cy="12" r="8.5" {...common} /><path d="M12 7v5l3.5 2" {...common} /></svg>;
+  }
+  return <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-6 w-6"><path d="m5 12 4 4L19 6" {...common} /></svg>;
+}
+
+const tools = [
+  { name: "Presupuestos", detail: "Cotizaciones claras, listas para compartir y seguir.", icon: "presupuesto" as const, tone: "violet" },
+  { name: "Facturador", detail: "Documentos de venta desde el mismo lugar.", icon: "factura" as const, tone: "blue" },
+  { name: "Clientes", detail: "Seguimiento de cada contacto y oportunidad.", icon: "clientes" as const, tone: "cyan" },
+  { name: "Calculadora de precios", detail: "Definí márgenes y precios con seguridad.", icon: "calculadora" as const, tone: "blue" },
+  { name: "Ventas y stock", detail: "Registrá movimientos y sabé qué te falta.", icon: "stock" as const, tone: "violet" },
+  { name: "Gestión de turnos", detail: "Ordená tu agenda y el tiempo de tu equipo.", icon: "turnos" as const, tone: "blue" },
+  { name: "Reportes", detail: "Mirá la información importante de un vistazo.", icon: "reportes" as const, tone: "cyan" },
+];
+
 function ModuleCard({
   title,
   accent,
@@ -178,6 +226,121 @@ export default function LandingPage() {
         </div>
 
         <div className="absolute bottom-5 left-6 h-12 w-40 opacity-35 [background-image:radial-gradient(circle,_#8c85ff_1.5px,_transparent_1.5px)] [background-size:16px_16px] sm:left-10" />
+      </section>
+
+      <section className="relative overflow-hidden border-y border-white/[0.07] bg-[#07080d] px-6 py-24 sm:px-10 lg:px-16 lg:py-32">
+        <div className="absolute inset-x-0 top-0 h-80 bg-[radial-gradient(ellipse_at_top,rgba(68,35,210,0.25),transparent_67%)]" />
+        <div className="relative mx-auto max-w-[1200px]">
+          <div className="grid items-end gap-8 lg:grid-cols-[1fr_auto]">
+            <div className="max-w-2xl">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#9f97ff]">Módulos para el día a día</p>
+              <h2 className="mt-5 font-display text-[clamp(2.7rem,5vw,5.2rem)] font-bold leading-[0.91] tracking-[-0.065em] text-white">
+                Todo lo que podés hacer <span className="landing-gradient-text">con Zimple.</span>
+              </h2>
+              <p className="mt-6 max-w-xl text-[17px] leading-relaxed text-white/55">
+                No necesitás adoptar un sistema gigante. Activá la herramienta que hoy te hace falta y construí tu propio espacio de gestión, a tu ritmo.
+              </p>
+            </div>
+            <div className="landing-stat-card w-full max-w-sm rounded-3xl border border-[#7c5cff]/35 p-5 lg:mb-1">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#7228ff] to-[#09bde6] text-white"><AnalyticsIcon /></div>
+                <div>
+                  <p className="text-sm font-semibold text-white">Tu negocio, más claro</p>
+                  <p className="text-xs text-white/45">Información útil para decidir.</p>
+                </div>
+              </div>
+              <div className="mt-5 flex h-10 items-end gap-1.5">
+                {[36, 54, 42, 78, 62, 92, 72].map((height, index) => <span key={index} className="flex-1 rounded-t bg-gradient-to-t from-[#4e35eb] to-[#10c9e9] opacity-80" style={{ height: `${height}%` }} />)}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {tools.map((tool, index) => (
+              <article key={tool.name} className={`landing-tool-card group rounded-[24px] p-5 ${index === 0 ? "sm:col-span-2 lg:col-span-1" : ""}`}>
+                <div className={`flex h-14 w-14 items-center justify-center rounded-2xl text-white shadow-lg ${tool.tone === "violet" ? "bg-gradient-to-br from-[#7628ff] to-[#9d43ff]" : tool.tone === "blue" ? "bg-gradient-to-br from-[#1a71ff] to-[#1faef9]" : "bg-gradient-to-br from-[#00accd] to-[#13d8ed]"}`}>
+                  <ToolGlyph name={tool.icon} />
+                </div>
+                <h3 className="mt-5 font-display text-[21px] font-semibold tracking-[-0.04em] text-white">{tool.name}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-white/50">{tool.detail}</p>
+                <div className="mt-6 flex gap-1.5 opacity-50"><span className="h-1.5 w-14 rounded-full bg-[#7964ff]" /><span className="h-1.5 w-8 rounded-full bg-[#21c7e8]" /></div>
+              </article>
+            ))}
+          </div>
+
+          <div className="mt-12 flex flex-col items-start justify-between gap-5 rounded-[28px] border border-white/10 bg-white/[0.035] px-6 py-6 sm:flex-row sm:items-center sm:px-8">
+            <p className="max-w-2xl text-xl font-medium tracking-[-0.035em] text-white/85">Las herramientas que tu negocio necesita, <span className="landing-gradient-text">en un solo lugar.</span></p>
+            <a href={accessUrl} className="shrink-0 text-sm font-bold text-[#57dafa] transition hover:text-white">Ver las herramientas <span className="ml-1">→</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section className="relative overflow-hidden bg-[#030305] px-6 py-24 sm:px-10 lg:px-16 lg:py-32">
+        <div className="absolute left-[3%] top-[8%] h-80 w-80 rounded-full bg-[#651de5]/20 blur-[120px]" />
+        <div className="absolute bottom-[5%] right-[2%] h-96 w-96 rounded-full bg-[#008ee1]/15 blur-[130px]" />
+        <div className="relative mx-auto grid max-w-[1200px] items-center gap-14 lg:grid-cols-[0.86fr_1.14fr] lg:gap-20">
+          <div>
+            <div className="inline-flex items-center gap-3 rounded-2xl border border-[#7949ff]/35 bg-[#421a8e]/20 p-2 pr-4">
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#7628ff] to-[#a246ff] text-white"><ToolGlyph name="presupuesto" /></span>
+              <span className="text-sm font-bold text-white">Armado de presupuestos</span>
+            </div>
+            <h2 className="mt-8 font-display text-[clamp(3rem,5.5vw,5.7rem)] font-bold leading-[0.9] tracking-[-0.065em] text-white">
+              Cotizaciones <span className="landing-gradient-text">que venden.</span>
+            </h2>
+            <p className="mt-6 max-w-md text-[18px] leading-relaxed text-white/62">
+              Armá presupuestos claros, prolijos y listos para compartir. Seguís cada propuesta y respondés más rápido cuando aparece una oportunidad.
+            </p>
+            <div className="mt-10 space-y-5">
+              {[
+                ["check", "Profesional", "Diseños claros y personalizados para cuidar tu imagen."],
+                ["send", "Listo para compartir", "Enviá tu propuesta en PDF o por link en segundos."],
+                ["shield", "Generá confianza", "Mostrá orden desde el primer presupuesto."],
+              ].map(([icon, title, detail]) => (
+                <div key={title} className="flex items-start gap-4">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/[0.04] text-[#62d9f7]"><ToolGlyph name={icon as ToolIconName} /></span>
+                  <div><h3 className="font-display text-[18px] font-semibold tracking-[-0.035em] text-white">{title}</h3><p className="mt-1 text-sm leading-relaxed text-white/48">{detail}</p></div>
+                </div>
+              ))}
+            </div>
+            <a href={accessUrl} className="landing-cta mt-10 inline-block rounded-2xl px-6 py-3.5 text-sm font-bold text-white">Crear mi primer presupuesto <span className="ml-2 text-lg">→</span></a>
+          </div>
+
+          <div className="relative mx-auto w-full max-w-[620px]">
+            <div className="landing-invoice relative rounded-[30px] border border-[#35c4ff]/40 p-5 sm:p-7">
+              <div className="flex items-start justify-between gap-3 border-b border-white/10 pb-6">
+                <div><p className="text-sm text-white/50">Cotización <span className="text-white/80">#00015</span></p><p className="mt-1 text-xs text-white/35">Lista para enviar a tu cliente</p></div>
+                <span className="rounded-xl bg-[#00bd9b]/15 px-3 py-2 text-xs font-bold text-[#35dfbd]">✓ Aprobado</span>
+              </div>
+              <div className="mt-6 rounded-2xl border border-white/10 bg-black/20 p-4">
+                <p className="text-xs text-white/45">Cliente</p><p className="mt-1 font-display text-lg font-semibold text-white">Tu próximo cliente</p><p className="mt-1 text-xs text-white/40">Propuesta profesional y clara</p>
+              </div>
+              <div className="mt-5 overflow-hidden rounded-2xl border border-white/10 bg-black/20">
+                <div className="grid grid-cols-[1fr_auto_auto] gap-3 border-b border-white/10 px-4 py-3 text-[11px] font-semibold text-white/45"><span>Concepto</span><span>Cant.</span><span>Total</span></div>
+                {["Productos o servicios", "Mano de obra", "Detalle adicional"].map((item, index) => <div key={item} className="grid grid-cols-[1fr_auto_auto] gap-3 px-4 py-3 text-xs text-white/65"><span>{item}</span><span>{index + 1}</span><span>$ {index === 0 ? "32.000" : index === 1 ? "18.000" : "8.000"}</span></div>)}
+              </div>
+              <div className="mt-5 flex items-end justify-between"><span className="text-sm text-white/50">Total</span><strong className="font-display text-[clamp(1.8rem,4vw,2.7rem)] tracking-[-0.05em] landing-gradient-text">$ 58.000</strong></div>
+              <div className="mt-6 grid gap-3 sm:grid-cols-2"><a href={accessUrl} className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#7429ff] to-[#08bee8] px-4 py-3 text-sm font-bold text-white"><ToolGlyph name="send" /> Compartir</a><a href={accessUrl} className="rounded-xl border border-[#2cbff0]/45 px-4 py-3 text-center text-sm font-bold text-[#4edcf6] transition hover:bg-[#0d3c59]/40">Ver presupuestos</a></div>
+            </div>
+            <div className="absolute -right-4 top-[24%] hidden rounded-2xl border border-[#42cfff]/35 bg-[#0d1730]/90 p-4 shadow-[0_18px_50px_rgba(0,138,255,0.2)] backdrop-blur sm:block"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#6724f3] to-[#11cde9] text-white"><ToolGlyph name="send" /></span><p className="mt-3 text-sm font-bold text-white">Enviado</p><p className="mt-1 text-xs text-white/45">En segundos</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section className="relative overflow-hidden border-t border-white/[0.07] bg-[#080a13] px-6 py-20 text-center sm:px-10 lg:px-16 lg:py-28">
+        <div className="absolute inset-x-0 top-0 h-56 bg-[radial-gradient(ellipse_at_center,rgba(82,44,238,0.32),transparent_70%)]" />
+        <div className="relative mx-auto max-w-[1000px]">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#9f97ff]">Hecho para avanzar</p>
+          <h2 className="mt-5 font-display text-[clamp(2.6rem,5vw,5rem)] font-bold leading-[0.92] tracking-[-0.06em] text-white">Empezá simple. <span className="landing-gradient-text">Crecé cuando quieras.</span></h2>
+          <p className="mx-auto mt-6 max-w-2xl text-[17px] leading-relaxed text-white/55">No hace falta usar todo desde el primer día. Empezá por resolver una tarea y sumá herramientas cuando realmente te sirvan.</p>
+          <div className="mx-auto mt-12 grid max-w-3xl gap-4 text-left sm:grid-cols-3">
+            {[
+              ["clock", "Rápido", "Ponete en marcha sin vueltas."],
+              ["cloud", "En la nube", "Accedé desde donde estés."],
+              ["shield", "Ordenado", "Todo en un mismo entorno."],
+            ].map(([icon, title, detail]) => <div key={title} className="rounded-2xl border border-white/10 bg-white/[0.04] p-5"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.07] text-[#59d8f5]"><ToolGlyph name={icon as ToolIconName} /></span><h3 className="mt-4 font-display text-lg font-semibold tracking-[-0.035em] text-white">{title}</h3><p className="mt-1 text-sm leading-relaxed text-white/48">{detail}</p></div>)}
+          </div>
+          <a href={accessUrl} className="landing-cta mt-12 inline-block rounded-2xl px-8 py-4 text-[15px] font-bold text-white">Accedé a Zimple <span className="ml-2 text-lg">→</span></a>
+        </div>
       </section>
     </main>
   );

@@ -131,6 +131,26 @@ h1, h2, h3, .font-display { font-family: var(--font-display); letter-spacing: -0
   transform: translateY(-2px);
 }
 
+.landing-tool-card,
+.landing-stat-card,
+.landing-invoice {
+  background:
+    linear-gradient(145deg, rgba(30, 32, 62, 0.88), rgba(7, 11, 25, 0.82)),
+    rgba(10, 12, 25, 0.8);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 18px 55px rgba(1, 4, 16, 0.3);
+}
+
+.landing-tool-card {
+  border: 1px solid rgba(104, 129, 255, 0.2);
+  transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+}
+
+.landing-tool-card:hover {
+  border-color: rgba(86, 207, 255, 0.55);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 20px 55px rgba(49, 39, 178, 0.24);
+  transform: translateY(-5px);
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .landing-card-one { animation: float 7s ease-in-out infinite; }
   .landing-card-two { animation: float 7s ease-in-out -2.2s infinite; }
