@@ -103,3 +103,36 @@ h1, h2, h3, .font-display { font-family: var(--font-display); letter-spacing: -0
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Campaign landing visual language */
+.landing-grid {
+  background-image:
+    linear-gradient(rgba(115, 92, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(115, 92, 255, 0.06) 1px, transparent 1px);
+  background-size: 70px 70px;
+  mask-image: linear-gradient(to bottom, black, transparent 82%);
+}
+
+.landing-gradient-text {
+  background: linear-gradient(105deg, #7e16ff 2%, #663eff 38%, #00cdf2 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.landing-cta {
+  background: linear-gradient(110deg, #7526ff, #265bff 58%, #05c9e9);
+  box-shadow: 0 12px 36px -10px rgba(75, 55, 255, 0.82), inset 0 1px 0 rgba(255,255,255,0.3);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.landing-cta:hover {
+  box-shadow: 0 18px 44px -9px rgba(32, 161, 255, 0.72), inset 0 1px 0 rgba(255,255,255,0.35);
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .landing-card-one { animation: float 7s ease-in-out infinite; }
+  .landing-card-two { animation: float 7s ease-in-out -2.2s infinite; }
+  .landing-card-three { animation: float 7s ease-in-out -4.3s infinite; }
+}
