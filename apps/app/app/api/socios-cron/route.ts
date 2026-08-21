@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { marcarVencidosYGenerarCuotas } from '@/lib/actions/socios'
 import { prisma } from '@/lib/prisma'
+import { checkCronSecret } from '@/lib/cron-auth'
 
 export async function GET(req: NextRequest) {
-  if (!process.env.CRON_SECRET) {
-    return NextResponse.json({ error: 'Cron no configurado' }, { status: 500 })
-  }
-  const secret = req.nextUrl.searchParams.get('secret')
-  if (secret !== process.env.CRON_SECRET) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const unauthorized = checkCronSecret(req)
+  if (unauthorized) return unauthorized
 
   const users = await prisma.user.findMany({ select: { id: true } })
 

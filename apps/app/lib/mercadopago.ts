@@ -1,4 +1,4 @@
-import { MercadoPagoConfig, PreApproval, PreApprovalPlan, Payment } from "mercadopago";
+import { MercadoPagoConfig, PreApproval, PreApprovalPlan, Payment, WebhookSignatureValidator } from "mercadopago";
 
 // ─── Client singleton ────────────────────────────────────────────────────────
 // Keys se cargan desde env vars en Railway.
@@ -99,29 +99,36 @@ export async function getSubscription(preapprovalId: string) {
   return preApproval.get({ id: preapprovalId });
 }
 
+// Tolerancia contra reintentos/replay: un webhook con un `ts` más viejo que
+// esto se rechaza, aunque la firma sea válida (pudo haber sido capturado y
+// reenviado). 5 min cubre reintentos legítimos de MP con margen de sobra.
+const WEBHOOK_TOLERANCE_SECONDS = 5 * 60;
+
 // ─── Verificar signature del webhook ─────────────────────────────────────────
+// Usa el validador oficial del SDK en vez de recomputar el HMAC a mano: la
+// versión anterior armaba el manifest como `id:{x-request-id};request-id:
+// {x-request-id}` — pero el campo `id:` del manifest de MP tiene que salir
+// del query param `data.id` de la URL del webhook, no del header
+// x-request-id (son dos valores distintos). El validador oficial ya hace
+// esto bien, además de la comparación en tiempo constante y el chequeo de
+// antigüedad del timestamp.
 export function verifyWebhookSignature(
   xSignature: string | null,
   xRequestId: string | null,
-  body: string
+  dataId: string | null
 ): boolean {
   const secret = process.env.MP_WEBHOOK_SECRET;
   if (!secret || !xSignature || !xRequestId) return false;
 
   try {
-    const crypto = require("crypto");
-    const [tsPart, v1Part] = xSignature.split(",");
-    const ts = tsPart?.split("=")[1];
-    const v1 = v1Part?.split("=")[1];
-    if (!ts || !v1) return false;
-
-    const manifest = `id:${xRequestId};request-id:${xRequestId};ts:${ts};`;
-    const hmac = crypto
-      .createHmac("sha256", secret)
-      .update(manifest)
-      .digest("hex");
-
-    return hmac === v1;
+    WebhookSignatureValidator.validate({
+      xSignature,
+      xRequestId,
+      dataId,
+      secret,
+      toleranceSeconds: WEBHOOK_TOLERANCE_SECONDS,
+    });
+    return true;
   } catch {
     return false;
   }

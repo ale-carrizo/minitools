@@ -1,17 +1,28 @@
 "use server";
 
 import bcrypt from "bcryptjs";
+import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export type RegisterState = {
   error?: string;
   success?: boolean;
 };
 
+const REGISTER_LIMIT = 5;
+const REGISTER_WINDOW_MS = 60 * 60 * 1000;
+
 export async function registerUser(
   _prev: RegisterState,
   formData: FormData
 ): Promise<RegisterState> {
+  const ip = (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const rate = checkRateLimit(`register:${ip}`, REGISTER_LIMIT, REGISTER_WINDOW_MS);
+  if (!rate.allowed) {
+    return { error: "Demasiados intentos. Probá de nuevo en un rato." };
+  }
+
   const name = (formData.get("name") as string)?.trim();
   let email = (formData.get("email") as string)?.trim().toLowerCase();
   const password = formData.get("password") as string;

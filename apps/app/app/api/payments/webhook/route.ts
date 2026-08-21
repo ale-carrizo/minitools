@@ -14,6 +14,7 @@ export async function POST(req: NextRequest) {
   const body = await req.text();
   const xSignature = req.headers.get("x-signature");
   const xRequestId = req.headers.get("x-request-id");
+  const dataId = req.nextUrl.searchParams.get("data.id");
 
   // Verificación de firma es obligatoria. Sin MP_WEBHOOK_SECRET rechazamos todo.
   if (!process.env.MP_WEBHOOK_SECRET) {
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Webhook no configurado" }, { status: 500 });
   }
 
-  const valid = verifyWebhookSignature(xSignature, xRequestId, body);
+  const valid = verifyWebhookSignature(xSignature, xRequestId, dataId);
   if (!valid) {
     console.warn("[Webhook] Firma inválida — request rechazado");
     return NextResponse.json({ error: "Firma inválida" }, { status: 401 });
