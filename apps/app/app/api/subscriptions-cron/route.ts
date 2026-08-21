@@ -1,18 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getSubscription } from '@/lib/mercadopago'
+import { checkCronSecret } from '@/lib/cron-auth'
 
 // Corre periódicamente (ver socios-cron para el mismo patrón de pinger externo).
 // Un trial vencido sin tarjeta autorizada en MP pierde acceso: se marca EXPIRED
 // y se suspende al usuario (mismo flag que ya bloquea el login).
 export async function GET(req: NextRequest) {
-  if (!process.env.CRON_SECRET) {
-    return NextResponse.json({ error: 'Cron no configurado' }, { status: 500 })
-  }
-  const secret = req.nextUrl.searchParams.get('secret')
-  if (secret !== process.env.CRON_SECRET) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const unauthorized = checkCronSecret(req)
+  if (unauthorized) return unauthorized
 
   const vencidas = await prisma.subscription.findMany({
     where: { status: 'TRIAL', trialEndsAt: { lt: new Date() } },

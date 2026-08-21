@@ -5,6 +5,17 @@ import Google from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { authConfig } from "./auth.config";
+import { checkRateLimit } from "@/lib/rate-limit";
+
+// Hash "de relleno" sin contraseña real detrás — se compara contra esto cuando
+// el email no existe, para que authorize() tarde lo mismo que cuando sí existe
+// y bcrypt.compare corre de verdad. Sin esto, "email no existe" responde mucho
+// más rápido que "email existe, contraseña mal", lo que permite enumerar
+// cuentas midiendo el tiempo de respuesta del login.
+const DUMMY_HASH = "$2b$12$HEsLpwlKu033JSgfFxRDoO10TmOJBYfLyReVDVv46mITJmfSKxHJC";
+
+const LOGIN_LIMIT = 10;
+const LOGIN_WINDOW_MS = 5 * 60 * 1000;
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
@@ -20,8 +31,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Contraseña", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, request) {
         if (!credentials?.email || !credentials?.password) return null;
+
+        const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+        const rate = checkRateLimit(`login:${ip}`, LOGIN_LIMIT, LOGIN_WINDOW_MS);
+        if (!rate.allowed) return null;
 
         const email = String(credentials.email).trim().toLowerCase();
 
@@ -29,13 +44,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           where: { email },
         });
 
-        if (!user || !user.password) return null;
-        if (user.suspended) return null;
-
         const valid = await bcrypt.compare(
           credentials.password as string,
-          user.password
+          user?.password ?? DUMMY_HASH
         );
+
+        if (!user || !user.password) return null;
+        if (user.suspended) return null;
         if (!valid) return null;
 
         return {
