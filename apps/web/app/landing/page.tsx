@@ -135,7 +135,7 @@ function ModuleCard({
 export default function LandingPage() {
   return (
     <main className="landing-page min-h-screen overflow-hidden bg-[#030305] text-white">
-      <section className="relative isolate min-h-screen px-6 pb-12 pt-8 sm:px-10 lg:px-16 lg:pb-16 lg:pt-12">
+      <section className="relative isolate overflow-hidden px-6 pb-12 pt-8 sm:px-10 lg:px-16 lg:pb-16 lg:pt-12">
         <div className="landing-grid absolute inset-0 -z-20 opacity-30" />
         <div className="absolute -right-48 top-[-14rem] -z-10 h-[52rem] w-[52rem] rounded-full bg-[#4418d4]/40 blur-[120px]" />
         <div className="absolute right-[4%] top-[22%] -z-10 h-80 w-80 rounded-full bg-[#0879ef]/25 blur-[105px]" />
@@ -157,7 +157,7 @@ export default function LandingPage() {
           </a>
         </div>
 
-        <div className="mx-auto grid max-w-[1440px] items-center gap-12 pt-16 lg:min-h-[calc(100vh-100px)] lg:grid-cols-[0.94fr_1.06fr] lg:gap-2 lg:pt-6">
+        <div className="mx-auto grid max-w-[1440px] items-center gap-12 pt-10 lg:grid-cols-[0.94fr_1.06fr] lg:gap-2 lg:pt-6">
           <div className="relative z-10 max-w-3xl animate-[fade-up_0.75s_cubic-bezier(0.16,1,0.3,1)_both]">
             <p className="mb-7 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#9f97ff]">Gestión simple para tu negocio</p>
             <h1 className="font-display text-[clamp(2.4rem,6.56vw,6.72rem)] font-bold leading-[0.95] tracking-[-0.073em] text-white">
