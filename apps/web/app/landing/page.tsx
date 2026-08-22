@@ -160,7 +160,7 @@ export default function LandingPage() {
         <div className="mx-auto grid max-w-[1440px] items-center gap-12 pt-10 lg:grid-cols-[0.94fr_1.06fr] lg:gap-2 lg:pt-6">
           <div className="relative z-10 max-w-3xl animate-[fade-up_0.75s_cubic-bezier(0.16,1,0.3,1)_both]">
             <p className="mb-7 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#9f97ff]">Gestión simple para tu negocio</p>
-            <h1 className="font-display text-[clamp(2.4rem,6.56vw,6.72rem)] font-bold leading-[0.95] tracking-[-0.073em] text-white">
+            <h1 className="font-display text-[clamp(2.4rem,6.56vw,6.72rem)] font-bold leading-[1.08] tracking-[-0.073em] text-white">
               Tu caja de
               <span className="mt-2 block landing-gradient-text">herramientas</span>
               <span className="block landing-gradient-text">digitales.</span>
