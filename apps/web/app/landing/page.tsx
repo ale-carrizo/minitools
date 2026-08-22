@@ -346,12 +346,12 @@ export default function LandingPage({ includePricingAndFooter = false }: { inclu
                 </p>
               </div>
 
-              <div className="mt-16 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+              <div className="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
                 {pricingPlans.map((plan) => (
-                  <article key={plan.name} className={`relative flex min-h-[480px] flex-col rounded-[28px] border p-7 ${plan.featured ? "border-[#7951ff] bg-[linear-gradient(150deg,rgba(70,33,159,0.52),rgba(10,14,31,0.95)_55%,rgba(7,15,28,0.95))] shadow-[0_18px_60px_rgba(91,55,255,0.28)]" : "border-white/10 bg-white/[0.035]"}`}>
+                  <article key={plan.name} className={`relative flex min-h-[450px] flex-col rounded-[28px] border p-5 lg:p-6 ${plan.featured ? "border-[#7951ff] bg-[linear-gradient(150deg,rgba(70,33,159,0.52),rgba(10,14,31,0.95)_55%,rgba(7,15,28,0.95))] shadow-[0_18px_60px_rgba(91,55,255,0.28)]" : "border-white/10 bg-white/[0.035]"}`}>
                     {plan.featured && <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-[#782dff] to-[#11c7e8] px-4 py-1.5 text-[11px] font-bold tracking-[0.12em] text-white">MÁS POPULAR</span>}
                     <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/45">{plan.name}</p>
-                    <p className="mt-6 font-display text-[45px] font-bold leading-none tracking-[-0.06em] text-white">{plan.price}</p>
+                    <p className="mt-6 font-display text-[clamp(1.9rem,3vw,2.8rem)] font-bold leading-none tracking-[-0.06em] text-white">{plan.price}</p>
                     <p className="mt-2 text-sm text-white/45">por mes</p>
                     <div className="mt-5 min-h-7">{plan.saving && <span className="rounded-full bg-[#7855ff]/15 px-3 py-1.5 text-xs font-bold text-[#b6b0ff]">{plan.saving}</span>}</div>
                     <h3 className="mt-2 font-display text-xl font-semibold tracking-[-0.04em] text-white">{plan.description}</h3>
