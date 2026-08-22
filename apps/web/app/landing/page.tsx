@@ -275,57 +275,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="relative overflow-hidden bg-[#030305] px-6 py-24 sm:px-10 lg:px-16 lg:py-32">
-        <div className="absolute left-[3%] top-[8%] h-80 w-80 rounded-full bg-[#651de5]/20 blur-[120px]" />
-        <div className="absolute bottom-[5%] right-[2%] h-96 w-96 rounded-full bg-[#008ee1]/15 blur-[130px]" />
-        <div className="relative mx-auto grid max-w-[1200px] items-center gap-14 lg:grid-cols-[0.86fr_1.14fr] lg:gap-20">
-          <div>
-            <div className="inline-flex items-center gap-3 rounded-2xl border border-[#7949ff]/35 bg-[#421a8e]/20 p-2 pr-4">
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#7628ff] to-[#a246ff] text-white"><ToolGlyph name="presupuesto" /></span>
-              <span className="text-sm font-bold text-white">Armado de presupuestos</span>
-            </div>
-            <h2 className="mt-8 font-display text-[clamp(3rem,5.5vw,5.7rem)] font-bold leading-[0.9] tracking-[-0.065em] text-white">
-              Cotizaciones <span className="landing-gradient-text">que venden.</span>
-            </h2>
-            <p className="mt-6 max-w-md text-[18px] leading-relaxed text-white/62">
-              Armá presupuestos claros, prolijos y listos para compartir. Seguís cada propuesta y respondés más rápido cuando aparece una oportunidad.
-            </p>
-            <div className="mt-10 space-y-5">
-              {[
-                ["check", "Profesional", "Diseños claros y personalizados para cuidar tu imagen."],
-                ["send", "Listo para compartir", "Enviá tu propuesta en PDF o por link en segundos."],
-                ["shield", "Generá confianza", "Mostrá orden desde el primer presupuesto."],
-              ].map(([icon, title, detail]) => (
-                <div key={title} className="flex items-start gap-4">
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/[0.04] text-[#62d9f7]"><ToolGlyph name={icon as ToolIconName} /></span>
-                  <div><h3 className="font-display text-[18px] font-semibold tracking-[-0.035em] text-white">{title}</h3><p className="mt-1 text-sm leading-relaxed text-white/48">{detail}</p></div>
-                </div>
-              ))}
-            </div>
-            <a href={accessUrl} className="landing-cta mt-10 inline-block rounded-2xl px-6 py-3.5 text-sm font-bold text-white">Crear mi primer presupuesto <span className="ml-2 text-lg">→</span></a>
-          </div>
-
-          <div className="relative mx-auto w-full max-w-[620px]">
-            <div className="landing-invoice relative rounded-[30px] border border-[#35c4ff]/40 p-5 sm:p-7">
-              <div className="flex items-start justify-between gap-3 border-b border-white/10 pb-6">
-                <div><p className="text-sm text-white/50">Cotización <span className="text-white/80">#00015</span></p><p className="mt-1 text-xs text-white/35">Lista para enviar a tu cliente</p></div>
-                <span className="rounded-xl bg-[#00bd9b]/15 px-3 py-2 text-xs font-bold text-[#35dfbd]">✓ Aprobado</span>
-              </div>
-              <div className="mt-6 rounded-2xl border border-white/10 bg-black/20 p-4">
-                <p className="text-xs text-white/45">Cliente</p><p className="mt-1 font-display text-lg font-semibold text-white">Tu próximo cliente</p><p className="mt-1 text-xs text-white/40">Propuesta profesional y clara</p>
-              </div>
-              <div className="mt-5 overflow-hidden rounded-2xl border border-white/10 bg-black/20">
-                <div className="grid grid-cols-[1fr_auto_auto] gap-3 border-b border-white/10 px-4 py-3 text-[11px] font-semibold text-white/45"><span>Concepto</span><span>Cant.</span><span>Total</span></div>
-                {["Productos o servicios", "Mano de obra", "Detalle adicional"].map((item, index) => <div key={item} className="grid grid-cols-[1fr_auto_auto] gap-3 px-4 py-3 text-xs text-white/65"><span>{item}</span><span>{index + 1}</span><span>$ {index === 0 ? "32.000" : index === 1 ? "18.000" : "8.000"}</span></div>)}
-              </div>
-              <div className="mt-5 flex items-end justify-between"><span className="text-sm text-white/50">Total</span><strong className="font-display text-[clamp(1.8rem,4vw,2.7rem)] tracking-[-0.05em] landing-gradient-text">$ 58.000</strong></div>
-              <div className="mt-6 grid gap-3 sm:grid-cols-2"><a href={accessUrl} className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#7429ff] to-[#08bee8] px-4 py-3 text-sm font-bold text-white"><ToolGlyph name="send" /> Compartir</a><a href={accessUrl} className="rounded-xl border border-[#2cbff0]/45 px-4 py-3 text-center text-sm font-bold text-[#4edcf6] transition hover:bg-[#0d3c59]/40">Ver presupuestos</a></div>
-            </div>
-            <div className="absolute -right-4 top-[24%] hidden rounded-2xl border border-[#42cfff]/35 bg-[#0d1730]/90 p-4 shadow-[0_18px_50px_rgba(0,138,255,0.2)] backdrop-blur sm:block"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#6724f3] to-[#11cde9] text-white"><ToolGlyph name="send" /></span><p className="mt-3 text-sm font-bold text-white">Enviado</p><p className="mt-1 text-xs text-white/45">En segundos</p></div>
-          </div>
-        </div>
-      </section>
-
       <section className="relative overflow-hidden border-t border-white/[0.07] bg-[#080a13] px-6 py-20 text-center sm:px-10 lg:px-16 lg:py-28">
         <div className="absolute inset-x-0 top-0 h-56 bg-[radial-gradient(ellipse_at_center,rgba(82,44,238,0.32),transparent_70%)]" />
         <div className="relative mx-auto max-w-[1000px]">
