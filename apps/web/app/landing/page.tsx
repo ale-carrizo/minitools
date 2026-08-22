@@ -99,6 +99,45 @@ const tools = [
   { name: "Reportes", detail: "Mirá la información importante de un vistazo.", icon: "reportes" as const, tone: "cyan" },
 ];
 
+const pricingPlans = [
+  {
+    name: "Una herramienta",
+    price: "$6.000",
+    description: "Para un caso puntual.",
+    detail: "Si solo necesitás cubrir una tarea específica.",
+    features: ["Elegí 1 herramienta", "Actualizaciones incluidas", "Soporte por email"],
+    cta: "Elegir opción puntual",
+  },
+  {
+    name: "Starter",
+    price: "$12.000",
+    saving: "Ahorrás 33%",
+    description: "Hasta 3 herramientas",
+    detail: "Lo esencial para empezar a ordenar tu negocio.",
+    features: ["Elegí hasta 3 herramientas", "Cambiá herramientas cuando lo necesites", "Actualizaciones incluidas"],
+    cta: "Elegir Starter",
+  },
+  {
+    name: "Pro",
+    price: "$23.000",
+    saving: "Ahorrás 37%",
+    description: "Hasta 6 herramientas",
+    detail: "Más herramientas para más tareas del día a día.",
+    features: ["Elegí hasta 6 herramientas", "Cambiá herramientas cuando lo necesites", "Soporte prioritario"],
+    cta: "Elegir Pro",
+    featured: true,
+  },
+  {
+    name: "Full",
+    price: "$30.000",
+    saving: "Ahorrás 44%",
+    description: "Todas las herramientas",
+    detail: "Toda la caja Zimple, hoy y mañana.",
+    features: ["Acceso a las 12 herramientas", "Nuevas herramientas incluidas", "Soporte prioritario"],
+    cta: "Elegir Full",
+  },
+];
+
 function ModuleCard({
   title,
   accent,
@@ -132,7 +171,7 @@ function ModuleCard({
   );
 }
 
-export default function LandingPage() {
+export default function LandingPage({ includePricingAndFooter = false }: { includePricingAndFooter?: boolean }) {
   return (
     <main className="landing-page min-h-screen overflow-hidden bg-[#030305] text-white">
       <section className="relative isolate overflow-hidden px-6 pb-10 pt-6 sm:px-10 lg:px-16 lg:pb-14 lg:pt-8">
@@ -291,6 +330,62 @@ export default function LandingPage() {
           <a href={accessUrl} className="landing-cta mt-12 inline-block rounded-2xl px-8 py-4 text-[15px] font-bold text-white">Accedé a Zimple <span className="ml-2 text-lg">→</span></a>
         </div>
       </section>
+
+      {includePricingAndFooter && (
+        <>
+          <section className="relative overflow-hidden bg-[#030305] px-6 py-24 sm:px-10 lg:px-16 lg:py-32">
+            <div className="absolute left-1/2 top-0 h-[34rem] w-[70rem] -translate-x-1/2 rounded-full bg-[#5220ca]/20 blur-[130px]" />
+            <div className="relative mx-auto max-w-[1260px]">
+              <div className="mx-auto max-w-3xl text-center">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#9f97ff]">Precios</p>
+                <h2 className="mt-5 font-display text-[clamp(2.7rem,5vw,5.3rem)] font-bold leading-[0.92] tracking-[-0.065em] text-white">
+                  Elegí cuántas herramientas <span className="landing-gradient-text">necesitás.</span>
+                </h2>
+                <p className="mx-auto mt-6 max-w-xl text-[17px] leading-relaxed text-white/55">
+                  Entrás a Zimple para resolver una necesidad puntual y ampliás tu espacio cuando tu negocio lo pida.
+                </p>
+              </div>
+
+              <div className="mt-16 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+                {pricingPlans.map((plan) => (
+                  <article key={plan.name} className={`relative flex min-h-[480px] flex-col rounded-[28px] border p-7 ${plan.featured ? "border-[#7951ff] bg-[linear-gradient(150deg,rgba(70,33,159,0.52),rgba(10,14,31,0.95)_55%,rgba(7,15,28,0.95))] shadow-[0_18px_60px_rgba(91,55,255,0.28)]" : "border-white/10 bg-white/[0.035]"}`}>
+                    {plan.featured && <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-[#782dff] to-[#11c7e8] px-4 py-1.5 text-[11px] font-bold tracking-[0.12em] text-white">MÁS POPULAR</span>}
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/45">{plan.name}</p>
+                    <p className="mt-6 font-display text-[45px] font-bold leading-none tracking-[-0.06em] text-white">{plan.price}</p>
+                    <p className="mt-2 text-sm text-white/45">por mes</p>
+                    <div className="mt-5 min-h-7">{plan.saving && <span className="rounded-full bg-[#7855ff]/15 px-3 py-1.5 text-xs font-bold text-[#b6b0ff]">{plan.saving}</span>}</div>
+                    <h3 className="mt-2 font-display text-xl font-semibold tracking-[-0.04em] text-white">{plan.description}</h3>
+                    <p className="mt-2 min-h-11 text-sm leading-relaxed text-white/50">{plan.detail}</p>
+                    <ul className="mt-7 space-y-3">
+                      {plan.features.map((feature) => <li key={feature} className="flex items-start gap-2.5 text-sm leading-relaxed text-white/70"><span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#714bff]/20 text-[#79e2f4]"><ToolGlyph name="check" /></span>{feature}</li>)}
+                    </ul>
+                    <a href={accessUrl} className={`mt-auto block rounded-xl px-4 py-3.5 text-center text-sm font-bold transition ${plan.featured ? "landing-cta text-white" : "border border-white/15 bg-white/[0.06] text-white hover:border-[#54d6f3]/55 hover:bg-white/[0.1]"}`}>{plan.cta}</a>
+                  </article>
+                ))}
+              </div>
+              <p className="mt-8 text-center text-sm text-white/42">Podés cambiar de plan cuando quieras.</p>
+            </div>
+          </section>
+
+          <footer className="border-t border-white/[0.08] bg-[#05060a] px-6 py-12 sm:px-10 lg:px-16">
+            <div className="mx-auto max-w-[1260px]">
+              <p className="text-center text-sm text-white/48">Empezá con una sola app. Sumá otras sólo cuando tu negocio realmente las necesite.</p>
+              <div className="mt-9 flex flex-col items-center justify-between gap-6 border-t border-white/[0.07] pt-8 lg:flex-row">
+                <Link href="/" aria-label="Ir al inicio de Zimple Tools" className="flex items-center gap-3">
+                  <ZimpleMark size={32} />
+                  <span className="font-display text-lg font-semibold tracking-[-0.04em] text-white">Zimple Tools</span>
+                </Link>
+                <nav aria-label="Enlaces legales" className="flex items-center gap-6 text-sm text-white/48">
+                  <Link href="/privacidad" className="transition hover:text-white">Privacidad</Link>
+                  <Link href="/terminos" className="transition hover:text-white">Términos</Link>
+                  <a href="mailto:[EMAIL LEGAL / SOPORTE]" className="transition hover:text-white">Contacto</a>
+                </nav>
+                <p className="text-center text-sm text-white/32">© 2026 Zimple Tools. Todos los derechos reservados.</p>
+              </div>
+            </div>
+          </footer>
+        </>
+      )}
     </main>
   );
 }
