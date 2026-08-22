@@ -165,13 +165,13 @@ export default function LandingPage() {
               <span className="mt-2 block landing-gradient-text">herramientas</span>
               <span className="block landing-gradient-text">digitales.</span>
             </h1>
-            <p className="mt-10 max-w-xl text-[clamp(1.35rem,2.15vw,2.25rem)] font-medium leading-[1.16] tracking-[-0.045em] text-white/90">
+            <p className="mt-6 max-w-xl text-[clamp(1.35rem,2.15vw,2.25rem)] font-medium leading-[1.16] tracking-[-0.045em] text-white/90">
               Todo lo que tu negocio necesita, <span className="landing-gradient-text">en un solo lugar.</span>
             </p>
-            <p className="mt-5 max-w-md text-base leading-relaxed text-white/55">
+            <p className="mt-4 max-w-md text-base leading-relaxed text-white/55">
               Elegí las herramientas que te sirven hoy y sumá otras cuando tu negocio las necesite.
             </p>
-            <div className="mt-9 flex flex-wrap items-center gap-4">
+            <div className="mt-7 flex flex-wrap items-center gap-4">
               <a
                 href={accessUrl}
                 className="landing-cta rounded-2xl px-7 py-4 text-[15px] font-bold text-white"
@@ -183,7 +183,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="relative mx-auto h-[420px] w-full max-w-[660px] sm:h-[500px] lg:h-[620px] lg:max-w-none">
+          <div className="relative mx-auto h-[380px] w-full max-w-[660px] sm:h-[440px] lg:h-[520px] lg:max-w-none">
             <div className="absolute right-[-20%] top-[8%] h-[82%] w-[85%] rounded-full bg-gradient-to-br from-[#5b20ef]/50 via-[#095dd9]/35 to-transparent blur-3xl" />
             <svg className="absolute left-[4%] top-[6%] h-[86%] w-[96%] opacity-70" viewBox="0 0 630 560" fill="none" aria-hidden="true">
               <path d="M-10 455C137 462 132 276 276 305c100 20 72-164 276-140" stroke="url(#landing-line)" strokeWidth="1.2" />
